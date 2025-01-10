@@ -19,8 +19,8 @@ if [[ $# -lt 1 ]]; then
 fi
 
 # Install Splunk
-wget -O splunkforwarder-9.1.2-b6b9c8185839-Linux-x86_64.tgz "https://download.splunk.com/products/universalforwarder/releases/9.1.2/linux/splunkforwarder-9.1.2-b6b9c8185839-Linux-x86_64.tgz"
-tar -xzvf splunkforwarder-9.1.2-b6b9c8185839-Linux-x86_64.tgz -C /opt
+wget -O splunkforwarder-9.1.1-64e843ea36b1-Linux-x86_64.tgz "https://download.splunk.com/products/universalforwarder/releases/9.1.1/linux/splunkforwarder-9.1.1-64e843ea36b1-Linux-x86_64.tgz"
+tar -xzvf splunkforwarder-9.1.1-64e843ea36b1-Linux-x86_64.tgz -C /opt
 cd /opt/splunkforwarder/bin
 
 # Request and confirm password
@@ -44,26 +44,30 @@ done
 monitor() {
   if [ -f $1 ]
   then
-    ./splunk add monitor $1
+    ./splunk add monitor "$1" --sourcetype "$2"
   fi
 }
 
 # Add files to log
-monitor /var/log/syslog
-monitor /var/log/messages
+monitor /var/log/syslog syslog
+monitor /var/log/messages messages
+monitor /var/log/cron cron
+monitor /var/log/audit.log audit
+monitor /var/tmp temp
+monitor /tmp temp
 # Apache
-monitor /var/log/apache/access.log
-monitor /var/log/apache/error.log
-monitor /var/log/apache2/access.log
-monitor /var/log/apache2/error.log
+monitor /var/log/apache/access.log apacheaccess
+monitor /var/log/apache/error.log apacheerror
+monitor /var/log/apache2/access.log apache2access
+monitor /var/log/apache2/error.log apache2error
 # SSH
-monitor /var/log/auth.log
-monitor /var/log/secure
+monitor /var/log/auth.log auth
+monitor /var/log/secure secure
 
 #monitor /var/log/httpd/*_log
 #watch /var/log/https/modsec_*.log
-monitor /var/log/mysql.log
-monitor /var/log/mysqld.log
+monitor /var/log/mysql.log mysql
+monitor /var/log/mysqld.log mysql
 # TODO: add more files
 
 # == Configure options ==
