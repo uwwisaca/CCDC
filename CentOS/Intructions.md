@@ -13,6 +13,9 @@ This will output the user accounts.
 sudo passwd (userAccountName)
 Randomly generated password work best for this. User a password generator and storage system. (keepass, bitwarden, etc...)
 ## Ports!
+
+This section is less relevent if utilizing the scripts:
+
 If the formal remains the same for years to come, CentOS just needs to have 2 ports open: 80, and 443.
 
 Enable the firewall:
