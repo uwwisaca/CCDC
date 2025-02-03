@@ -12,8 +12,9 @@ fi
 # Install required packages
 yum -y install audit fail2ban iptables-services
 
-# Disable unnecessary services
+# Disable SSH and other unnecessary services
 services_to_disable=(
+    "sshd"
     "avahi-daemon"
     "cups"
     "dhcpd"
@@ -40,7 +41,7 @@ cat > /etc/sysconfig/iptables << 'EOF'
 # Allow localhost
 -A INPUT -i lo -j ACCEPT
 
-# Allow HTTP/HTTPS
+# Allow HTTP/HTTPS only
 -A INPUT -p tcp --dport 80 -j ACCEPT
 -A INPUT -p tcp --dport 443 -j ACCEPT
 
@@ -53,32 +54,12 @@ EOF
 systemctl enable iptables
 systemctl restart iptables
 
-# Secure SSH
-cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
-cat > /etc/ssh/sshd_config << 'EOF'
-Protocol 2
-PermitRootLogin no
-MaxAuthTries 3
-PubkeyAuthentication yes
-PasswordAuthentication no
-PermitEmptyPasswords no
-X11Forwarding no
-ClientAliveInterval 300
-ClientAliveCountMax 0
-AllowUsers apache
-EOF
-
-systemctl restart sshd
-
 # Configure fail2ban
 cat > /etc/fail2ban/jail.local << 'EOF'
 [DEFAULT]
 bantime = 3600
 findtime = 600
 maxretry = 3
-
-[sshd]
-enabled = true
 
 [apache-auth]
 enabled = true
