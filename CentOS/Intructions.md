@@ -1,7 +1,11 @@
 # CCDC CentOS Hardening Instructions
 This folder was created by Tyler Deal with the intention of passing on to future UWW Cyber/ISACA students, to help with preperation and competition.
+If install is needed: https://ultahost.com/knowledge-base/install-prestashop-on-ubuntu/
+
 ## Update!
 sudo yum update -y
+sudo yum upgrade -y
+
 ## User Accounts
 It's important to figure out which user accounts are on your system.
 we can run ~ cat /etc/passwd | grep /bin/bash
