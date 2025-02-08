@@ -10,17 +10,12 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Install required packages
+yum -y install epel-release
 yum -y install audit fail2ban iptables-services
 
 # Disable SSH and other unnecessary services
 services_to_disable=(
     "sshd"
-    "avahi-daemon"
-    "cups"
-    "dhcpd"
-    "nfs"
-    "rpcbind"
-    "vsftpd"
 )
 
 for service in "${services_to_disable[@]}"; do
@@ -72,7 +67,7 @@ systemctl enable fail2ban
 systemctl start fail2ban
 
 # Secure Apache
-yum -y install mod_security mod_evasive
+yum -y install mod_security
 cat > /etc/httpd/conf.d/security.conf << 'EOF'
 ServerTokens Prod
 ServerSignature Off
@@ -102,13 +97,11 @@ EOF
 
 sysctl -p /etc/sysctl.d/99-security.conf
 
-# Remove unnecessary users/groups
-userdel games
-userdel operator
-
 # Set password policies
 sed -i 's/PASS_MAX_DAYS.*/PASS_MAX_DAYS 90/' /etc/login.defs
 sed -i 's/PASS_MIN_DAYS.*/PASS_MIN_DAYS 7/' /etc/login.defs
 sed -i 's/PASS_WARN_AGE.*/PASS_WARN_AGE 7/' /etc/login.defs
+
+cat /etc/shadow | grep "*$6$*"
 
 echo "System hardening complete. Please review changes and reboot."
