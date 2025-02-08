@@ -1,4 +1,4 @@
-# CCDC CentOS Hardening Instructions
+# CentOS Hardening Instructions
 This folder was created by Tyler Deal with the intention of passing on to future UWW Cyber/ISACA students, to help with preperation and competition.
 If install is needed: https://ultahost.com/knowledge-base/install-prestashop-on-ubuntu/
 Assume everything is compromised. Secure passwords, firewalls, and account/permission audits will be crucial. 
@@ -58,5 +58,6 @@ sudo firewall-cmd --reload
 
 Verify the config:
 sudo firewall-cmd --zone=drop --list-all
+
 # How do we harden Prestashop?
 There's a few important things to remember here. [CVE 2024-34716](https://nvd.nist.gov/vuln/detail/CVE-2024-34716)  
