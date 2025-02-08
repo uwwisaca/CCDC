@@ -1,1 +1,1 @@
-# Windows 10 Instructions
+# Splunk Instructions

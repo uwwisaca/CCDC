@@ -19,8 +19,8 @@ if [[ $# -lt 1 ]]; then
 fi
 
 # Install Splunk
-wget -O splunkforwarder-9.1.1-64e843ea36b1-Linux-x86_64.tgz "https://download.splunk.com/products/universalforwarder/releases/9.1.1/linux/splunkforwarder-9.1.1-64e843ea36b1-Linux-x86_64.tgz"
-tar -xzvf splunkforwarder-9.1.1-64e843ea36b1-Linux-x86_64.tgz -C /opt
+wget -O splunkforwarder-9.1.1-64e843ea36b1.x86_64.rpm "https://download.splunk.com/products/universalforwarder/releases/9.1.1/linux/splunkforwarder-9.1.1-64e843ea36b1.x86_64.rpm"
+dnf install -y splunkforwarder-9.1.1-64e843ea36b1.x86_64.rpm
 cd /opt/splunkforwarder/bin
 
 # Request and confirm password
@@ -81,6 +81,9 @@ usermod -a -G splunk splunk
 ./splunk enable boot-start -user splunk
 #which systemd && ./splunk enable boot-start -systemd-managed 1 -user splunk 
 chown -R splunk:splunk /opt/splunkforwarder
+
+# Ensure SELinux doesn't block Splunk
+setenforce = 0
 
 # This doesn't always seem to be able to restart on it's own, so we just kill it
 killall splunkd
