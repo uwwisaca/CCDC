@@ -1,6 +1,10 @@
 #!/bin/bash
 
-# UFW SETTINGS
+# UPDATE SYSTEM PACKAGES
+apt update && apt upgrade -y
+echo "System packages have been updated."
+
+# CONFIGURE UFW SETTINGS
 # Reset UFW
 ufw --force reset
 
@@ -28,20 +32,9 @@ echo "y" | ufw enable
 # Show final status
 ufw status verbose
 
-
-# APPENDING LINES TO WEB.CONF (enabling SSL, defining HTTP port)
-# Defining the web.conf file path
-FILE_PATH = "/opt/splunk/etc/system/local/web.conf"
-
-# Append these lines to the web file if they do not already exist
-if ! grep -q "^enableSplunkSSL = 1$" "$FILE_PATH"; then
-	echo "enableSplunkSSL = 1" >> "$FILE_PATH"
-fi
-if ! grep -q "^httpport = 8000$" "$FILE_PATH"; then
-	echo "httpport = 8000" >> "$FILE_PATH"
-fi
-echo "Lines added to $FILE_PATH successfully."
-
+# APPEND LINES TO WEB.CONF (enabling SSL, defining HTTP port)
+echo "enableSplunkSSL = 1" >> /opt/splunk/etc/system/local/web.conf
+echo "httpport = 8000" >> /opt/splunk/etc/system/local/web.conf
 
 # RESTART SPLUNK
 /opt/splunk/bin/splunk restart
