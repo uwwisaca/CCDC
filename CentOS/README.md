@@ -37,27 +37,10 @@ sudo passwd (userAccountName)
 Randomly generated password work best for this. User a password generator and storage system. (keepass, bitwarden, etc...)
 
 ## Ports!
+For the competition: 
 
-This section is less relevent if utilizing the scripts:
+80,443,8089
 
-If the formal remains the same for years to come, CentOS just needs to have 2 ports open: 80, and 443.
-
-Enable the firewall:
-sudo systemctl start firewalld
-sudo systemctl enable firewalld
-
-Set the device to drop all incoming packets by default. 
-sudo firewall-cmd --set-default-zone=drop
-
-Allow ports 80 and 443 through:
-sudo firewall-cmd --permanent --zone=drop --add-port=80/tcp
-sudo firewall-cmd --permanent --zone=drop --add-port=443/tcp
-
-Reload the firewall:
-sudo firewall-cmd --reload
-
-Verify the config:
-sudo firewall-cmd --zone=drop --list-all
-
+Try your best never to use port 80 for connecting to the web server.
 # How do we harden Prestashop?
 There's a few important things to remember here. [CVE 2024-34716](https://nvd.nist.gov/vuln/detail/CVE-2024-34716)  
