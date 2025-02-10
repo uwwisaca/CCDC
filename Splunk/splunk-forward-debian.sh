@@ -19,8 +19,8 @@ if [[ $# -lt 1 ]]; then
 fi
 
 # Install Splunk
-wget -O splunkforwarder-9.1.1-64e843ea36b1-Linux-x86_64.tgz "https://download.splunk.com/products/universalforwarder/releases/9.1.1/linux/splunkforwarder-9.1.1-64e843ea36b1-Linux-x86_64.tgz"
-tar -xzvf splunkforwarder-9.1.1-64e843ea36b1-Linux-x86_64.tgz -C /opt
+wget -O splunkforwarder-9.1.1-64e843ea36b1-linux-2.6-amd64.deb "https://download.splunk.com/products/universalforwarder/releases/9.1.1/linux/splunkforwarder-9.1.1-64e843ea36b1-linux-2.6-amd64.deb"
+dpkg -i splunkforwarder-9.1.1-64e843ea36b1-linux-2.6-amd64.deb
 cd /opt/splunkforwarder/bin
 
 # Request and confirm password

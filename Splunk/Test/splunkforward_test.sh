@@ -44,30 +44,30 @@ done
 monitor() {
   if [ -f $1 ]
   then
-    ./splunk add monitor "$1" --sourcetype "$2"
+    ./splunk add monitor "$1"
   fi
 }
 
 # Add files to log
-monitor /var/log/syslog syslog
-monitor /var/log/messages messages
-monitor /var/log/cron cron
-monitor /var/log/audit.log audit
-monitor /var/tmp temp
-monitor /tmp temp
+monitor /var/log/syslog
+monitor /var/log/messages
+monitor /var/log/cron
+monitor /var/log/audit.log
+monitor /var/tmp
+monitor /tmp
 # Apache
-monitor /var/log/apache/access.log apacheaccess
-monitor /var/log/apache/error.log apacheerror
-monitor /var/log/apache2/access.log apache2access
-monitor /var/log/apache2/error.log apache2error
+monitor /var/log/apache/access.log
+monitor /var/log/apache/error.log
+monitor /var/log/apache2/access.log
+monitor /var/log/apache2/error.log
 # SSH
-monitor /var/log/auth.log auth
-monitor /var/log/secure secure
+monitor /var/log/auth.log
+monitor /var/log/secure
 
 #monitor /var/log/httpd/*_log
 #watch /var/log/https/modsec_*.log
-monitor /var/log/mysql.log mysql
-monitor /var/log/mysqld.log mysql
+monitor /var/log/mysql.log
+monitor /var/log/mysqld.log
 # TODO: add more files
 
 # == Configure options ==
@@ -80,7 +80,7 @@ usermod -a -G splunk splunk
 # Set Splunk to start as Splunk user
 ./splunk enable boot-start -user splunk
 #which systemd && ./splunk enable boot-start -systemd-managed 1 -user splunk 
-chown -R splunk /opt/splunkforwarder
+chown -R splunk:splunk /opt/splunkforwarder
 
 # This doesn't always seem to be able to restart on it's own, so we just kill it
 killall splunkd
