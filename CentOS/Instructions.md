@@ -8,7 +8,9 @@ Login
 
 Git clone the repo.
 
-run CentPasswd.sh, Run CentOSHardening.sh
+-> If needed, you can run "sudo chmod +x (filename.sh)" in order to execute these scripts.
+
+run CentPasswd.sh, Run CentHardening2.sh
 
 Ensure configuration works as expected.
 
@@ -24,6 +26,10 @@ Check for strange prestashop accounts (using mysql):
     SELECT * FROM ps_customer;
     SELECT * FROM ps_employee;
     Or check from employee panel. 
+
+Make sure you log into the PrestaShop admin panel and change the admin password.    
+
+Run the MySQL Hardening Script. (mysqlHardening.sh)
 
 ## Update! (Optional, might be a waste of time)
 sudo yum update -y

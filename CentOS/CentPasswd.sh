@@ -17,3 +17,19 @@ if [[ $response =~ ^[yY]$ ]]; then
 else
     echo "Operation cancelled."
 fi
+
+# Get list of local user accounts
+users=$(getent passwd | awk -F: '$3 >= 1000 && $3 < 60000 {print $1}')
+
+echo "Found the following user accounts:"
+echo "$users"
+
+# Iterate through users
+for username in $users; do
+    read -p "Change password for $username? (y/n): " choice
+    if [[ $choice == "y" || $choice == "Y" ]]; then
+        passwd $username
+    fi
+done
+
+echo "Password change process complete."

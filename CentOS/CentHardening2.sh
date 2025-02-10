@@ -1,14 +1,10 @@
 #!/bin/bash
-
 # CentOS Hardening Script
 # Run as root
-
-# Check if running as root
 if [ "$EUID" -ne 0 ]; then 
     echo "Please run as root"
     exit 1
 fi
-
 echo "Starting CentOS hardening process..."
 
 # Set critical file permissions
@@ -55,25 +51,17 @@ systemctl start firewalld
 # Create fail2ban configuration
 cat > /etc/fail2ban/jail.local << 'EOL'
 [DEFAULT]
-# Ban hosts for 1 hour
 bantime  = 3600
 findtime  = 600
 maxretry = 5
-
-# Ignore localhost
 ignoreip = 127.0.0.1/8 ::1
-
-# Use firewalld instead of iptables
 banaction = firewallcmd-rich-rules
 banaction_allports = firewallcmd-rich-rules
-
-# Only send one email per banned IP
 destemail = root@localhost
 sender = root@localhost
 mta = sendmail
 action = %(action_mw)s
 
-# SSH jail
 [sshd]
 enabled = true
 port = ssh
@@ -81,7 +69,6 @@ filter = sshd
 logpath = /var/log/secure
 maxretry = 3
 
-# FTP jail
 [vsftpd]
 enabled = true
 port = ftp,ftp-data,ftps,ftps-data
@@ -89,23 +76,21 @@ filter = vsftpd
 logpath = /var/log/secure
 maxretry = 3
 
-# Don't block HTTP/HTTPS
 [http-get-dos]
 enabled = false
-
 [apache-badbots]
 enabled = false
-
 [apache-auth]
 enabled = false
 EOL
 
-# Configure firewalld
+# Configure firewall-cmd
+systemctl enable firewalld
+systemctl start firewalld
 echo "Configuring firewalld..."
-# Add HTTP and HTTPS to public zone
 firewall-cmd --permanent --zone=public --add-service=http
 firewall-cmd --permanent --zone=public --add-service=https
-# Reload firewall to apply changes
+firewall-cmd --permanent --zone=public --add-port=8089/tcp
 firewall-cmd --reload
 
 # Start and enable fail2ban
@@ -116,6 +101,33 @@ systemctl start fail2ban
 echo -e "\nFail2ban status:"
 fail2ban-client status
 
+# Prevent directory traversal for web servers
+echo "Configuring web server directory traversal protection..."
+cat >> /etc/httpd/conf/httpd.conf << 'EOL'
+<Directory />
+    Options -Indexes
+    AllowOverride None
+    Order deny,allow
+    Deny from all
+</Directory>
+
+<Directory /var/www/html>
+    Options -Indexes
+    AllowOverride None
+    Require all granted
+</Directory>
+EOL
+
+# Secure /var/www/ directory permissions
+echo "Securing /var/www/ directory permissions..."
+chown -R root:apache /var/www/
+find /var/www/ -type d -exec chmod 755 {} \;
+find /var/www/ -type f -exec chmod 644 {} \;
+chmod 755 /var/www/
+
+# Restart web server to apply changes
+systemctl restart httpd
+
 # Print summary of actions
 echo -e "\nHardening Summary:"
 echo "==================="
@@ -123,11 +135,8 @@ echo "1. Set secure permissions on critical files"
 echo "2. Listed all users with login capability"
 echo "3. Disabled SSH service"
 echo "4. Installed and configured fail2ban with firewalld"
-echo "   - Using firewalld for ban actions"
-echo "   - Blocking failed login attempts for SSH and FTP"
-echo "   - Not blocking web server traffic"
-echo "   - Ban time: 1 hour"
-echo "   - Max retry: 5 attempts within 10 minutes"
-echo "5. Configured firewalld to allow HTTP/HTTPS traffic"
+echo "5. Configured firewalld to allow HTTP/HTTPS and Splunk port"
+echo "6. Added directory traversal protection for web server"
+echo "7. Secured /var/www/ directory permissions"
 
 echo -e "\nScript completed successfully!"
