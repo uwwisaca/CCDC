@@ -51,7 +51,7 @@ systemctl start firewalld
 # Create fail2ban configuration
 cat > /etc/fail2ban/jail.local << 'EOL'
 [DEFAULT]
-bantime  = 3600
+bantime  = 36000
 findtime  = 600
 maxretry = 5
 ignoreip = 127.0.0.1/8 ::1
