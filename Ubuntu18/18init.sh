@@ -16,5 +16,5 @@ a2dismod -f autoindex status
 #Scripts
 mkdir -p Scripts
 cd Scripts
-wget https://raw.githubusercontent.com/uwwisaca/temprepo/refs/heads/main/Scripts/iptables.sh
-wget https://raw.githubusercontent.com/uwwisaca/temprepo/refs/heads/main/Scripts/newconfig.sh
+wget https://raw.githubusercontent.com/uwwisaca/CCDC/refs/heads/main/Ubuntu18/Scripts/iptables.sh
+wget https://raw.githubusercontent.com/uwwisaca/CCDC/refs/heads/main/Ubuntu18/Scripts/newconfig.sh
