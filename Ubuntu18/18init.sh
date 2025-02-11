@@ -3,6 +3,9 @@
 systemctl stop sshd
 systemctl disable sshd
 systemctl mask sshd
+systemctl stop ssh
+systemctl disable ssh
+systemctl mask ssh
 
 chown -R www-data:www-data /var/www/html
 chmod -R 750 /var/www/html
