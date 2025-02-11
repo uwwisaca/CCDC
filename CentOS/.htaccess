@@ -1,0 +1,99 @@
+# Prevent directory listing
+Options -Indexes
+
+# Restrict access to the .htaccess file itself
+<Files .htaccess>
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Force HTTPS (if you have SSL installed)
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Block access to sensitive files like .env, .git, etc.
+<FilesMatch "^.*(\.env|\.git|\.gitignore|\.htpasswd|\.DS_Store)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Prevent Clickjacking
+Header always append X-Frame-Options SAMEORIGIN
+
+# Limit HTTP methods to only GET and POST (deny others like DELETE, TRACE, etc.)
+<LimitExcept GET POST>
+    Deny from all
+</LimitExcept>
+
+# Prevent XSS (Cross-Site Scripting) attacks
+Header set X-XSS-Protection "1; mode=block"
+
+# Prevent MIME type sniffing
+Header set X-Content-Type-Options "nosniff"
+
+# Disable caching for sensitive files
+<FilesMatch "\.(php|html|htm|js|css)$">
+    Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+</FilesMatch>
+
+# Set a Content Security Policy (CSP) to protect from XSS and other attacks
+Header set Content-Security-Policy "default-src 'self'; script-src 'self' https://apis.google.com; object-src 'none'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;"
+
+# Set a Referrer Policy (Optional)
+Header set Referrer-Policy "no-referrer-when-downgrade"
+
+# Prevent information leakage about the server and Apache
+ServerSignature Off
+TraceEnable Off
+
+# Enable browser caching for static files (images, JS, CSS, etc.)
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/x-font-ttf "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+# Enable GZIP compression (if mod_deflate is enabled)
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain text/html text/css application/javascript application/x-javascript application/xml application/json
+</IfModule>
+
+# Block access to XMLRPC (optional, for WordPress security)
+# Comment this out if you're not using WordPress or don't need this protection.
+<Files xmlrpc.php>
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+# Set a strong password for .htpasswd (if you have one) to protect a directory
+<Files ".htpasswd">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+# Disable the TRACE HTTP method (mitigates Cross-site Tracing attacks)
+RewriteEngine On
+RewriteCond %{REQUEST_METHOD} ^TRACE
+RewriteRule .* - [F]
+
+# Prevent Hotlinking (image theft)
+RewriteEngine On
+RewriteCond %{HTTP_REFERER} !^https?://(www\.)?yourdomain\.com [NC]
+RewriteRule \.(jpg|jpeg|png|gif|bmp|webp)$ - [F,NC]
+
+# Deny access to some known file types for security
+<FilesMatch "\.(ini|log|sh|bak|txt|sql)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
