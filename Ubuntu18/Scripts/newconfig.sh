@@ -2,10 +2,12 @@
 mkdir configs
 cd configs
 
-wget https://raw.githubusercontent.com/b-lamer/temprepo/refs/heads/main/configs/000-default.conf
-wget https://raw.githubusercontent.com/b-lamer/temprepo/refs/heads/main/configs/apache2.conf
-wget https://raw.githubusercontent.com/b-lamer/temprepo/refs/heads/main/configs/security.conf
-wget https://raw.githubusercontent.com/b-lamer/temprepo/refs/heads/main/configs/sshd_config
+wget https://raw.githubusercontent.com/uwwisaca/CCDC/refs/heads/main/Ubuntu18/configs/000-default.conf
+wget https://raw.githubusercontent.com/uwwisaca/CCDC/refs/heads/main/Ubuntu18/configs/apache2.conf
+wget https://raw.githubusercontent.com/uwwisaca/CCDC/refs/heads/main/Ubuntu18/configs/security.conf
+wget https://raw.githubusercontent.com/uwwisaca/CCDC/refs/heads/main/Ubuntu18/configs/sshd_config
+
+cd ~
 
 cp -r /root/configs/000-default.conf /etc/apache2/sites-available/000-default.conf
 cp -r /root/configs/apache2.conf /etc/apache2/apache2.conf
