@@ -78,3 +78,8 @@ sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/CentOS-*.repo
 cd /etc/yum.repos.d/ && sudo rm -rf epel.repo
 
 Now try to update and upgrade the system.
+
+### Cronjobs suck don't they... 
+To check for CronJobs use crontab -e  
+Be mindful that this only checks the current user. The script will CronJobCheck.sh will show you all accounts with CronJobs. Check their crontabs.
+

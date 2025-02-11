@@ -6,6 +6,10 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 echo "Starting CentOS hardening process..."
+# Sometimes Cent can come with a broken epel-release install. So I wanted to do this earlier in the script. 
+yum remove -y epel-release
+yum install -y epel-release
+
 
 # Set critical file permissions
 echo "Setting critical file permissions..."
@@ -41,8 +45,8 @@ echo "SSH service has been disabled"
 
 # Install and configure fail2ban
 echo "Installing and configuring fail2ban..."
-dnf install -y epel-release
-dnf install -y fail2ban firewalld
+
+yum install -y fail2ban firewalld
 
 # Enable and start firewalld
 systemctl enable firewalld
