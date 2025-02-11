@@ -1,4 +1,5 @@
 #!/bin/sh
+cd ~
 mkdir configs
 cd configs
 
