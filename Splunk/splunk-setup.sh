@@ -1,36 +1,36 @@
 #!/bin/bash
 
 # UPDATE SYSTEM PACKAGES
-apt update && apt upgrade -y
+dnf update -y && dnf upgrade -y
 echo "System packages have been updated."
 
-# CONFIGURE UFW SETTINGS
-# Reset UFW
-ufw --force reset
+# CONFIGURE IPTABLES SETTINGS
+# Flush existing rules
+iptables -F
+iptables -X
 
-# Set default UFW policies
-ufw default deny incoming
-ufw default deny outgoing
+# Set default IPTables policies
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT ACCEPT
+
+# Allow loopback interface traffic
+iptables -A INPUT -i lo -j ACCEPT
+
+# Allow established and related connections
+iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 # Allow essential incoming connections
-ufw allow in 8000    # Splunk Web
-ufw allow in 8089    # Splunk Management
-ufw allow in 9997    # Splunk Forward
+iptables -A INPUT -p tcp --dport 8000 -j ACCEPT    # Splunk Web
+iptables -A INPUT -p tcp --dport 8089 -j ACCEPT    # Splunk Management
+iptables -A INPUT -p tcp --dport 9997 -j ACCEPT    # Splunk Forward
 
-# Allow essential outgoing connections
-ufw allow out 53     # DNS
-ufw allow out 80     # HTTP
-ufw allow out 123    # NTP
-ufw allow out 443    # HTTPS
-ufw allow out 8089   # Splunk Management (other hosts)
-ufw allow out 8090   # Splunk Management (splunk host)
-ufw allow out 67/udp # DHCP
+# Log dropped packets
+iptables -A INPUT -j LOG --log-prefix "IPTables-Dropped: " --log-level 4 
 
-# Enable UFW
-echo "y" | ufw enable
-
-# Show final status
-ufw status verbose
+# Save the rules
+iptables-save > /etc/iptables.rules
+echo "Firewall rules applied successfully."
 
 # APPEND LINES TO WEB.CONF (enabling SSL, defining HTTP port)
 echo "enableSplunkSSL = 1" >> /opt/splunk/etc/system/local/web.conf
