@@ -23,6 +23,3 @@ wget https://raw.githubusercontent.com/uwwisaca/CCDC/refs/heads/main/Ubuntu18/Sc
 wget https://raw.githubusercontent.com/uwwisaca/CCDC/refs/heads/main/Ubuntu18/Scripts/newconfig.sh
 wget https://raw.githubusercontent.com/uwwisaca/CCDC/refs/heads/main/CentOS/CronJobCheck.sh
 chmod 700 -R ~/Scripts
-
-sudo apt update
-sudo apt install libapache2-mod-security2
