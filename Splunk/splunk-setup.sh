@@ -4,33 +4,22 @@
 dnf update -y && dnf upgrade -y
 echo "System packages have been updated."
 
-# CONFIGURE IPTABLES SETTINGS
+# CONFIGURE CMD-FIREWALL SETTINGS
 # Flush existing rules
-iptables -F
-iptables -X
-
-# Set default IPTables policies
-iptables -P INPUT DROP
-iptables -P FORWARD DROP
-iptables -P OUTPUT ACCEPT
-
-# Allow loopback interface traffic
-iptables -A INPUT -i lo -j ACCEPT
-
-# Allow established and related connections
-iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+echo "Establishing firewall rules"
+cmd-firewall --flush
 
 # Allow essential incoming connections
-iptables -A INPUT -p tcp --dport 8000 -j ACCEPT    # Splunk Web
-iptables -A INPUT -p tcp --dport 8089 -j ACCEPT    # Splunk Management
-iptables -A INPUT -p tcp --dport 9997 -j ACCEPT    # Splunk Forward
+cmd-firewall --allow-in 8000 # Splunk Web
+cmd-firewall --allow-in 8089 # Splunk Management
+cmd-firewall --allow-in 9997 # Splunk Forward
 
-# Log dropped packets
-iptables -A INPUT -j LOG --log-prefix "IPTables-Dropped: " --log-level 4 
+# Block all other incoming connections
+cmd-firewall --deny-in ALL
 
 # Save the rules
-iptables-save > /etc/iptables.rules
-echo "Firewall rules applied successfully."
+cmd-firewall --save
+echo "Firewall rules successfully established and saved."
 
 # APPEND LINES TO WEB.CONF (enabling SSL, defining HTTP port)
 echo "enableSplunkSSL = 1" >> /opt/splunk/etc/system/local/web.conf
