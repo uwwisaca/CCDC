@@ -2,4 +2,4 @@
 
 UW-Whitewater's official CCDC team repository.
 
-# Oracle 7 Splunk Server
+# Oracle 9 Splunk Server
