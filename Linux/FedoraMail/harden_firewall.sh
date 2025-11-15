@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ===================================================================
-#   CCDC Firewall Hardening Script (firewalld)
+#   Cyber Hawk Firewall Hardening Script (firewalld)
 #   Strategy: Default Deny, Allow by Exception
 # ===================================================================
 

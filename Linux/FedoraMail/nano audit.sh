@@ -4,7 +4,7 @@
 # This script is READ-ONLY. It will not change your system.
 
 echo "================================================="
-echo "   CCDC User & Privilege Audit Tool"
+echo "  Cyber Hawk User & Privilege Audit Tool"
 echo "================================================="
 
 echo -e "\n### 1. Users with Root Privileges (UID 0) ###"

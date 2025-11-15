@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ===================================================================
-#   CCDC User Management Script
+#   CyberHawks User Management Script
 #   A safe wrapper for changing names, passwords, and locking.
 # ===================================================================
 
