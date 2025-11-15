@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # CCDC Triage Script: Find Suspicious Users & Privileges
+# Copyright (C) Google Gemini 
 # This script is READ-ONLY. It will not change your system.
 
 echo "================================================="

@@ -2,6 +2,7 @@
 
 # ===================================================================
 #   Cyber Hawk Firewall Hardening Script (firewalld)
+#   Copyright (C) Google Gemini 
 #   Strategy: Default Deny, Allow by Exception
 # ===================================================================
 

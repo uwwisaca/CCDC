@@ -2,6 +2,7 @@
 
 # ===================================================================
 #   CyberHawks User Management Script
+#   Copyright (C) Google Gemini 
 #   A safe wrapper for changing names, passwords, and locking.
 # ===================================================================
 
