@@ -1,5 +1,7 @@
 # VyOS Reference Sheet
+
 Reference the official documentation if needed: https://docs.vyos.io/en/latest/cli.html
+
 Reference the quick-start documentation here: https://docs.vyos.io/en/1.4/quick-start.html
 
 **VyOS supports smart command completion; if stuck, attempt to use tab completion in order to resolve the situation.**
