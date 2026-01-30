@@ -10,11 +10,11 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# #checks if ccdcuser1 exists
-# if ! id ccdcuser1 &>/dev/null; then
-#   echo "ERROR: ccdcuser1 does not exist. Aborting."
-#   exit 1
-# fi
+#checks if ccdcuser1 exists
+if ! id ccdcuser1 &>/dev/null; then
+  echo "ERROR: ccdcuser1 does not exist. Aborting."
+  exit 1
+fi
 
 echo "!!Restricting SSH to $ALLOWED_SUBNET!!"
 

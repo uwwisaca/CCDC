@@ -67,6 +67,6 @@ echo "--- Reloading firewall to apply all changes... ---"
 firewall-cmd --reload
 
 echo ""
-echo "--- ✅ Firewall Hardening Complete. ---"
+echo "--- Firewall Hardening Complete. ---"
 echo "--- Final Configuration: ---"
 firewall-cmd --list-all
