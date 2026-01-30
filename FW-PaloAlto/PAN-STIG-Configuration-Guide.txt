@@ -1,0 +1,407 @@
+# Palo Alto PAN-OS 11.x STIG Configuration Guide
+# Based on: U_PAN_ALG_V3R4, U_PAN_IDPS_V3R2, U_PAN_NDM_V3R3_Manual_STIG
+# Version: 1.0
+# Date: January 30, 2026
+#
+# This file contains CLI and Web UI configuration steps for Palo Alto firewalls
+# Execute these commands via SSH or configure via Web UI
+
+# ========================================
+# INITIAL ACCESS
+# ========================================
+# SSH: ssh admin@<pan-firewall-ip>
+# Web UI: https://<pan-firewall-ip>
+
+# Enter configuration mode
+configure
+
+# ========================================
+# PASSWORD AND AUTHENTICATION POLICY
+# ========================================
+
+# Set password profile
+set deviceconfig setting password minimum-length 15
+set deviceconfig setting password complexity enabled yes
+set deviceconfig setting password minimum-uppercase-letters 1
+set deviceconfig setting password minimum-lowercase-letters 1
+set deviceconfig setting password minimum-numeric-letters 1
+set deviceconfig setting password minimum-special-characters 1
+set deviceconfig setting password password-change on-first-time-login
+set deviceconfig setting password expiration period 60
+set deviceconfig setting password expiration warning-period 7
+set deviceconfig setting password expiration notification-period 7
+set deviceconfig setting password history count 5
+
+# Set failed authentication lockout
+set deviceconfig setting management failed-attempts lockout-time 15
+
+# ========================================
+# SESSION TIMEOUT
+# ========================================
+
+# Set session timeout (15 minutes)
+set deviceconfig setting session timeout 15
+set deviceconfig setting session remember-password yes
+
+# ========================================
+# BANNER CONFIGURATION
+# ========================================
+
+# Set login banner
+set deviceconfig system login-banner "You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only.
+
+By using this IS (which includes any device attached to this IS), you consent to the following conditions:
+
+- The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.
+
+- At any time, the USG may inspect and seize data stored on this IS.
+
+- Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose.
+
+Unauthorized access is prohibited."
+
+# ========================================
+# TIME SYNCHRONIZATION (NTP)
+# ========================================
+
+# Configure NTP servers (replace with your NTP servers)
+set deviceconfig system ntp-servers primary-ntp-server ntp-server-address <ntp-server-1>
+set deviceconfig system ntp-servers primary-ntp-server authentication-type symmetric-key
+set deviceconfig system ntp-servers primary-ntp-server algorithm sha1
+set deviceconfig system ntp-servers primary-ntp-server auth-key-id 1
+
+set deviceconfig system ntp-servers secondary-ntp-server ntp-server-address <ntp-server-2>
+
+# Set timezone
+set deviceconfig system timezone US/Eastern
+
+# ========================================
+# LOGGING CONFIGURATION
+# ========================================
+
+# Configure syslog forwarding (replace with your syslog server)
+set shared log-settings syslog STIG-Syslog server syslog-server transport UDP
+set shared log-settings syslog STIG-Syslog server syslog-server port 514
+set shared log-settings syslog STIG-Syslog server syslog-server format BSD
+set shared log-settings syslog STIG-Syslog server syslog-server server <syslog-server-ip>
+set shared log-settings syslog STIG-Syslog server syslog-server facility LOG_USER
+
+# Configure log forwarding profile
+set shared log-settings profiles STIG-Log-Profile match-list Traffic log-type traffic
+set shared log-settings profiles STIG-Log-Profile match-list Traffic send-syslog STIG-Syslog
+set shared log-settings profiles STIG-Log-Profile match-list Threat log-type threat
+set shared log-settings profiles STIG-Log-Profile match-list Threat send-syslog STIG-Syslog
+set shared log-settings profiles STIG-Log-Profile match-list Wildfire log-type wildfire
+set shared log-settings profiles STIG-Log-Profile match-list Wildfire send-syslog STIG-Syslog
+set shared log-settings profiles STIG-Log-Profile match-list URL log-type url
+set shared log-settings profiles STIG-Log-Profile match-list URL send-syslog STIG-Syslog
+set shared log-settings profiles STIG-Log-Profile match-list Data log-type data
+set shared log-settings profiles STIG-Log-Profile match-list Data send-syslog STIG-Syslog
+set shared log-settings profiles STIG-Log-Profile match-list Config log-type config
+set shared log-settings profiles STIG-Log-Profile match-list Config send-syslog STIG-Syslog
+set shared log-settings profiles STIG-Log-Profile match-list System log-type system
+set shared log-settings profiles STIG-Log-Profile match-list System send-syslog STIG-Syslog
+
+# Enable detailed system logging
+set deviceconfig setting logging logging-service-forwarding yes
+
+# ========================================
+# MANAGEMENT INTERFACE ACCESS
+# ========================================
+
+# Configure permitted IP addresses for management (replace with your management network)
+set deviceconfig system permitted-ip <management-network>/<cidr>
+
+# Disable HTTP, enable HTTPS only
+set deviceconfig system service disable-http yes
+set deviceconfig system service disable-telnet yes
+set deviceconfig system service disable-snmp yes
+
+# Configure HTTPS certificate
+# set deviceconfig system certificate <certificate-name>
+
+# ========================================
+# AUTHENTICATION PROFILE (TACACS+/RADIUS)
+# ========================================
+
+# Configure TACACS+ server profile
+set shared server-profile tacplus TACACS-Profile server <tacacs-server-ip>
+set shared server-profile tacplus TACACS-Profile server <tacacs-server-ip> secret <tacacs-key>
+set shared server-profile tacplus TACACS-Profile server <tacacs-server-ip> port 49
+
+# Configure authentication profile
+set shared authentication-profile TACACS-Auth method tacplus
+set shared authentication-profile TACACS-Auth server-profile TACACS-Profile
+
+# Configure authentication sequence
+set deviceconfig system authentication-profile TACACS-Auth
+
+# Configure admin role mapping
+set shared admin-role-profile TACACS-Roles role superuser
+set shared admin-role-profile TACACS-Roles role superreader
+
+# ========================================
+# SECURITY ZONES
+# ========================================
+
+# Configure security zones (example - customize as needed)
+set zone trust network layer3 ethernet1/1
+set zone untrust network layer3 ethernet1/2
+set zone dmz network layer3 ethernet1/3
+
+# Enable log forwarding on zones
+set zone trust enable-user-identification yes
+set zone trust log-setting STIG-Log-Profile
+
+# ========================================
+# SECURITY POLICIES
+# ========================================
+
+# Create default deny rule (should be last rule)
+set rulebase security rules DENY-ALL from any
+set rulebase security rules DENY-ALL to any
+set rulebase security rules DENY-ALL source any
+set rulebase security rules DENY-ALL destination any
+set rulebase security rules DENY-ALL application any
+set rulebase security rules DENY-ALL service any
+set rulebase security rules DENY-ALL action deny
+set rulebase security rules DENY-ALL log-start yes
+set rulebase security rules DENY-ALL log-end yes
+set rulebase security rules DENY-ALL log-setting STIG-Log-Profile
+
+# Create intrazone deny rule
+set rulebase security rules INTRAZONE-DENY from any
+set rulebase security rules INTRAZONE-DENY to any
+set rulebase security rules INTRAZONE-DENY source any
+set rulebase security rules INTRAZONE-DENY destination any
+set rulebase security rules INTRAZONE-DENY application any
+set rulebase security rules INTRAZONE-DENY service any
+set rulebase security rules INTRAZONE-DENY action deny
+set rulebase security rules INTRAZONE-DENY option disable-server-response-inspection no
+
+# Example allow rule (customize as needed)
+# set rulebase security rules TRUST-TO-UNTRUST from trust
+# set rulebase security rules TRUST-TO-UNTRUST to untrust
+# set rulebase security rules TRUST-TO-UNTRUST source any
+# set rulebase security rules TRUST-TO-UNTRUST destination any
+# set rulebase security rules TRUST-TO-UNTRUST application any
+# set rulebase security rules TRUST-TO-UNTRUST service application-default
+# set rulebase security rules TRUST-TO-UNTRUST action allow
+# set rulebase security rules TRUST-TO-UNTRUST log-start yes
+# set rulebase security rules TRUST-TO-UNTRUST log-end yes
+# set rulebase security rules TRUST-TO-UNTRUST log-setting STIG-Log-Profile
+# set rulebase security rules TRUST-TO-UNTRUST profile-setting profiles virus default
+# set rulebase security rules TRUST-TO-UNTRUST profile-setting profiles spyware default
+# set rulebase security rules TRUST-TO-UNTRUST profile-setting profiles vulnerability default
+# set rulebase security rules TRUST-TO-UNTRUST profile-setting profiles url-filtering default
+# set rulebase security rules TRUST-TO-UNTRUST profile-setting profiles file-blocking default
+# set rulebase security rules TRUST-TO-UNTRUST profile-setting profiles wildfire-analysis default
+
+# ========================================
+# THREAT PREVENTION PROFILES
+# ========================================
+
+# Configure Anti-Virus profile
+set profiles virus strict decoder smtp action reset-both
+set profiles virus strict decoder imap action reset-both
+set profiles virus strict decoder pop3 action reset-both
+set profiles virus strict decoder http action reset-both
+set profiles virus strict decoder ftp action reset-both
+set profiles virus strict decoder smb action reset-both
+
+# Configure Anti-Spyware profile
+set profiles spyware strict rules simple-critical action reset-both
+set profiles spyware strict rules simple-high action reset-both
+set profiles spyware strict rules simple-medium action reset-both
+set profiles spyware strict rules simple-low action alert
+
+# Configure Vulnerability Protection profile
+set profiles vulnerability strict rules simple-client-critical action reset-both
+set profiles vulnerability strict rules simple-client-high action reset-both
+set profiles vulnerability strict rules simple-client-medium action reset-both
+set profiles vulnerability strict rules simple-server-critical action reset-both
+set profiles vulnerability strict rules simple-server-high action reset-both
+set profiles vulnerability strict rules simple-server-medium action reset-both
+
+# Configure URL Filtering profile
+set profiles url-filtering strict block "command-and-control,malware,phishing,adult,gambling,weapons"
+set profiles url-filtering strict alert "questionable,high-risk,insufficient-content"
+set profiles url-filtering strict allow "business-and-economy,computer-and-internet-info,education,government"
+
+# Configure File Blocking profile
+set profiles file-blocking strict rules Block-Executables application any
+set profiles file-blocking strict rules Block-Executables file-type "pe,7z,jar,msi,dmg,pkg,bat,sh"
+set profiles file-blocking strict rules Block-Executables direction both
+set profiles file-blocking strict rules Block-Executables action block
+
+# Configure WildFire Analysis profile
+set profiles wildfire-analysis default rules rule1 application any
+set profiles wildfire-analysis default rules rule1 file-type any
+set profiles wildfire-analysis default rules rule1 direction both
+set profiles wildfire-analysis default rules rule1 analysis public-cloud
+
+# ========================================
+# SSL/TLS DECRYPTION
+# ========================================
+
+# Configure SSL/TLS service profile
+set shared ssl-tls-service-profile STIG-SSL protocol-settings min-version tls1-2
+set shared ssl-tls-service-profile STIG-SSL protocol-settings max-version tls1-3
+set shared ssl-tls-service-profile STIG-SSL protocol-settings auth-algo-md5 no
+set shared ssl-tls-service-profile STIG-SSL protocol-settings auth-algo-sha1 no
+set shared ssl-tls-service-profile STIG-SSL protocol-settings auth-algo-sha256 yes
+set shared ssl-tls-service-profile STIG-SSL protocol-settings auth-algo-sha384 yes
+set shared ssl-tls-service-profile STIG-SSL protocol-settings enc-algo-3des no
+set shared ssl-tls-service-profile STIG-SSL protocol-settings enc-algo-aes-128-cbc no
+set shared ssl-tls-service-profile STIG-SSL protocol-settings enc-algo-aes-256-cbc no
+set shared ssl-tls-service-profile STIG-SSL protocol-settings enc-algo-aes-128-gcm yes
+set shared ssl-tls-service-profile STIG-SSL protocol-settings enc-algo-aes-256-gcm yes
+
+# Apply SSL/TLS profile to management interface
+set deviceconfig system ssl-tls-service-profile STIG-SSL
+
+# ========================================
+# GLOBAL PROTECT (if applicable)
+# ========================================
+
+# Configure GlobalProtect portal authentication
+# set network global-protect global-protect-portal PORTAL-1 authentication-profile TACACS-Auth
+
+# Configure GlobalProtect gateway
+# set network global-protect global-protect-gateway GATEWAY-1 authentication-profile TACACS-Auth
+
+# ========================================
+# USER-ID
+# ========================================
+
+# Configure User-ID agent (if using AD integration)
+# set deviceconfig system user-id-agent <agent-name> host <user-id-agent-ip>
+# set deviceconfig system user-id-agent <agent-name> port 5007
+# set deviceconfig system user-id-agent <agent-name> ldap-proxy yes
+
+# ========================================
+# DNS SECURITY
+# ========================================
+
+# Enable DNS Security
+set deviceconfig system dns-setting servers primary <dns-server-1>
+set deviceconfig system dns-setting servers secondary <dns-server-2>
+
+# ========================================
+# HIGH AVAILABILITY (if applicable)
+# ========================================
+
+# Configure HA (example for active/passive)
+# set deviceconfig high-availability enabled yes
+# set deviceconfig high-availability group 1
+# set deviceconfig high-availability peer-ip <peer-firewall-ip>
+# set deviceconfig high-availability mode active-passive
+# set deviceconfig high-availability state-synchronization enabled yes
+# set deviceconfig high-availability ha1-link-monitoring enabled yes
+# set deviceconfig high-availability ha2-link-monitoring enabled yes
+
+# ========================================
+# COMMIT AND SAVE
+# ========================================
+
+# Exit configuration mode
+exit
+
+# Commit configuration
+commit
+
+# Save configuration
+save config to running-config.xml
+
+# Backup configuration
+scp export configuration from running-config.xml to <backup-location>
+
+# ========================================
+# VERIFICATION COMMANDS
+# ========================================
+
+# Verify system status
+show system info
+show system resources
+show session info
+show logging-status
+
+# Verify security policies
+show running security-policy
+
+# Verify threat prevention
+show running threat-profile
+
+# Verify zones
+show zone all
+
+# Verify NTP
+show ntp
+
+# Verify logging
+show log system
+
+# ========================================
+# POST-CONFIGURATION TASKS
+# ========================================
+
+# 1. Test management access from authorized workstation
+# 2. Verify NTP synchronization
+# 3. Verify logging to syslog server
+# 4. Test authentication via TACACS+/RADIUS
+# 5. Review and customize security policies
+# 6. Configure content updates (Applications, Threats, WildFire)
+# 7. Enable and configure GlobalProtect if remote access required
+# 8. Configure User-ID for identity-based policies
+# 9. Implement SSL decryption policies (with proper legal/privacy review)
+# 10. Schedule automatic content updates
+# 11. Configure HA if required
+# 12. Run STIG compliance scan
+
+# ========================================
+# MONITORING AND MAINTENANCE
+# ========================================
+
+# Regular monitoring commands:
+# show system info
+# show counter global
+# show session info
+# show jobs all
+# show high-availability all (if HA configured)
+
+# Content updates:
+# request content upgrade check
+# request content upgrade download latest
+# request content upgrade install version latest
+
+# ========================================
+# WEB UI CONFIGURATION (Alternative)
+# ========================================
+
+# Many settings can be configured via Web UI:
+# 1. Device > Setup > Management
+# 2. Device > Setup > Operations > Authentication Profile
+# 3. Device > Setup > Operations > Log Settings
+# 4. Policies > Security
+# 5. Objects > Security Profiles
+# 6. Network > GlobalProtect (if applicable)
+# 7. Objects > Authentication
+
+# ========================================
+# NOTES
+# ========================================
+
+# - Replace all placeholder values with actual values
+# - Customize security policies based on requirements
+# - Test in non-production environment first
+# - Implement least-privilege access model
+# - Enable all security features (AV, AS, Vuln, URL, File Block, WildFire)
+# - Configure content updates to run automatically
+# - Use dynamic address groups when possible
+# - Implement App-ID and User-ID for granular control
+# - Document all configuration changes
+# - Review PAN-OS documentation for version-specific features
+
+# ========================================
+# END OF CONFIGURATION
+# ========================================

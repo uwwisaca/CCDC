@@ -1,0 +1,411 @@
+# Cisco FTD 7.x STIG Configuration Guide
+# Based on: U_Cisco_ASA_FW_V2R1_Manual_STIG and U_Cisco_ASA_NDM_V2R4_Manual_STIG
+# Version: 1.0
+# Date: January 30, 2026
+#
+# This file contains CLI commands to harden Cisco FTD/ASA
+# Execute these commands via SSH or console connection
+# Commands must be executed in the appropriate configuration mode
+
+# ========================================
+# INITIAL SETUP
+# ========================================
+# Connect to device via SSH or console
+# ssh admin@<ftd-ip>
+# OR use console cable
+
+# Enter enable mode
+enable
+
+# Enter configuration mode
+configure terminal
+
+# ========================================
+# PASSWORD AND AUTHENTICATION (CAT I/II)
+# ========================================
+
+# Set minimum password length (14 characters minimum)
+password-policy minimum-length 14
+
+# Enable password complexity
+password-policy characters-min-uppercase 1
+password-policy characters-min-lowercase 1
+password-policy characters-min-numeric 1
+password-policy characters-min-special 1
+
+# Set password aging
+password-policy lifetime 60
+
+# Set failed login attempts lockout
+aaa authentication login-attempts max-failures 3
+
+# Configure local user with privilege 15 (replace with your username)
+username admin password <strong-password> privilege 15
+username admin privilege 15
+
+# ========================================
+# BANNER (CAT II)
+# ========================================
+
+banner motd *****************************************************************************
+You are accessing a U.S. Government (USG) Information System (IS) that is
+provided for USG-authorized use only.
+
+By using this IS (which includes any device attached to this IS), you consent
+to the following conditions:
+
+- The USG routinely intercepts and monitors communications on this IS for
+  purposes including, but not limited to, penetration testing, COMSEC
+  monitoring, network operations and defense, personnel misconduct (PM), law
+  enforcement (LE), and counterintelligence (CI) investigations.
+
+- At any time, the USG may inspect and seize data stored on this IS.
+
+- Communications using, or data stored on, this IS are not private, are
+  subject to routine monitoring, interception, and search, and may be
+  disclosed or used for any USG-authorized purpose.
+
+- This IS includes security measures (e.g., authentication and access
+  controls) to protect USG interests--not for your personal benefit or
+  privacy.
+
+- Notwithstanding the above, using this IS does not constitute consent to PM,
+  LE or CI investigative searching or monitoring of the content of privileged
+  communications, or work product, related to personal representation or
+  services by attorneys, psychotherapists, or clergy, and their assistants.
+  Such communications and work product are private and confidential.
+*****************************************************************************
+
+# Set login banner
+banner login Use of this system constitutes consent to monitoring.
+banner exec Unauthorized access prohibited.
+
+# ========================================
+# LOGGING (CAT II)
+# ========================================
+
+# Enable logging
+logging enable
+
+# Set logging level
+logging trap informational
+logging console critical
+
+# Configure logging to syslog server (replace with your syslog server)
+logging host inside <syslog-server-ip>
+logging host inside <backup-syslog-server-ip>
+
+# Enable logging for all severity levels
+logging trap debugging
+
+# Enable logging buffer
+logging buffered informational
+logging buffer-size 65536
+
+# Enable timestamp on log messages
+logging timestamp
+
+# Log denied packets
+logging message 106023 level informational
+
+# ========================================
+# TIME SYNCHRONIZATION (CAT II)
+# ========================================
+
+# Configure NTP (replace with your NTP servers)
+ntp server <ntp-server-1> prefer
+ntp server <ntp-server-2>
+
+# Enable NTP authentication
+ntp authenticate
+ntp authentication-key 1 md5 <ntp-key>
+ntp trusted-key 1
+ntp server <ntp-server-1> key 1
+
+# Set timezone (adjust as needed)
+clock timezone EST -5
+clock summer-time EDT recurring
+
+# ========================================
+# SSH CONFIGURATION (CAT II)
+# ========================================
+
+# Generate SSH keys
+crypto key generate rsa modulus 2048
+
+# Enable SSH version 2 only
+ssh version 2
+
+# Configure SSH timeout
+ssh timeout 15
+
+# Configure SSH from management network only (adjust network as needed)
+ssh <management-network> <netmask> management
+
+# Disable Telnet
+no telnet <any-network> <any-mask> <any-interface>
+
+# ========================================
+# SNMP CONFIGURATION (CAT II)
+# ========================================
+
+# Disable SNMP if not needed
+no snmp-server enable
+
+# If SNMP is required, configure SNMPv3
+snmp-server group STIG-GROUP v3 priv
+snmp-server user snmpadmin STIG-GROUP v3 auth sha <auth-password> priv aes 256 <priv-password>
+snmp-server host inside <ntp-server-ip> version 3 snmpadmin
+
+# Disable SNMPv1/v2
+no snmp-server enable traps snmp authentication linkup linkdown coldstart
+
+# ========================================
+# AAA CONFIGURATION (CAT I/II)
+# ========================================
+
+# Configure AAA for TACACS+ or RADIUS (replace with your AAA server)
+aaa-server TACACS protocol tacacs+
+aaa-server TACACS (inside) host <tacacs-server-ip>
+ key <tacacs-key>
+
+# Configure AAA authentication
+aaa authentication ssh console TACACS LOCAL
+aaa authentication http console TACACS LOCAL
+aaa authentication enable console TACACS LOCAL
+
+# Configure AAA authorization
+aaa authorization command TACACS LOCAL
+aaa authorization exec authentication-server
+
+# Configure AAA accounting
+aaa accounting command TACACS
+aaa accounting ssh console TACACS
+
+# ========================================
+# SERVICE HARDENING (CAT II)
+# ========================================
+
+# Disable unnecessary services
+no service password-recovery
+no http server enable
+no http redirect 80
+
+# If HTTP/HTTPS is required for management
+http server enable
+http <management-network> <netmask> management
+https-redirect
+
+# Configure session timeout
+timeout uauth 0:15:00 absolute
+timeout xlate 3:00:00
+timeout conn 1:00:00 half-closed 0:10:00 udp 0:02:00 icmp 0:00:02
+
+# ========================================
+# ACCESS CONTROL (CAT I/II)
+# ========================================
+
+# Configure management access from specific networks only
+access-list MGMT-ACCESS extended permit tcp <management-network> <netmask> any eq ssh
+access-list MGMT-ACCESS extended permit tcp <management-network> <netmask> any eq https
+access-list MGMT-ACCESS extended deny ip any any log
+
+# Apply access list to management interface
+access-group MGMT-ACCESS in interface management
+
+# ========================================
+# FIREWALL RULES (CAT I/II)
+# ========================================
+
+# Default deny all traffic
+access-list INSIDE-IN extended deny ip any any log
+access-list OUTSIDE-IN extended deny ip any any log
+
+# Example: Allow specific traffic (customize as needed)
+# access-list INSIDE-IN extended permit tcp <internal-network> <netmask> any eq https
+# access-list INSIDE-IN extended permit tcp <internal-network> <netmask> any eq http
+
+# Apply access lists to interfaces
+# access-group INSIDE-IN in interface inside
+# access-group OUTSIDE-IN in interface outside
+
+# ========================================
+# NAT CONFIGURATION (CAT II)
+# ========================================
+
+# Configure NAT as required (example)
+# nat (inside,outside) source dynamic inside-network interface
+
+# ========================================
+# INSPECTION AND FILTERING (CAT II)
+# ========================================
+
+# Configure default inspection policy
+policy-map global_policy
+ class inspection_default
+  inspect icmp
+  inspect icmp error
+  inspect tcp
+  inspect udp
+  inspect ftp
+  inspect h323 h225
+  inspect h323 ras
+  inspect netbios
+  inspect rsh
+  inspect rtsp
+  inspect skinny
+  inspect esmtp
+  inspect sqlnet
+  inspect sunrpc
+  inspect tftp
+  inspect sip
+  inspect xdmcp
+
+# Apply service policy
+service-policy global_policy global
+
+# ========================================
+# SECURE PROTOCOLS (CAT I/II)
+# ========================================
+
+# Configure SSL/TLS settings
+ssl server-version tlsv1.2
+ssl client-version tlsv1.2
+ssl cipher tlsv1.2 high medium
+
+# Disable weak ciphers
+ssl cipher tlsv1.2 custom "ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384"
+
+# ========================================
+# FAILOVER CONFIGURATION (if applicable)
+# ========================================
+
+# If using failover, secure failover link
+# failover lan unit primary
+# failover lan interface failover <interface>
+# failover lan key <failover-key>
+# failover link failover <interface>
+# failover interface ip failover <primary-ip> <netmask> standby <secondary-ip>
+
+# ========================================
+# ROUTING (CAT II)
+# ========================================
+
+# Configure static routes as needed
+# route outside 0.0.0.0 0.0.0.0 <default-gateway>
+
+# Enable routing verification
+ip verify reverse-path interface inside
+ip verify reverse-path interface outside
+
+# ========================================
+# CONNECTION LIMITS (CAT II)
+# ========================================
+
+# Set connection limits
+set connection conn-max 100000
+set connection embryonic-conn-max 10000
+set connection timeout tcp 1:00:00
+
+# ========================================
+# FRAGMENTATION (CAT II)
+# ========================================
+
+# Configure fragment reassembly
+fragment chain 1 inside
+fragment chain 1 outside
+
+# ========================================
+# ARP INSPECTION (CAT II)
+# ========================================
+
+# Enable ARP inspection
+arp-inspection inside enable
+arp-inspection outside enable
+
+# ========================================
+# SAVE CONFIGURATION
+# ========================================
+
+# Exit configuration mode
+end
+
+# Save configuration
+write memory
+
+# Backup configuration
+copy running-config tftp://<tftp-server>/ftd-config-backup.cfg
+
+# ========================================
+# VERIFICATION COMMANDS
+# ========================================
+
+# Verify configuration
+show running-config
+show version
+show interface
+show access-list
+show logging
+show ntp associations
+show ssh sessions
+show aaa-server
+
+# ========================================
+# POST-CONFIGURATION TASKS
+# ========================================
+
+# 1. Test SSH access from authorized management workstation
+# 2. Verify NTP synchronization
+# 3. Verify logging to syslog server
+# 4. Test AAA authentication
+# 5. Review and customize firewall rules
+# 6. Configure high availability if required
+# 7. Implement change control procedures
+# 8. Document network topology and rules
+# 9. Schedule regular configuration backups
+# 10. Run STIG compliance scan (ACAS/Nessus)
+
+# ========================================
+# MONITORING AND MAINTENANCE
+# ========================================
+
+# Commands for regular monitoring:
+# show cpu usage
+# show memory
+# show connections
+# show logging
+# show failover (if applicable)
+# show traffic
+
+# ========================================
+# NOTES
+# ========================================
+
+# - Replace all placeholder values (IP addresses, passwords, keys) with actual values
+# - Customize firewall rules based on security requirements
+# - Test all changes in non-production environment first
+# - Implement out-of-band management if possible
+# - Use strong passwords and store securely
+# - Document all configuration changes
+# - Review Cisco FTD documentation for specific features
+# - This configuration provides baseline hardening
+# - Additional FTD-specific features should be configured via FMC (Firepower Management Center)
+
+# ========================================
+# FMC (Firepower Management Center) Integration
+# ========================================
+
+# If using FMC for management, additional configuration should be done via FMC GUI:
+# - Access Control Policies
+# - Intrusion Prevention (IPS) Policies
+# - File Policies (AMP)
+# - Network Discovery Policies
+# - SSL Decryption Policies
+# - Identity Policies (integration with AD/LDAP)
+
+# Register FTD to FMC:
+# configure manager add <fmc-ip> <registration-key>
+
+# ========================================
+# END OF CONFIGURATION
+# ========================================

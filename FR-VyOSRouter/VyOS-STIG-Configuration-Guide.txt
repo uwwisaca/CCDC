@@ -1,0 +1,453 @@
+# VyOS 1.4.x Router STIG Configuration Guide
+# Based on: U_Router_V5R2_Manual_SRG and U_NDM_V5R4_Manual_SRG
+# Version: 1.0
+# Date: January 30, 2026
+#
+# This file contains VyOS configuration commands for STIG compliance
+# Execute these commands via SSH console
+
+# ========================================
+# INITIAL ACCESS
+# ========================================
+# SSH: ssh vyos@<router-ip>
+# Default credentials (change immediately): vyos/vyos
+
+# Enter configuration mode
+configure
+
+# ========================================
+# SYSTEM HOSTNAME AND DOMAIN
+# ========================================
+
+set system host-name vyos-router
+set system domain-name example.com
+
+# ========================================
+# PASSWORD AND AUTHENTICATION
+# ========================================
+
+# Set local user with strong password (minimum 15 characters, complexity)
+set system login user admin authentication plaintext-password '<strong-password-15+chars>'
+set system login user admin level admin
+
+# Delete default vyos user (after creating admin user)
+delete system login user vyos
+
+# Set password policy via PAM (requires manual /etc/pam.d/ configuration)
+# This must be done outside VyOS configuration mode
+
+# ========================================
+# LOGIN BANNER
+# ========================================
+
+set system login banner pre-login "
+*****************************************************************************
+You are accessing a U.S. Government (USG) Information System (IS) that is
+provided for USG-authorized use only.
+
+By using this IS (which includes any device attached to this IS), you consent
+to the following conditions:
+
+- The USG routinely intercepts and monitors communications on this IS for
+  purposes including, but not limited to, penetration testing, COMSEC
+  monitoring, network operations and defense, personnel misconduct (PM), law
+  enforcement (LE), and counterintelligence (CI) investigations.
+
+- At any time, the USG may inspect and seize data stored on this IS.
+
+- Communications using, or data stored on, this IS are not private, are
+  subject to routine monitoring, interception, and search, and may be
+  disclosed or used for any USG-authorized purpose.
+
+Unauthorized access is prohibited.
+*****************************************************************************
+"
+
+set system login banner post-login "Authorized use only. All activity is monitored and logged."
+
+# ========================================
+# TIME SYNCHRONIZATION (NTP)
+# ========================================
+
+# Configure NTP servers
+set system ntp server <ntp-server-1> prefer
+set system ntp server <ntp-server-2>
+
+# Set timezone
+set system time-zone America/New_York
+
+# ========================================
+# LOGGING CONFIGURATION
+# ========================================
+
+# Enable logging to local file
+set system syslog global facility all level info
+set system syslog global facility auth level warning
+
+# Configure remote syslog (replace with your syslog server)
+set system syslog host <syslog-server-ip> facility all level info
+set system syslog host <syslog-server-ip> facility auth level warning
+set system syslog host <syslog-server-ip> port 514
+
+# Enable console logging
+set system syslog console facility all level notice
+
+# ========================================
+# SSH CONFIGURATION
+# ========================================
+
+# Enable SSH service
+set service ssh port 22
+set service ssh listen-address <management-interface-ip>
+
+# Disable SSH password authentication (use keys)
+# set service ssh disable-password-authentication
+
+# Configure SSH ciphers (strong only)
+set service ssh ciphers aes256-ctr
+set service ssh ciphers aes192-ctr
+set service ssh ciphers aes128-ctr
+
+# Configure SSH key exchange algorithms
+set service ssh key-exchange curve25519-sha256
+set service ssh key-exchange diffie-hellman-group16-sha512
+set service ssh key-exchange diffie-hellman-group18-sha512
+
+# Configure SSH MACs
+set service ssh mac hmac-sha2-512
+set service ssh mac hmac-sha2-256
+
+# Set SSH timeout
+set service ssh client-keepalive-interval 300
+
+# ========================================
+# SNMP CONFIGURATION (if required)
+# ========================================
+
+# Configure SNMPv3 (disable SNMPv1/v2 if not needed)
+set service snmp v3 user snmpadmin auth plaintext-password '<snmp-auth-password>'
+set service snmp v3 user snmpadmin privacy plaintext-password '<snmp-priv-password>'
+set service snmp v3 user snmpadmin auth type sha
+set service snmp v3 user snmpadmin privacy type aes
+set service snmp v3 user snmpadmin group snmpgroup
+
+set service snmp v3 group snmpgroup mode ro
+set service snmp v3 group snmpgroup view default
+
+# Restrict SNMP access
+set service snmp listen-address <management-interface-ip>
+
+# ========================================
+# INTERFACES CONFIGURATION
+# ========================================
+
+# Configure interfaces (example - customize as needed)
+set interfaces ethernet eth0 address <wan-ip>/<cidr>
+set interfaces ethernet eth0 description 'WAN Interface'
+
+set interfaces ethernet eth1 address <lan-ip>/<cidr>
+set interfaces ethernet eth1 description 'LAN Interface'
+
+# ========================================
+# ROUTING
+# ========================================
+
+# Configure default route
+set protocols static route 0.0.0.0/0 next-hop <default-gateway>
+
+# Enable IP forwarding (done by default when routing is configured)
+
+# Configure OSPF (if needed)
+# set protocols ospf area 0 network <network>/<cidr>
+# set protocols ospf parameters router-id <router-id>
+
+# Configure BGP (if needed)
+# set protocols bgp system-as <as-number>
+# set protocols bgp neighbor <neighbor-ip> remote-as <remote-as>
+
+# ========================================
+# FIREWALL RULES
+# ========================================
+
+# Create firewall ruleset for WAN incoming
+set firewall name WAN-IN default-action drop
+set firewall name WAN-IN enable-default-log
+
+# Allow established/related connections
+set firewall name WAN-IN rule 10 action accept
+set firewall name WAN-IN rule 10 state established enable
+set firewall name WAN-IN rule 10 state related enable
+set firewall name WAN-IN rule 10 log disable
+
+# Drop invalid packets
+set firewall name WAN-IN rule 20 action drop
+set firewall name WAN-IN rule 20 state invalid enable
+set firewall name WAN-IN rule 20 log enable
+
+# Example: Allow SSH from management network
+set firewall name WAN-IN rule 30 action accept
+set firewall name WAN-IN rule 30 protocol tcp
+set firewall name WAN-IN rule 30 destination port 22
+set firewall name WAN-IN rule 30 source address <management-network>/<cidr>
+set firewall name WAN-IN rule 30 log enable
+
+# Default deny (logged)
+set firewall name WAN-IN rule 999 action drop
+set firewall name WAN-IN rule 999 log enable
+
+# Create firewall ruleset for WAN outgoing
+set firewall name WAN-OUT default-action accept
+set firewall name WAN-OUT enable-default-log
+
+# Create firewall ruleset for LAN incoming
+set firewall name LAN-IN default-action drop
+set firewall name LAN-IN enable-default-log
+
+# Allow established/related
+set firewall name LAN-IN rule 10 action accept
+set firewall name LAN-IN rule 10 state established enable
+set firewall name LAN-IN rule 10 state related enable
+
+# Allow LAN to Internet (customize as needed)
+set firewall name LAN-IN rule 100 action accept
+set firewall name LAN-IN rule 100 source address <lan-network>/<cidr>
+set firewall name LAN-IN rule 100 log enable
+
+# Apply firewall rulesets to interfaces
+set interfaces ethernet eth0 firewall in name WAN-IN
+set interfaces ethernet eth0 firewall out name WAN-OUT
+set interfaces ethernet eth1 firewall in name LAN-IN
+
+# ========================================
+# NAT CONFIGURATION
+# ========================================
+
+# Configure source NAT (masquerade)
+set nat source rule 100 outbound-interface eth0
+set nat source rule 100 source address <lan-network>/<cidr>
+set nat source rule 100 translation address masquerade
+
+# Configure destination NAT (port forwarding example)
+# set nat destination rule 10 destination port 80
+# set nat destination rule 10 inbound-interface eth0
+# set nat destination rule 10 translation address <internal-server-ip>
+# set nat destination rule 10 translation port 80
+# set nat destination rule 10 protocol tcp
+
+# ========================================
+# SECURITY HARDENING
+# ========================================
+
+# Disable source routing
+set system ip disable-forwarding
+
+# Enable TCP SYN cookies
+set system conntrack tcp loose enable
+
+# Configure connection tracking timeouts
+set system conntrack timeout tcp established 432000
+set system conntrack timeout tcp close 10
+
+# Disable ICMP redirects
+set system ip disable-redirects
+
+# Enable reverse path filtering
+set system ip arp-filter enable
+
+# ========================================
+# VPN CONFIGURATION (IPsec)
+# ========================================
+
+# Configure IPsec (if VPN is required)
+# set vpn ipsec esp-group ESP-GROUP proposal 1 encryption aes256
+# set vpn ipsec esp-group ESP-GROUP proposal 1 hash sha256
+# set vpn ipsec esp-group ESP-GROUP lifetime 3600
+
+# set vpn ipsec ike-group IKE-GROUP proposal 1 encryption aes256
+# set vpn ipsec ike-group IKE-GROUP proposal 1 hash sha256
+# set vpn ipsec ike-group IKE-GROUP proposal 1 dh-group 14
+# set vpn ipsec ike-group IKE-GROUP lifetime 28800
+
+# set vpn ipsec site-to-site peer <peer-ip> authentication mode pre-shared-secret
+# set vpn ipsec site-to-site peer <peer-ip> authentication pre-shared-secret <psk>
+# set vpn ipsec site-to-site peer <peer-ip> ike-group IKE-GROUP
+# set vpn ipsec site-to-site peer <peer-ip> local-address <local-ip>
+# set vpn ipsec site-to-site peer <peer-ip> tunnel 1 esp-group ESP-GROUP
+# set vpn ipsec site-to-site peer <peer-ip> tunnel 1 local prefix <local-network>/<cidr>
+# set vpn ipsec site-to-site peer <peer-ip> tunnel 1 remote prefix <remote-network>/<cidr>
+
+# ========================================
+# QUALITY OF SERVICE (QoS)
+# ========================================
+
+# Configure traffic shaping (if needed)
+# set traffic-policy shaper WAN-SHAPER bandwidth 100mbit
+# set traffic-policy shaper WAN-SHAPER default bandwidth 80%
+# set traffic-policy shaper WAN-SHAPER default ceiling 100%
+# set traffic-policy shaper WAN-SHAPER default queue-type fair-queue
+
+# Apply traffic policy
+# set interfaces ethernet eth0 traffic-policy out WAN-SHAPER
+
+# ========================================
+# HIGH AVAILABILITY (VRRP)
+# ========================================
+
+# Configure VRRP (if HA is required)
+# set high-availability vrrp group 1 interface eth1
+# set high-availability vrrp group 1 virtual-address <vip>/<cidr>
+# set high-availability vrrp group 1 priority 100
+# set high-availability vrrp group 1 preempt true
+# set high-availability vrrp group 1 authentication password '<vrrp-password>'
+# set high-availability vrrp group 1 authentication type simple
+
+# ========================================
+# DHCP SERVER (if providing DHCP)
+# ========================================
+
+# Configure DHCP server for LAN
+# set service dhcp-server shared-network-name LAN subnet <lan-network>/<cidr> default-router <router-ip>
+# set service dhcp-server shared-network-name LAN subnet <lan-network>/<cidr> dns-server <dns-server-1>
+# set service dhcp-server shared-network-name LAN subnet <lan-network>/<cidr> dns-server <dns-server-2>
+# set service dhcp-server shared-network-name LAN subnet <lan-network>/<cidr> domain-name example.com
+# set service dhcp-server shared-network-name LAN subnet <lan-network>/<cidr> lease 86400
+# set service dhcp-server shared-network-name LAN subnet <lan-network>/<cidr> range 0 start <start-ip>
+# set service dhcp-server shared-network-name LAN subnet <lan-network>/<cidr> range 0 stop <end-ip>
+
+# ========================================
+# DNS FORWARDING (if providing DNS)
+# ========================================
+
+# Configure DNS forwarding
+# set service dns forwarding listen-address <lan-ip>
+# set service dns forwarding name-server <upstream-dns-1>
+# set service dns forwarding name-server <upstream-dns-2>
+# set service dns forwarding cache-size 10000
+# set service dns forwarding allow-from <lan-network>/<cidr>
+
+# ========================================
+# COMMIT AND SAVE
+# ========================================
+
+# Commit configuration
+commit
+
+# Save configuration
+save
+
+# ========================================
+# BACKUP CONFIGURATION
+# ========================================
+
+# Exit configuration mode
+exit
+
+# Show configuration (for verification)
+show configuration
+
+# Backup configuration to file
+save /config/backup-config-$(date +%Y%m%d).config
+
+# Copy configuration to remote server (SCP)
+scp /config/config.boot user@<backup-server>:/path/to/backup/
+
+# ========================================
+# VERIFICATION COMMANDS
+# ========================================
+
+# System status
+show system uptime
+show version
+show interfaces
+show ip route
+show firewall
+show nat source rules
+show nat destination rules
+show ntp
+
+# Connection tracking
+show conntrack table ipv4
+
+# Logs
+show log
+show log tail
+
+# ========================================
+# POST-CONFIGURATION TASKS
+# ========================================
+
+# 1. Test SSH access from authorized management workstation
+# 2. Verify NTP synchronization: show ntp
+# 3. Verify routing: show ip route
+# 4. Test firewall rules: ping, traceroute
+# 5. Verify NAT operation: show nat source translations
+# 6. Test VPN connectivity (if configured)
+# 7. Monitor system logs: show log tail
+# 8. Document network topology
+# 9. Schedule configuration backups
+# 10. Run security scan
+
+# ========================================
+# ADDITIONAL HARDENING (via shell)
+# ========================================
+
+# Exit to shell (requires elevated privileges)
+# exit
+
+# Some additional hardening must be done via Linux shell:
+# - Configure PAM for password complexity
+# - Harden SSH configuration beyond VyOS settings
+# - Configure fail2ban for brute force protection
+# - Set file permissions
+# - Configure auditd
+
+# Example PAM configuration for password complexity:
+# Edit /etc/pam.d/common-password
+# Add: password requisite pam_pwquality.so retry=3 minlen=15 dcredit=-1 ucredit=-1 ocredit=-1 lcredit=-1
+
+# ========================================
+# MONITORING AND MAINTENANCE
+# ========================================
+
+# Regular monitoring:
+# show system uptime
+# show interfaces
+# show log tail
+# show firewall statistics
+# show nat source statistics
+# show vpn ipsec sa (if VPN configured)
+
+# Performance monitoring:
+# show system resource
+# show interfaces counters
+
+# ========================================
+# NOTES
+# ========================================
+
+# - Replace all placeholder values with actual values
+# - Customize firewall rules based on security requirements
+# - Test all changes in non-production environment first
+# - VyOS is Debian-based, so standard Linux hardening applies
+# - Implement least-privilege firewall rules
+# - Use strong passwords and keys
+# - Document all configuration changes
+# - Keep VyOS updated with latest security patches
+# - Review VyOS documentation for version-specific features
+
+# ========================================
+# UPDATE SYSTEM
+# ========================================
+
+# Check for system updates (requires exit to shell)
+# exit
+# sudo apt update
+# sudo apt upgrade
+
+# Update VyOS image
+# add system image https://downloads.vyos.io/rolling/current/vyos-rolling-latest.iso
+# reboot
+
+# ========================================
+# END OF CONFIGURATION
+# ========================================
