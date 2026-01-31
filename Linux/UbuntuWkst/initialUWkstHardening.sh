@@ -3,67 +3,67 @@ set -e
 
 ALLOWED_SUBNET="172.20.242.0/24"
 SSH_PORT=22
+HTTPS_PORT=443
 
 #checks if running as root
 if [ "$EUID" -ne 0 ]; then
-  echo "ERROR: Must be run as root"
-  exit 1
-fi
-
-#checks if ccdcuser1 exists
-if ! id ccdcuser1 &>/dev/null; then
-  echo "ERROR: ccdcuser1 does not exist. Aborting."
-  exit 1
+     echo "ERROR: Must be run as root"
+     exit 1
 fi
 
 echo "!!Restricting SSH to $ALLOWED_SUBNET!!"
 
-#enables firewalld
-if ! systemctl is-active --quiet firewalld; then
-  echo "Starting firewalld..."
-  systemctl enable --now firewalld
+# Enables ufw
+if ! systemctl is-active --quiet ufw; then
+     echo "Starting ufw firewall..."
+     sudo systemctl enable --now ufw
 fi
 
-echo "Removing generic SSH access"
-firewall-cmd --permanent --remove-service=ssh || true
+# Reset UFW Rules
+sudo ufw --force reset
 
-echo "Allowing SSH only from $ALLOWED_SUBNET"
-firewall-cmd --permanent \
-  --add-rich-rule="rule family='ipv4' source address='$ALLOWED_SUBNET' service name='ssh' accept"
+echo "Setting up default ufw rules"
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw logging on
 
-firewall-cmd --reload
-
-#verifies firewall rules
-echo
-echo "Firewall SSH rules:"
-firewall-cmd --list-rich-rules
+sudo ufw reload
+sudo ufw enable
 
 #installs fail2ban
 echo
 echo "Installing Fail2Ban"
-dnf install -y epel-release
-dnf install -y fail2ban fail2ban-firewalld
+sudo apt install -y fail2ban
 
 #configures fail2ban
 echo "Configuring Fail2Ban for SSH..."
 
-cat > /etc/fail2ban/jail.local <<EOF
-[DEFAULT]
-bantime = 1h
-findtime = 10m
-maxretry = 5
-backend = systemd
+sudo cat > /etc/fail2ban/jail.local <<EOF
+[ufw]
+enabled=true
+filter=ufw.aggressive
+action=iptables-allports
+logpath=/var/log/ufw.log
+maxretry=1
+bantime=-1
 
 [sshd]
-enabled = true
+backend=systemd
+enabled=true
+filter=sshd
+mode=normal
+port=22
+protocol=tcp
+maxretry=3
+bantime=-1
 EOF
 
-systemctl enable --now fail2ban
+sudo systemctl enable --now fail2ban
 
 #verifies fail2ban status
 echo
 echo "Fail2Ban status:"
-fail2ban-client status sshd
+sudo fail2ban-client status sshd
 
 echo
 echo "SSH restricted to $ALLOWED_SUBNET"
