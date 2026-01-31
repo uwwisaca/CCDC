@@ -47,7 +47,7 @@ sudo dnf install -y sshpass expect
 
 #### Deploy to Cisco FTD (172.20.240.200) ✅ SAME NETWORK SEGMENT
 ```powershell
-cd "C:\Users\JPeacy\OneDrive - Rockwell Automation, Inc\Desktop\CCDC Stigs"
+
 
 # Interactive (will prompt for passwords)
 .\Deploy-Cisco-FTD-STIG.ps1 -HostIP "172.20.240.200" -Username "admin"
