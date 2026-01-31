@@ -216,18 +216,18 @@ $pdcEmulator = Get-ADDomainController -Discover -Service PrimaryDC
 Write-Log "PDC Emulator (time source): $($pdcEmulator.HostName)" "INFO"
 Write-Log "Ensure PDC Emulator synchronizes with external NTP source" "WARN"
 
-# WN19-AF-000130: DFS-R for SYSVOL replication
-Write-Log "Checking SYSVOL replication method..." "INFO"
+# # WN19-AF-000130: DFS-R for SYSVOL replication
+# Write-Log "Checking SYSVOL replication method..." "INFO"
 
-$dfsrEnabled = (Get-ADObject -Filter {objectClass -eq "msDFSR-GlobalSettings"} -SearchBase "CN=Configuration,$($forest.RootDomain)" -ErrorAction SilentlyContinue)
+# $dfsrEnabled = (Get-ADObject -Filter {objectClass -eq "msDFSR-GlobalSettings"} -SearchBase "CN=Configuration,$($forest.RootDomain)" -ErrorAction SilentlyContinue)
 
-if ($dfsrEnabled) {
-    Write-Log "SYSVOL replication using DFS-R" "SUCCESS"
-}
-else {
-    Write-Log "SYSVOL may be using FRS (deprecated)" "WARN"
-    Write-Log "Migrate to DFS-R if using FRS" "WARN"
-}
+# if ($dfsrEnabled) {
+#     Write-Log "SYSVOL replication using DFS-R" "SUCCESS"
+# }
+# else {
+#     Write-Log "SYSVOL may be using FRS (deprecated)" "WARN"
+#     Write-Log "Migrate to DFS-R if using FRS" "WARN"
+# }
 
 # WN19-AF-000140: AdminSDHolder
 Write-Log "Checking AdminSDHolder..." "INFO"

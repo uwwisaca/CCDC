@@ -145,7 +145,7 @@ sessionTimeout = 15m
 serverName = splunk-server
 
 # SPLK-CL-000230: Pass4SymmKey - CHANGE THIS
-pass4SymmKey = $7$CHANGETHISKEY
+pass4SymmKey = A7HYTdJbSTTcnstxVhXldhjuyo1OifWzs2JVHHY148
 
 [diskUsage]
 # SPLK-CL-000240: Minimum free space
@@ -398,10 +398,10 @@ log "SUCCESS" "Unnecessary features disabled"
 log "INFO" "Restarting Splunk..."
 
 # Stop Splunk
-sudo -u splunk "$SPLUNK_HOME/bin/splunk" stop
+sudo "$SPLUNK_HOME/bin/splunk" stop
 
 # Start Splunk
-sudo -u splunk "$SPLUNK_HOME/bin/splunk" start --accept-license --answer-yes
+sudo "$SPLUNK_HOME/bin/splunk" start --accept-license --answer-yes
 
 log "SUCCESS" "Splunk restarted"
 
