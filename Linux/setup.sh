@@ -54,7 +54,6 @@ elif [[ -r /etc/os-release ]]; then # If no IP match, fall back to OS detection 
 else
     echo "ERROR: Machine not automatically identified." 
     echo "Please Manually Run Machine-Specific Scripts!"
-    exit 1
 fi
 
 # Run Audit
