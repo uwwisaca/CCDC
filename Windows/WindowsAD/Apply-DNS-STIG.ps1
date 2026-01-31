@@ -39,11 +39,14 @@ Write-Log "========================================"
 Import-Module DnsServer
 
 $dnsServer = $env:COMPUTERNAME
+$LOCAL_IP = (Get-NetIPAddress -AddressFamily IPv4 | Select-Object -First 1 -ExpandProperty IPAddress)
+
 
 # DNS-SR-000010: Configure DNS logging
 Write-Log "Configuring DNS logging..." "INFO"
 
-Set-DnsServerDiagnostics -All $true -LogFilePath "C:\Windows\System32\dns\dns.log" -MaxMBFileSize 500000000
+Set-DnsServerDiagnostics -All -LogFilePath "C:\Windows\System32\dns\dns.log" -MaxMBFileSize 500
+
 
 Write-Log "DNS logging enabled" "SUCCESS"
 
@@ -127,23 +130,23 @@ Set-DnsServerScavenging -ScavengingState $true -ScavengingInterval "7.00:00:00" 
 
 foreach ($zone in $zones) {
     if ($zone.IsDsIntegrated) {
-        Set-DnsServerZoneAging -Name $zone.ZoneName -Aging $true -ScavengeServers @($dnsServer) -ErrorAction SilentlyContinue
+        Set-DnsServerZoneAging -Name $zone.ZoneName -Aging $true -ScavengeServers @($LOCAL_IP) -ErrorAction SilentlyContinue
     }
 }
 
 Write-Log "DNS scavenging configured" "SUCCESS"
 
-# DNS-SR-000090: Socket pool size
-Write-Log "Configuring socket pool..." "INFO"
+# # DNS-SR-000090: Socket pool size
+# Write-Log "Configuring socket pool..." "INFO"
 
-$socketPool = Get-DnsServerSetting | Select-Object -ExpandProperty SocketPoolSize
-if ($socketPool -lt 2500) {
-    dnscmd /Config /SocketPoolSize 2500
-    Write-Log "Socket pool size increased to 2500" "SUCCESS"
-}
-else {
-    Write-Log "Socket pool size already configured: $socketPool" "INFO"
-}
+# $socketPool = Get-DnsServerSetting | Select-Object -ExpandProperty SocketPoolSize
+# if ($socketPool -lt 2500) {
+#     dnscmd /Config /SocketPoolSize 2500
+#     Write-Log "Socket pool size increased to 2500" "SUCCESS"
+# }
+# else {
+#     Write-Log "Socket pool size already configured: $socketPool" "INFO"
+# }
 
 # DNS-SR-000100: Global query block list
 Write-Log "Checking global query block list..." "INFO"
@@ -205,20 +208,20 @@ if ($rpcProtocol -ne 0) {
     Write-Log "Consider limiting RPC protocol access" "WARN"
 }
 
-# DNS-SR-000180: Configure allowed IP addresses
-Write-Log "Configuring listen addresses..." "INFO"
+# # DNS-SR-000180: Configure allowed IP addresses
+# Write-Log "Configuring listen addresses..." "INFO"
 
-$listen = Get-DnsServerSetting | Select-Object -ExpandProperty ListenAddresses
-if ($listen.Count -eq 0) {
-    Write-Log "Listening on all interfaces" "WARN"
-    Write-Log "Consider restricting to specific IP addresses" "WARN"
-}
-else {
-    Write-Log "Listening on specific addresses:" "INFO"
-    foreach ($addr in $listen) {
-        Write-Log "  - $addr" "INFO"
-    }
-}
+# $listen = Get-DnsServerSetting | Select-Object -ExpandProperty ListenAddresses
+# if ($listen.Count -eq 0) {
+#     Write-Log "Listening on all interfaces" "WARN"
+#     Write-Log "Consider restricting to specific IP addresses" "WARN"
+# }
+# else {
+#     Write-Log "Listening on specific addresses:" "INFO"
+#     foreach ($addr in $listen) {
+#         Write-Log "  - $addr" "INFO"
+#     }
+# }
 
 # DNS-SR-000190: Configure root hints
 Write-Log "Checking root hints..." "INFO"
@@ -242,10 +245,7 @@ Write-Log "Note: Configure recursion scopes to limit which clients can perform r
 # DNS-SR-000210: Audit policy
 Write-Log "Configuring DNS audit policy..." "INFO"
 
-Set-DnsServerDiagnostics -EnableDnsSec ValidationFailures $true `
-    -EnableLoggingForZoneDataWrite $true `
-    -EnableLoggingForZoneLoad $true `
-    -EnableLoggingForPluginDllEvent $true
+Set-DnsServerDiagnostics -EnableDnsSecValidationFailures -EnableLoggingForZoneDataWrite -EnableLoggingForZoneLoad -EnableLoggingForPluginDllEvent
 
 Write-Log "DNS audit policy configured" "SUCCESS"
 

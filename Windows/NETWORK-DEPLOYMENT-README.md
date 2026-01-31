@@ -122,7 +122,6 @@ Network Devices:
 Network Devices:
 - Cisco FTD:                   Inside:  172.20.240.254/24 (172.20.240.200 mgmt)
                                Outside: 172.16.102.254/24
-                               External: 172.31.21.2/29
                                ⚠️ Deploy from Windows Server 2019 (same 172.20.240.x)
 
 - Palo Alto:                   Management: 172.20.242.150
@@ -130,8 +129,9 @@ Network Devices:
                                Inside:     172.20.242.254/24
                                ⭐ Deploy from Ubuntu Ecom (same 172.20.242.x)
 
-- VyOS Router:                 net1: 172.16.101.1/24
-                               net2: 172.25.20.1/24
+- VyOS Router:                 net0: 172.31.21.2/29
+                               net1: 172.16.101.1/24
+                               net2: 172.16.102.1/24
                                Deploy from Ubuntu Ecom
 
 If you have existing base configurations:
