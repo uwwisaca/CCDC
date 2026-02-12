@@ -20,6 +20,10 @@ MACHINE_IP=$(ip route get 172.16.101.1 | awk '{print $7; exit}')
 
 if [[ "$MACHINE_IP" == "172.20.242.20" ]]; then # Detect Splunk & Run Correct Scripts
     echo "Machine Detected: Oracle-Splunk"
+    #Install some dependencies, whatever is needed add below here -Thomas
+    dnf install -y tmux
+    dnf install -y audit
+    echo "Dependencies downloaded and installed. You can alert Firewall Master that connection can be cut!"
     sudo bash OracleSplunk/addindexes.sh
     sudo bash OracleSplunk/passwordRefresh.sh
     sudo bash OracleSplunk/fail2banSetup.sh
@@ -28,6 +32,10 @@ if [[ "$MACHINE_IP" == "172.20.242.20" ]]; then # Detect Splunk & Run Correct Sc
 
 elif [[ "$MACHINE_IP" == "172.20.242.30" ]]; then # Detect Ecom & Run Correct Scripts
     echo "Machine Detected: Ubuntu-Ecommerce"
+    #Install some dependencies, whatever is needed add below here -Thomas
+    apt install -y tmux
+    apt install -y audit
+    echo "Dependencies downloaded and installed. You can alert Firewall Master that connection can be cut!"
     sudo bash UbuntuEcom/initialEcomHardening.sh
     sudo bash UbuntuEcom/ubuntuForwarderInstall.sh
     sudo bash UbuntuEcom/apply-ubuntu-stig.sh
@@ -36,6 +44,10 @@ elif [[ "$MACHINE_IP" == "172.20.242.30" ]]; then # Detect Ecom & Run Correct Sc
 
 elif [[ "$MACHINE_IP" == "172.20.242.40" ]]; then # Detect Webmail & Run Correct Scripts
     echo "Machine Detected: Fedora-WebMail"
+    #Install some dependencies, whatever is needed add below here -Thomas
+    dnf install -y tmux
+    dnf install -y audit
+    echo "Dependencies downloaded and installed. You can alert Firewall Master that connection can be cut!"
     sudo bash FedoraMail/harden_firewall.sh
     sudo nash FedoraMail/fedoraForwarderInstall.sh
     sudo bash FedoraMail/apply-rhel9-stig.sh
@@ -46,6 +58,10 @@ elif [[ -r /etc/os-release ]]; then # If no IP match, fall back to OS detection 
 
     if [[ "$ID" == "ubuntu" && "$VERSION_ID" == "24.04" ]]; then
         echo "Machine Detected: Ubuntu-Workstation"
+        #Install some dependencies, whatever is needed add below here -Thomas
+        apt install -y tmux
+        apt install -y audit
+        echo "Dependencies downloaded and installed. You can alert Firewall Master that connection can be cut!"
         sudo bash UbuntuWkst/initialUWkstHardening.sh
         sudo bash UbuntuWkst/ubuntuForwarderInstall.sh
         sudo bash UbuntuWkst/apply-ubuntu-desktop-stig.sh
