@@ -14,6 +14,8 @@ splunkUser="admin"
 
 sudo -u splunk "$splunkBin" login #alternative to hardcoding password using -auth method
 
+read -s -p "Enter the old Splunk admin password: " splunkCurrentPassword
+echo
 read -s -p "Please enter the new password for the Splunk Web Admin account: " splunkNewPassword
 echo
 read -s -p "Please confirm password: " splunkPasswordConfirm
@@ -23,7 +25,8 @@ if [[ "$splunkNewPassword" != "$splunkPasswordConfirm" ]]; then
 	exit 1
 fi
 
-sudo -u splunk "$splunkBin" edit user "$splunkUser" -password "$splunkNewPassword"
+sudo -u splunk "$splunkBin" edit user "$splunkUser" -password "$splunkNewPassword" -auth "$splunkUser:$splunkCurrentPassword"
 
 echo "Splunk admin password updated successfully."
+
 
