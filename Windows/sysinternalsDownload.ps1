@@ -5,9 +5,10 @@ foreach ($item in $links) {
 	if ($item.href -match '\.exe$') {
 		$fileName = $item.href.Split('/')[-1]
 		Write-Host "Downloading: $fileName"
-		Invoke-WebRequest -Uri ("https://live.sysinternals.com" + $item.href) -Outfile "$DestinationFolder\$fileName" -ErrorAction Silently Continue
+		Invoke-WebRequest -Uri ("https://live.sysinternals.com" + $item.href) -Outfile "$DestinationFolder\$fileName" -ErrorAction SilentlyContinue
 	}
 
 }
+
 
 
