@@ -1,0 +1,192 @@
+# Setup our mocks --MFT needs to be mocked as below to pass srcDir
+Query: LET _ <= SELECT
+      mock(plugin='info', results=[dict(OS='windows')]),
+      mock(plugin='http_client', results=[
+         dict(Url='http://remote',
+              Content=IsPE, Response=200)]),
+      mock(plugin='glob', results=[
+        dict(
+          Name='wkscli.dll',
+          ModTime=timestamp(string='2021-06-21T05:57:50.185936246Z'),
+          OSPath=pathspec(Path=srcDir + '/artifacts/testdata/files/wkscli.dll'),
+          Mtime=timestamp(string='2021-06-21T05:57:50.185936246Z'),
+          Btime=timestamp(string='2021-06-21T05:57:50.185836399Z'),
+          Ctime=timestamp(string='2021-06-21T05:57:50.185936246Z'),
+          Atime=timestamp(string='2021-06-22T05:21:58.301135969Z'),
+          Data=null,
+          Size=9728,
+          IsDir=false,
+          IsLink=false
+        ),
+        dict(
+          Name='notnbt.exe',
+          ModTime=timestamp(string='2021-06-21T05:57:50.184145696Z'),
+          OSPath=pathspec(Path=srcDir + '/artifacts/testdata/files/notnbt.exe'),
+          OSPath=pathspec(Path=srcDir + '/artifacts/testdata/files/notnbt.exe'),
+          Mtime=timestamp(string='2021-01-01T05:57:50.184145696Z'),
+          Btime=timestamp(string='2021-03-01T05:57:50.184086639Z'),
+          Ctime=timestamp(string='2021-03-21T05:57:50.184145696Z'),
+          Atime=timestamp(string='2021-03-21T05:57:50.184157002Z'),
+          Data=null,
+          Size=17920,
+          IsDir=false,
+          IsLink=false
+        )]),
+      -- First call to Windows.NTFS.MFT reveal target dll info
+      -- srcDir needs to be used to align fields
+      mock(artifact=Artifact.Windows.NTFS.MFT, results=[
+         dict(
+          EntryNumber=42344,
+          InUse = true,
+          ParentEntryNumber = 3589,
+          MFTPath = srcDir + "$MFT",
+          OSPath =pathspec(Path=srcDir + "/artifacts/testdata/files/wkscli.dll"),
+          FileName = "wkscli.dll",
+          FileSize = 764976,
+          ReferenceCount = 2,
+          IsDir = false,
+          Created0x10 = "2020-11-19T02:48:46.9885373Z",
+          Created0x30 = "2021-01-24T06:57:36.7073284Z",
+          LastModified0x10 = "2020-11-19T02:48:47.0041758Z",
+          LastModified0x30 = "2021-01-24T06:57:39.5353986Z",
+          LastRecordChange0x10 = "2021-01-24T06:59:40.7021579Z",
+          LastRecordChange0x30 = "2021-01-24T06:57:39.5353986Z",
+          LastAccess0x10 = "2021-03-05T13:44:04.1999087Z",
+          LastAccess0x30 = "2021-01-24T06:57:36.7073284Z")
+      ])
+FROM scope()
+
+Output: []
+
+# Remove paths from golden image
+Query: LET CleanContext(HitContext) = dict(StoredSize=HitContext.StoredSize, Path= HitContext.Path, Size= HitContext.Size, sha256= HitContext.sha256)
+Output: []
+
+# Test NTFS yara outputs from shorthand and standard yara
+Query: SELECT relpath(path=OSPath, base=srcDir, sep="/") as TestPath, Size, Rule, CleanContext(HitContext=HitContext), HitOffset FROM Artifact.Windows.Detection.Yara.NTFS( DriveLetter=srcDir, PathRegex='wkscli.dll', YaraRule=MZRule)
+Output: [
+ {
+  "TestPath": "artifacts/testdata/files/wkscli.dll",
+  "Size": 9728,
+  "Rule": "X",
+  "CleanContext(HitContext=HitContext)": {
+   "StoredSize": 2,
+   "Path": "String.Data",
+   "Size": 2,
+   "sha256": "9b8db510ef42b8ed54a3712636fda55a4f8cfcd5493e20b74ab00cd4f3979f2d"
+  },
+  "HitOffset": 0
+ }
+]
+
+Query: SELECT relpath(path=OSPath, base=srcDir, sep="/") as TestPath, Size, Rule, CleanContext(HitContext=HitContext), HitOffset FROM Artifact.Windows.Detection.Yara.NTFS( DriveLetter=srcDir, PathRegex='wkscli.dll', ContextBytes=10, YaraRule=MZRule)
+Output: [
+ {
+  "TestPath": "artifacts/testdata/files/wkscli.dll",
+  "Size": 9728,
+  "Rule": "X",
+  "CleanContext(HitContext=HitContext)": {
+   "StoredSize": 12,
+   "Path": "String.Data",
+   "Size": 12,
+   "sha256": "d930a77b4e5a6df96f8be687f754be90fa6da7939406d214814a80393847ce1b"
+  },
+  "HitOffset": 0
+ }
+]
+
+# This rule has no strings so HitContext should be NULL
+Query: SELECT relpath(path=OSPath, base=srcDir, sep="/") as TestPath, Size, Rule, HitContext, HitOffset FROM Artifact.Windows.Detection.Yara.NTFS( DriveLetter=srcDir, PathRegex='wkscli.dll', YaraRule=IsPE)
+Output: [
+ {
+  "TestPath": "artifacts/testdata/files/wkscli.dll",
+  "Size": 9728,
+  "Rule": "IsPE",
+  "HitContext": null,
+  "HitOffset": 0
+ }
+]
+
+# test Generic glob based yara then a couple of time bounded queries
+Query: SELECT relpath(path=OSPath, base=srcDir, sep="/") as TestPath,Size, Rule,Mtime,Atime,Ctime,Btime FROM Artifact.Generic.Detection.Yara.Glob(YaraRule=IsPE)
+Output: [
+ {
+  "TestPath": "artifacts/testdata/files/wkscli.dll",
+  "Size": 9728,
+  "Rule": "IsPE",
+  "Mtime": "2021-06-21T05:57:50.185936246Z",
+  "Atime": "2021-06-22T05:21:58.301135969Z",
+  "Ctime": "2021-06-21T05:57:50.185936246Z",
+  "Btime": "2021-06-21T05:57:50.185836399Z"
+ },
+ {
+  "TestPath": "artifacts/testdata/files/notnbt.exe",
+  "Size": 17920,
+  "Rule": "IsPE",
+  "Mtime": "2021-01-01T05:57:50.184145696Z",
+  "Atime": "2021-03-21T05:57:50.184157002Z",
+  "Ctime": "2021-03-21T05:57:50.184145696Z",
+  "Btime": "2021-03-01T05:57:50.184086639Z"
+ }
+]
+
+Query: SELECT relpath(path=OSPath, base=srcDir, sep="/") as TestPath,Size, Rule,Mtime,Atime,Ctime,Btime FROM Artifact.Generic.Detection.Yara.Glob(DateAfter='2021-03-01', DateBefore='2021-07-01',YaraRule=IsPE)
+Output: [
+ {
+  "TestPath": "artifacts/testdata/files/wkscli.dll",
+  "Size": 9728,
+  "Rule": "IsPE",
+  "Mtime": "2021-06-21T05:57:50.185936246Z",
+  "Atime": "2021-06-22T05:21:58.301135969Z",
+  "Ctime": "2021-06-21T05:57:50.185936246Z",
+  "Btime": "2021-06-21T05:57:50.185836399Z"
+ },
+ {
+  "TestPath": "artifacts/testdata/files/notnbt.exe",
+  "Size": 17920,
+  "Rule": "IsPE",
+  "Mtime": "2021-01-01T05:57:50.184145696Z",
+  "Atime": "2021-03-21T05:57:50.184157002Z",
+  "Ctime": "2021-03-21T05:57:50.184145696Z",
+  "Btime": "2021-03-01T05:57:50.184086639Z"
+ }
+]
+
+Query: SELECT relpath(path=OSPath, base=srcDir, sep="/") as TestPath, CleanContext(HitContext=HitContext), Size,Rule,Mtime,Atime,Ctime,Btime FROM Artifact.Generic.Detection.Yara.Glob(DateBefore='2021-04-01',ContextBytes=10,YaraRule=MZRule)
+Output: [
+ {
+  "TestPath": "artifacts/testdata/files/notnbt.exe",
+  "CleanContext(HitContext=HitContext)": {
+   "StoredSize": 12,
+   "Path": "String.Data",
+   "Size": 12,
+   "sha256": "d930a77b4e5a6df96f8be687f754be90fa6da7939406d214814a80393847ce1b"
+  },
+  "Size": 17920,
+  "Rule": "X",
+  "Mtime": "2021-01-01T05:57:50.184145696Z",
+  "Atime": "2021-03-21T05:57:50.184157002Z",
+  "Ctime": "2021-03-21T05:57:50.184145696Z",
+  "Btime": "2021-03-01T05:57:50.184086639Z"
+ }
+]
+
+# test Windows.Detection.Yara.Device (should also work cross platform)
+Query: SELECT relpath(path=DevicePath, base=srcDir, sep="/") as TestPath, CleanContext(HitContext=HitContext), StartOffest,ScanLength,Rule,YaraString,HitOffset FROM Artifact.Windows.Detection.Yara.Device(DevicePath=srcDir + "/artifacts/testdata/files/MBR")
+Output: [
+ {
+  "TestPath": "artifacts/testdata/files/MBR",
+  "CleanContext(HitContext=HitContext)": {
+   "StoredSize": 512,
+   "Path": "data",
+   "Size": 512,
+   "sha256": "0c05714e525951781417248c7ee8a2f42ec5bfa04f8f3e0e10cd118e438a67eb"
+  },
+  "StartOffest": 0,
+  "ScanLength": 512,
+  "Rule": "MBR",
+  "YaraString": "$mbr",
+  "HitOffset": 0
+ }
+]
+

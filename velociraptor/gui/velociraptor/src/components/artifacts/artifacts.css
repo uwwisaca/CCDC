@@ -1,0 +1,115 @@
+.artifact-search-table  {
+    padding-right: 0;
+    padding-left: 0;
+    margin-right: 15px;
+    max-height: calc(100vh - 150px);
+    overflow-y: auto;
+    position: fixed;
+    overflow-x: hidden;
+    direction: rtl;
+}
+
+.artifact-search-table tr.row-selected td {
+    background-color: var(--color-table-row-selected);
+    color: var(--color-table-row-selected-text);
+}
+
+.artifact-search-table button {
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+}
+
+.artifact-search-table button:hover {
+    color: var(--color-foreground);
+    cursor: pointer;
+}
+
+.artifact-search-table thead {
+    display: none;
+}
+
+.artifact-search-table tr td {
+    padding-left: 7px;
+    line-height: 2;
+    background-color: var(--color-canvas-background);
+}
+
+.artifact-search-report {
+    padding-left: 20px;
+    padding-right: 20px;
+    height: calc(100vh - 150px);
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.artifact-search-report .report-viewer {
+    margin-bottom: 150px;
+    overflow: none;
+}
+
+.artifact-search-panel {
+    position: static;
+    width: 100%;
+    overflow-x: auto;
+    height: -webkit-fill-available;
+}
+
+.artifact-toolbar {
+    margin: 5px;
+}
+
+pre {
+    white-space: pre-wrap;
+    min-height: 1.5em
+}
+
+.arg-help {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+span.user-edit {
+    padding-right: 1ex;
+}
+
+.artifact-filter {
+    width: 250px;
+}
+
+.artifact-search {
+    z-index: 1000;
+}
+
+.artifact-search-input {
+    height: 38px;
+}
+
+.form-inline .artifact-search-input.form-control {
+    width: 300px;
+}
+
+.artifact-search-table td {
+    padding: 0px;
+    margin: 0px;
+}
+
+.link-button {
+  background-color: transparent;
+  color: var(--color-foreground);
+  border: none;
+  cursor: pointer;
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+
+.built-in-icon {
+    padding-right: 5px;
+}
+
+.deleting-artifacts {
+    height: 60vh;
+    overflow: auto;
+    display: block;
+}

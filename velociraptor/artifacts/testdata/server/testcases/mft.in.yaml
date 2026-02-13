@@ -1,0 +1,54 @@
+Parameters:
+  RemappingTemplate: |
+    remappings:
+      - type: mount
+        from:
+          accessor: raw_ntfs
+          prefix: |
+            {
+               "DelegateAccessor": "file",
+               "DelegatePath": %q,
+               "Path": "/"
+            }
+        on:
+          accessor: "ntfs"
+          prefix: '\\\\.\\C:'
+          path_type: ntfs
+
+      - type: mount
+        from:
+          accessor: mft
+          prefix: |
+            {
+               "DelegateAccessor": "file",
+               "DelegatePath": %q,
+               "Path": "/"
+            }
+        on:
+          accessor: mft
+          prefix: '\\\\.\\C:'
+          path_type: ntfs
+
+
+Queries:
+  - LET _ <= remap(config=format(format=RemappingTemplate,
+       args=[
+          srcDir+'/artifacts/testdata/files/test.ntfs.dd',
+          srcDir+'/artifacts/testdata/files/test.ntfs.dd',
+        ]), clear=TRUE)
+
+  # Test MFT output
+  - SELECT * FROM Artifact.Windows.NTFS.MFT(
+            MFTDrive='''\\.\C:''',
+            FileRegex='just_a_file\\.txt')
+
+  # Test time contraints
+  - SELECT * FROM Artifact.Windows.NTFS.MFT(MFTDrive='''\\.\C:''',
+        FileRegex='\\.txt',DateBefore='2018-12-31')
+
+  - SELECT * FROM Artifact.Windows.NTFS.MFT(MFTDrive='''\\.\C:''',
+        FileRegex='\\.txt',DateAfter='2021-07-01')
+
+  - SELECT * FROM Artifact.Windows.NTFS.MFT(MFTDrive='''\\.\C:''',
+        FileRegex='\\.txt',DateAfter='2021-07-01',
+        DateBefore='2022-02-01',AllNtfs='Y')

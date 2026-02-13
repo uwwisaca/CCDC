@@ -1,0 +1,36 @@
+{
+ "CleanedRules": [
+  "import \"pe\"",
+  "import \"time\"",
+  "",
+  "rule TestPE {",
+  "  strings:",
+  "    $a = \"Hello\"",
+  "  condition:",
+  "    pe.is_pe",
+  "}",
+  "",
+  "rule UnimportedModule {",
+  "  condition:",
+  "    time.now \u003e 0",
+  "}",
+  "",
+  "rule AllOfThem {",
+  "  strings:",
+  "    $a = \"hello\"",
+  "  condition:",
+  "    any of them",
+  "}",
+  "",
+  "rule PECondition {",
+  "  strings:",
+  "    $a = \"hello\"",
+  "  condition:",
+  "    pe.is_pe and for any s in pe.sections : (s.name == \".text\") and all of them",
+  "}",
+  ""
+ ],
+ "Errors": [
+  "Rule TestIssuer: accesses undefined field number_of_signatures in module pe"
+ ]
+}

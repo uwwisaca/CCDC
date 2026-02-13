@@ -1,0 +1,39 @@
+# Kerbroasting VQL test
+Query: SELECT OSPath.Basename AS OSPath, * FROM Artifact.Windows.EventLogs.Kerberoasting( EvtxGlob=srcDir + '/artifacts/testdata/files/EID4769_Kerberoasting.evtx')
+Output: [
+ {
+  "OSPath": "EID4769_Kerberoasting.evtx",
+  "EventTime": "2019-09-30T01:58:40Z",
+  "EventID": 4769,
+  "Computer": "DC2016.dfir.lab",
+  "ServiceName": "SVC-APP03",
+  "ServiceSid": "S-1-5-21-3673242659-2809345135-1169127309-1110",
+  "TargetUserName": "matt@DFIR.LAB",
+  "Status": "0x0",
+  "TargetDomainName": "DFIR.LAB",
+  "TicketEncryptionType": "0x17",
+  "TicketOptions": "0x40810010",
+  "TransmittedServices": "-",
+  "IpAddress": "::ffff:192.168.63.1",
+  "IpPort": "52562",
+  "_Source": "Windows.EventLogs.Kerberoasting"
+ },
+ {
+  "OSPath": "EID4769_Kerberoasting.evtx",
+  "EventTime": "2019-09-30T01:58:40Z",
+  "EventID": 4769,
+  "Computer": "DC2016.dfir.lab",
+  "ServiceName": "SVC-SQL02",
+  "ServiceSid": "S-1-5-21-3673242659-2809345135-1169127309-1109",
+  "TargetUserName": "matt@DFIR.LAB",
+  "Status": "0x0",
+  "TargetDomainName": "DFIR.LAB",
+  "TicketEncryptionType": "0x17",
+  "TicketOptions": "0x40810010",
+  "TransmittedServices": "-",
+  "IpAddress": "::ffff:192.168.63.1",
+  "IpPort": "52564",
+  "_Source": "Windows.EventLogs.Kerberoasting"
+ }
+]
+

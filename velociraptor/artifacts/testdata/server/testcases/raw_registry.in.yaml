@@ -1,0 +1,58 @@
+Queries:
+  - SELECT mock(plugin='info', results=[dict(OS='windows'), dict(OS='windows')] )
+    FROM scope()
+
+  # Test listing a direcctory with Key named the same as a value. This
+  # should show both key and value as separate entities with the same
+  # name. Glob should be able to handle this because raw registry
+  # accessor presents the UniqueName() interface to allow Globs to see
+  # them as different entities.
+  - SELECT OSPath.Path AS Key, Data, Data.type AS Type
+    FROM glob(globs="*", accessor="raw_reg", root=pathspec(
+       Path="/Local Settings/Software/Microsoft/Windows/Shell/BagMRU",
+       DelegatePath=srcDir+"/artifacts/testdata/files/UsrClass.dat"))
+    WHERE OSPath.Basename =~ "0"
+    ORDER BY Type
+
+  # Now test read_file on values. If there is a value and a key of the
+  # same name an Open() will prefer the value.
+  - SELECT format(format="%02x", args=read_file(accessor='raw_reg', filename=pathspec(
+       Path="/Local Settings/Software/Microsoft/Windows/Shell/BagMRU/0",
+       DelegatePath=srcDir+"/artifacts/testdata/files/UsrClass.dat"))) AS ValueContent
+    FROM scope()
+
+  # This artifact uses the raw registry parser.
+  - SELECT *
+    FROM Artifact.Windows.Forensics.Amcache(
+       amCacheGlob=srcDir+"/artifacts/testdata/files/Amcache.hve") LIMIT 5
+
+  # Test the shell bags artifact
+  - SELECT ModTime, basename(path=Hive), KeyPath, Slot, Description, _Parsed
+    FROM Artifact.Windows.Forensics.Shellbags(SearchSpecs=[
+      dict(
+         HiveGlob=srcDir+"/artifacts/testdata/files/UsrClass.dat",
+         KeyGlob='''\Local Settings\Software\Microsoft\Windows\Shell\BagMRU\**'''),])
+    ORDER BY KeyPath
+
+  # Test the SAM parsers
+  - SELECT ParsedF, ParsedV FROM Artifact.Windows.Forensics.SAM(
+       SAMPath=srcDir+"/artifacts/testdata/files/SAM", source="Parsed")
+
+  - SELECT * FROM Artifact.Windows.Forensics.SAM(
+       SAMPath=srcDir+"/artifacts/testdata/files/SAM", source="CreateTimes")
+
+  # Check raw reg can read values as files - REG_SZ.
+  - SELECT utf16(string=read_file(filename=pathspec(
+        Path="\\Root\\DeviceCensus\\Processor\\ProcessorIdentifier",
+        DelegatePath=srcDir+"/artifacts/testdata/files/Amcache.hve",
+        DelegateAccessor='file'),
+      accessor="raw_reg"))
+    FROM scope()
+
+  # Check raw reg can read values as files - REG_DWORD
+  - SELECT utf16(string=read_file(filename=pathspec(
+        Path="\\Root\\DeviceCensus\\WritePermissionsCheck",
+        DelegatePath=srcDir+"/artifacts/testdata/files/Amcache.hve",
+        DelegateAccessor='file'),
+      accessor="raw_reg"))
+    FROM scope()

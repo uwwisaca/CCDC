@@ -1,0 +1,68 @@
+Queries:
+  - SELECT whoami() FROM scope()
+
+  # Should return no users
+  - SELECT * FROM gui_users(all_orgs=TRUE) WHERE name =~ "TestUser"
+
+  # Lets create a user
+  - SELECT user_create(
+       user="TestUser", password="hunter2",
+       roles=["reader", "investigator"]) FROM scope()
+
+  - SELECT name, roles FROM gui_users(all_orgs=TRUE) WHERE name =~ "TestUser"
+
+  # Grant replaces all roles (should lose investigator).
+  - LET _ <= user_grant(user="TestUser", roles="reader")
+  - SELECT user(user="TestUser") FROM scope()
+
+  # Grant supports adding policy with specific permissions
+  - LET _ <= user_grant(user="TestUser", roles="reader", policy=dict(label_clients=TRUE))
+  - SELECT user(user="TestUser") FROM scope()
+
+  # Create a new org
+  - LET _ <= org_create(name="MySecondOrg", org_id="ORGID2")
+  - LET _ <= user_grant(user="TestUser", roles="administrator", orgs="ORGID2")
+
+  # TestUser is an admin in ORGID2 and reader in root
+  - SELECT *, name+org_id AS Key FROM gui_users(all_orgs=TRUE)
+    WHERE name =~ "TestUser" ORDER BY Key
+
+  # Now delete it from the root org
+  - SELECT user_delete(user="TestUser", really_do_it=TRUE) FROM scope()
+
+  # Should be gone now but the user still exists in the ORGID2
+  - SELECT *, name+org_id AS Key FROM gui_users(all_orgs=TRUE) WHERE name =~ "TestUser"
+    ORDER BY Key
+
+  # Now delete it from the org
+  - SELECT user_delete(user="TestUser", really_do_it=TRUE, orgs="ORGID2") FROM scope()
+
+  # Should be gone now
+  - SELECT *, name+org_id AS Key FROM gui_users(all_orgs=TRUE) WHERE name =~ "TestUser"
+    ORDER BY Key
+
+  # Grant a non existant user a role
+  - SELECT user_grant(user="TestUserNotThere", roles="reader") FROM scope()
+  - SELECT * FROM test_read_logs() WHERE Log =~ "User not found" AND NOT Log =~ "SELECT"
+  - SELECT *, name+org_id AS Key FROM gui_users(all_orgs=TRUE)
+    WHERE name =~ "TestUserNotThere"
+    ORDER BY Key
+
+  # Should refuse to add a user with a reserved name
+  - SELECT user_create(
+       user="VelociraptorServer", password="hunter2",
+       roles=["investigator"]) FROM scope()
+
+  - SELECT * FROM test_read_logs() WHERE Log =~ "Username is reserved" AND NOT Log =~ "SELECT"
+
+  # Set user options.
+  - SELECT user_options(user=whoami(),
+           lang="fr",
+           theme="veloci-dark",
+           links=[dict(
+              text="Foobar",
+              url="https://www.google.com",
+              type="sidebar",
+              new_tab=TRUE), ],
+            default_password="foobar")
+    FROM scope()

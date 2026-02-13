@@ -1,0 +1,123 @@
+# Common use case - take a url, extract the query string, add some
+# more parameters and make a new request.
+Query: LET URL <= url(parse="http://www.google.com/?q=Hello&lang=fr")
+Output: []
+
+# Test various URL construction
+Query: SELECT url(scheme="http", host="www.google.com", query=dict(foo="bar")).String FROM scope()
+Output: [
+ {
+  "url(scheme=\"http\", host=\"www.google.com\", query=dict(foo=\"bar\")).String": "http://www.google.com?foo=bar"
+ }
+]
+
+# Dict addition can be used to override the original map replacing the
+# value of lang
+Query: LET NewQuery <= URL.Query + dict(lang="en")
+Output: []
+
+# Spin up a local httpbin server for testing
+Query: LET HTTPBINURL <= httpbin()
+Output: []
+
+## Encode parameters in GET query. Check that we can send headers.
+Query: SELECT parse_json(data=Content).url, parse_json(data=Content).headers.`Foo-Bar` FROM http_client(url=HTTPBINURL + "/get", params=NewQuery, headers=dict(`foo-bar`="baz"), method="GET")
+Output: [
+ {
+  "parse_json(data=Content).url": "http://127.0.0.1:8006/get?lang=en\u0026q=Hello",
+  "parse_json(data=Content).headers.`Foo-Bar`": [
+   "baz"
+  ]
+ }
+]
+
+## Encode parameters in POST query
+Query: SELECT parse_json(data=Content).data FROM http_client(url=HTTPBINURL + "/post", params=NewQuery, method="POST")
+Output: [
+ {
+  "parse_json(data=Content).data": "data:application/octet-stream;base64,bGFuZz1lbiZxPUhlbGxv"
+ }
+]
+
+# Test Secrets
+Query: SELECT secret_add(type="HTTP Secrets", name="httpbin",
+       secret=dict(url=HTTPBINURL + "/get",
+                     extra_params="Foo: Value")),
+       secret_modify(type="HTTP Secrets",
+                     name="httpbin",
+                     add_users="VelociraptorServer")
+FROM scope()
+
+Output: [
+ {
+  "secret_add(type=\"HTTP Secrets\", name=\"httpbin\", secret=dict(url=HTTPBINURL + \"/get\", extra_params=\"Foo: Value\"))": "httpbin",
+  "secret_modify(type=\"HTTP Secrets\", name=\"httpbin\", add_users=\"VelociraptorServer\")": "httpbin"
+ }
+]
+
+# A Check that the secret was used correctly with added extra_params.
+# The user will receive the requested URL but the actual URL seen by
+# the server will be the secret one.
+Query: SELECT Url, parse_json(data=Content).url FROM http_client(url="secret://httpbin")
+Output: [
+ {
+  "Url": "secret://httpbin",
+  "parse_json(data=Content).url": "http://127.0.0.1:8006/get?Foo=Value"
+ }
+]
+
+# Test Secret filtering URLs. Filter allows user to append parameters
+# to URLs
+Query: SELECT secret_add(type="HTTP Secrets", name="httpbinAPIs",
+         secret=dict(url_regex=HTTPBINURL + "/get.+",
+                     extra_params="Foo: Value")),
+        secret_modify(type="HTTP Secrets", name="httpbinAPIs",
+                     add_users="VelociraptorServer")
+FROM scope()
+
+Output: [
+ {
+  "secret_add(type=\"HTTP Secrets\", name=\"httpbinAPIs\", secret=dict(url_regex=HTTPBINURL + \"/get.+\", extra_params=\"Foo: Value\"))": "httpbinAPIs",
+  "secret_modify(type=\"HTTP Secrets\", name=\"httpbinAPIs\", add_users=\"VelociraptorServer\")": "httpbinAPIs"
+ }
+]
+
+# The request contains both user supplied and secret supplied
+# parameters. User variables should be overridden by the secret.
+Query: SELECT Url, parse_json(data=Content).url FROM http_client(url=HTTPBINURL + "/get?arg1=2&Foo=OldValue", secret="httpbinAPIs")
+Output: [
+ {
+  "Url": "http://127.0.0.1:8006/get?arg1=2\u0026Foo=OldValue",
+  "parse_json(data=Content).url": "http://127.0.0.1:8006/get?Foo=Value\u0026arg1=2"
+ }
+]
+
+# This connection should be rejected
+Query: SELECT Response FROM http_client(url="http://www.microsoft.com/", secret="httpbinAPIs")
+Output: []
+
+Query: SELECT * FROM test_read_logs() WHERE Log =~ "forbids connection to http://www.microsoft.com/" AND NOT Log =~ "SELECT"
+Output: [
+ {
+  "Log": "Velociraptor: http_client: HTTP Secret URL regex http://127.0.0.1:8006/get.+ forbids connection to http://www.microsoft.com/\n"
+ }
+]
+
+# Test multiple URLs: First URL will fail but next one will work.
+Query: SELECT Url, Response FROM http_client( url=["http://localhost:232/sdfsd", "secret://httpbin"])
+Output: [
+ {
+  "Url": "secret://httpbin",
+  "Response": 200
+ }
+]
+
+# Cleanup
+Query: SELECT secret_modify(type="HTTP Secrets", name="httpbinAPIs", delete=TRUE), secret_modify(type="HTTP Secrets", name="httpbin", delete=TRUE) FROM scope()
+Output: [
+ {
+  "secret_modify(type=\"HTTP Secrets\", name=\"httpbinAPIs\", delete=TRUE)": "httpbinAPIs",
+  "secret_modify(type=\"HTTP Secrets\", name=\"httpbin\", delete=TRUE)": "httpbin"
+ }
+]
+

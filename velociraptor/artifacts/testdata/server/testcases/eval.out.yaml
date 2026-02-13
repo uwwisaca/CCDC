@@ -1,0 +1,13 @@
+Query: LET Variable = "Hello"
+Output: []
+
+Query: SELECT eval(func="x=>x.Variable"), eval(func="x=>x + ' world'", args=Variable)
+FROM scope()
+
+Output: [
+ {
+  "eval(func=\"x=\u003ex.Variable\")": "Hello",
+  "eval(func=\"x=\u003ex + ' world'\", args=Variable)": "Hello world"
+ }
+]
+

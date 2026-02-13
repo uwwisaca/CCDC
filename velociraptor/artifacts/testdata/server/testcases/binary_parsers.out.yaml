@@ -1,0 +1,286 @@
+Query: SELECT ModuleName, Timestamp, Functions[1] FROM Artifact.Windows.System.Powershell.ModuleAnalysisCache(GlobLookup=srcDir + "/artifacts/testdata/files/ModuleAnalysisCache") LIMIT 10
+Output: [
+ {
+  "ModuleName": "C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\Modules\\DirectAccessClientComponents\\DirectAccessClientComponents.psd1",
+  "Timestamp": "2019-11-22T01:09:05.488830566Z",
+  "Functions[1]": "Set-DAClientExperienceConfiguration"
+ },
+ {
+  "ModuleName": "C:\\Program Files\\WindowsPowerShell\\Modules\\PowerShellGet\\1.0.0.1\\PowerShellGet.psd1",
+  "Timestamp": "2019-11-22T01:12:42.637771606Z",
+  "Functions[1]": "inmo"
+ },
+ {
+  "ModuleName": "C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\Modules\\ISE\\ISE.psd1",
+  "Timestamp": "2019-09-30T06:50:00Z",
+  "Functions[1]": "Get-IseSnippet"
+ },
+ {
+  "ModuleName": "C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\Modules\\iSCSI\\iSCSI.psd1",
+  "Timestamp": "2019-11-22T01:09:41.28717041Z",
+  "Functions[1]": "New-IscsiTargetPortal"
+ },
+ {
+  "ModuleName": "C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Pester.psd1",
+  "Timestamp": "2019-11-22T01:10:32.889511108Z",
+  "Functions[1]": "Get-TestDriveItem"
+ },
+ {
+  "ModuleName": "C:\\Program Files\\WindowsPowerShell\\Modules\\Microsoft.PowerShell.Operation.Validation\\1.0.1\\Microsoft.PowerShell.Operation.Validation.psd1",
+  "Timestamp": "2019-11-22T01:10:32.938278198Z",
+  "Functions[1]": "Invoke-OperationValidation"
+ },
+ {
+  "ModuleName": "C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\Modules\\DeliveryOptimization\\DeliveryOptimization.psd1",
+  "Timestamp": "2019-11-22T01:08:26.081153869Z",
+  "Functions[1]": "Get-DOPercentageMaxForegroundBandwidth"
+ },
+ {
+  "ModuleName": "C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\Modules\\Microsoft.PowerShell.Management\\Microsoft.PowerShell.Management.psd1",
+  "Timestamp": "2019-11-22T01:10:45.914596557Z",
+  "Functions[1]": "Limit-EventLog"
+ },
+ {
+  "ModuleName": "C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\Modules\\Microsoft.PowerShell.Utility\\Microsoft.PowerShell.Utility.psd1",
+  "Timestamp": "2019-11-22T01:10:45.914596557Z",
+  "Functions[1]": "Convert-String"
+ },
+ {
+  "ModuleName": "C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\Modules\\BitsTransfer\\BitsTransfer.psd1",
+  "Timestamp": "2019-11-22T01:10:45.946586608Z",
+  "Functions[1]": "Set-BitsTransfer"
+ }
+]
+
+# Check the lnk parser
+Query: SELECT ShellLinkHeader, LinkInfo, LinkTarget.LinkTarget, StringData, ExtraData FROM Artifact.Windows.Forensics.Lnk(TargetGlob=srcDir + "/artifacts/testdata/files/1.lnk")
+Output: [
+ {
+  "ShellLinkHeader": {
+   "Headersize": 76,
+   "LinkClsID": "0114020000000000c000000000000046",
+   "LinkFlags": [
+    "DisableKnownFolderTracking",
+    "HasLinkInfo",
+    "HasLinkTargetIDList",
+    "HasWorkingDir",
+    "IsUnicode"
+   ],
+   "FileAttributes": [
+    "FILE_ATTRIBUTE_NORMAL"
+   ],
+   "FileSize": 1343,
+   "CreationTime": "2020-11-12T01:43:21Z",
+   "AccessTime": "2020-11-12T01:43:21Z",
+   "WriteTime": "2020-11-12T01:43:21Z",
+   "IconIndex": 0,
+   "ShowCommand": "SHOWNORMAL",
+   "HotKey": "No key assigned."
+  },
+  "LinkInfo": {
+   "LinkInfoFlags": [
+    "CommonNetworkRelativeLinkAndPathSuffix"
+   ],
+   "Target": {
+    "Path": "\\\\vmware-host\\Shared Folders\\shared\\tmp\\1.yaml",
+    "RelativeLink": {
+     "NetworkProviderType": "WNNC_NET_VMWARE",
+     "NetName": "\\\\vmware-host\\Shared Folders\\shared",
+     "DeviceName": "F:"
+    }
+   }
+  },
+  "LinkTarget.LinkTarget": "F:\\tmp\\1.yaml",
+  "StringData": {
+   "TargetPath": "\\\\vmware-host\\Shared Folders\\shared\\tmp\\1.yaml",
+   "Name": null,
+   "RelativePath": null,
+   "WorkingDir": null,
+   "Arguments": null,
+   "IconLocation": null
+  },
+  "ExtraData": {}
+ }
+]
+
+Query: SELECT ShellLinkHeader,LinkInfo,LinkTarget.LinkTarget,StringData,ExtraData FROM Artifact.Windows.Forensics.Lnk(TargetGlob=srcDir + "/artifacts/testdata/files/password.txt.lnk")
+Output: [
+ {
+  "ShellLinkHeader": {
+   "Headersize": 76,
+   "LinkClsID": "0114020000000000c000000000000046",
+   "LinkFlags": [
+    "EnableTargetMetadata",
+    "HasArguments",
+    "HasExpString",
+    "HasIconLocation",
+    "HasLinkInfo",
+    "HasLinkTargetIDList",
+    "HasRelativePath",
+    "HasWorkingDir",
+    "IsUnicode"
+   ],
+   "FileAttributes": [
+    "FILE_ATTRIBUTE_ARCHIVE"
+   ],
+   "FileSize": 331776,
+   "CreationTime": "2021-06-05T12:05:12Z",
+   "AccessTime": "2021-12-22T09:47:57Z",
+   "WriteTime": "2021-06-05T12:05:12Z",
+   "IconIndex": 97,
+   "ShowCommand": "SHOWNORMAL",
+   "HotKey": "No key assigned."
+  },
+  "LinkInfo": {
+   "LinkInfoFlags": [
+    "VolumeIDAndLocalBasePath"
+   ],
+   "Target": {
+    "Path": "C:\\Windows\\System32\\cmd.exe",
+    "VolumeInfo": {
+     "DriveType": "DRIVE_FIXED",
+     "DriveSerialNumber": 134260411,
+     "VolumeLabel": ""
+    }
+   }
+  },
+  "LinkTarget.LinkTarget": "C:\\Windows\\System32\\cmd.exe",
+  "StringData": {
+   "TargetPath": "C:\\Windows\\System32\\cmd.exe",
+   "Name": null,
+   "RelativePath": "..\\..\\..\\Windows\\System32\\cmd.exe",
+   "WorkingDir": null,
+   "Arguments": "/c \"echo HeLLO \u0026\u0026 pAuSe\"",
+   "IconLocation": "%sYsTemRooT%\\sYSteM32\\iMagEreS.dll"
+  },
+  "ExtraData": {
+   "EnvironmentVariable": "%sYsTemRooT%\\sYSteM32\\cMd.Exe",
+   "SpecialFolder": 37,
+   "KnownFolder": {
+    "GUID": "1AC14E77-02E7-4E5D-B744-2EB1AE5198B7",
+    "KnownFolder": "System"
+   },
+   "TrackerData": {
+    "MachineID": "cthdsk",
+    "MacAddress": "B4:2E:99:AF:AD:FA",
+    "CreationTime": "2021-08-09T12:40:51.549Z",
+    "VolumeDroid": "7C96CA62-E939-4B3D-A1E1-48D9DD63DF46",
+    "VolumeDroidBirth": "7C96CA62-E939-4B3D-A1E1-48D9DD63DF46",
+    "FileDroid": "07CAD38B-F90F-11EB-9AA3-B42E99AFADFA",
+    "FileDroidBirth": "07CAD38B-F90F-11EB-9AA3-B42E99AFADFA"
+   },
+   "PropertyStore": [
+    {
+     "GuidId": "DABD30ED-0043-4789-A7F8-D013A4736622/100",
+     "Description": "Item Folder Path Display Narrow",
+     "Type": 31,
+     "Value": "System32 (C:\\Windows)"
+    },
+    {
+     "GuidId": "46588AE2-4CBC-4338-BBFC-139326986DCE/4",
+     "Description": "SID",
+     "Type": 31,
+     "Value": "S-1-5-21-730516628-3352102648-2216876345-1001"
+    },
+    {
+     "GuidId": "B725F130-47EF-101A-A5F1-02608C9EEBAC/10",
+     "Description": "System.ItemNameDisplay",
+     "Type": 31,
+     "Value": "cmd.exe"
+    },
+    {
+     "GuidId": "B725F130-47EF-101A-A5F1-02608C9EEBAC/15",
+     "Description": "System.DateCreated",
+     "Type": 64,
+     "Value": "2021-06-05T12:05:14Z"
+    },
+    {
+     "GuidId": "B725F130-47EF-101A-A5F1-02608C9EEBAC/12",
+     "Description": "System.Size",
+     "Type": 21,
+     "Value": 331776
+    },
+    {
+     "GuidId": "B725F130-47EF-101A-A5F1-02608C9EEBAC/4",
+     "Description": "System.ItemTypeText",
+     "Type": 31,
+     "Value": "Application"
+    },
+    {
+     "GuidId": "B725F130-47EF-101A-A5F1-02608C9EEBAC/14",
+     "Description": "System.DateModified",
+     "Type": 64,
+     "Value": "2021-06-05T12:05:12Z"
+    },
+    {
+     "GuidId": "28636AA6-953D-11D2-B5D6-00C04FD918D0/30",
+     "Description": "ParsingPath",
+     "Type": 31,
+     "Value": "C:\\Windows\\System32\\cmd.exe"
+    },
+    {
+     "GuidId": "446D16B1-8DAD-4870-A748-402EA43D788C/104",
+     "Description": "Volume Id",
+     "Type": 72,
+     "Value": "15B7A6CC-2A32-42E4-B157-5824DCAFF312"
+    }
+   ]
+  }
+ }
+]
+
+# Check that binary parser arrays and foreach interact correctly
+# (array implement the iterator protocol properly).
+Query: SELECT * FROM foreach(row=parse_binary( accessor="data", filename=unhex(string=Data), profile=Profile, struct="MRU").Items)
+Output: [
+ {
+  "_value": 3
+ },
+ {
+  "_value": 4
+ },
+ {
+  "_value": 5
+ }
+]
+
+# Check that binary parser and flatten work properly
+Query: SELECT * FROM flatten(query={ SELECT 1 AS Foo, parse_binary(accessor="data", filename=unhex(string=Data),profile=Profile, struct="MRU").Items AS Items FROM scope() })
+Output: [
+ {
+  "Foo": 1,
+  "Items": 3
+ },
+ {
+  "Foo": 1,
+  "Items": 4
+ },
+ {
+  "Foo": 1,
+  "Items": 5
+ }
+]
+
+# Test VarInts
+Query: LET X <= parse_binary(accessor="data", filename=VarIntData, offset=0, profile=VarIntProfile, struct="Header")
+Output: []
+
+# Arrays can be indexed. Retrieving the array member is actually a
+# VarInt object because we need to get its size since it is
+# variable. If we want to do addition etc we need to get the Value.
+Query: SELECT X.Array, X.Array[0], X.Array[0].Size, X.Array[0].Value, X.Field1, X.Field1.Size FROM scope()
+Output: [
+ {
+  "X.Array": [
+   10230993603,
+   10230993603,
+   10230993603
+  ],
+  "X.Array[0]": 10230993603,
+  "X.Array[0].Size": 5,
+  "X.Array[0].Value": 10230993603,
+  "X.Field1": 10230993603,
+  "X.Field1.Size": 5
+ }
+]
+

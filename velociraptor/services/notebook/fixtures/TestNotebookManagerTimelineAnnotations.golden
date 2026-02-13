@@ -1,0 +1,185 @@
+{
+ "Notebook Metadata": {
+  "name": "Timeline Annotation",
+  "creator": "admin",
+  "artifacts": [
+   "Notebooks.Default"
+  ],
+  "parameters": [
+   {
+    "name": "ArtifactName",
+    "default": "Notebooks.Default",
+    "description": "Name of the artifact this notebook came from."
+   }
+  ],
+  "requests": [
+   {
+    "query_id": 1,
+    "total_queries": 1,
+    "env": [
+     {
+      "key": "ArtifactName",
+      "value": "Notebooks.Default"
+     },
+     {
+      "key": "ColumnTypes",
+      "value": "{}"
+     }
+    ],
+    "Query": [
+     {
+      "VQL": "LET ColumnTypes \u003c= parse_json(data=ColumnTypes)"
+     }
+    ],
+    "max_row": 1000
+   }
+  ],
+  "created_time": 1715775587,
+  "cell_metadata": [
+   {
+    "summary": "Welcome to Velociraptor notebooks!",
+    "timestamp": 1715775587000000000,
+    "type": "markdown",
+    "available_versions": [
+    ]
+   }
+  ]
+ },
+ "Notebook Metadata After Annotation": {
+  "name": "Timeline Annotation",
+  "creator": "admin",
+  "artifacts": [
+   "Notebooks.Default"
+  ],
+  "parameters": [
+   {
+    "name": "ArtifactName",
+    "default": "Notebooks.Default",
+    "description": "Name of the artifact this notebook came from."
+   }
+  ],
+  "requests": [
+   {
+    "query_id": 1,
+    "total_queries": 1,
+    "env": [
+     {
+      "key": "ArtifactName",
+      "value": "Notebooks.Default"
+     },
+     {
+      "key": "ColumnTypes",
+      "value": "{}"
+     }
+    ],
+    "Query": [
+     {
+      "VQL": "LET ColumnTypes \u003c= parse_json(data=ColumnTypes)"
+     }
+    ],
+    "max_row": 1000
+   }
+  ],
+  "created_time": 1715775587,
+  "cell_metadata": [
+   {
+    "summary": "Welcome to Velociraptor notebooks!",
+    "timestamp": 1715775587000000000,
+    "type": "markdown",
+    "available_versions": [
+    ]
+   }
+  ],
+  "available_downloads": {},
+  "available_uploads": {},
+  "timelines": [
+   "supertimeline"
+  ]
+ },
+ "Events": [
+  {
+   "Timestamp": "2024-05-15T12:19:47Z",
+   "Message": "Original Event Message 1",
+   "Description": "",
+   "OriginalEventField": "Extra field 1",
+   "Foo": "Bar 1",
+   "Notes": "Foo is suspicious at being Bar!",
+   "_AnnotatedBy": "admin",
+   "_AnnotationID": "TdAAAAAAAAA=",
+   "_Source": "Annotation"
+  }
+ ],
+ "Next Annotation": [
+  {
+   "Timestamp": "2024-03-30T05:13:07Z",
+   "Message": "Original Event Message 2",
+   "Description": "",
+   "OriginalEventField": "Extra field 2",
+   "Foo": "Older Bar 2",
+   "Notes": "An Earlier Foo is suspicious at being Older Bar!",
+   "_AnnotatedBy": "mike",
+   "_AnnotationID": "TtAAAAAAAAA=",
+   "_Source": "Annotation"
+  },
+  {
+   "Timestamp": "2024-05-15T12:19:47Z",
+   "Message": "Original Event Message 1",
+   "Description": "",
+   "OriginalEventField": "Extra field 1",
+   "Foo": "Bar 1",
+   "Notes": "Foo is suspicious at being Bar!",
+   "_AnnotatedBy": "admin",
+   "_AnnotationID": "TdAAAAAAAAA=",
+   "_Source": "Annotation"
+  }
+ ],
+ "Timelines Metadata": [
+  {
+   "name": "supertimeline",
+   "timelines": [
+    {
+     "start_time": 1711775587,
+     "end_time": 1715775587,
+     "id": "Annotation",
+     "timestamp_column": "Timestamp",
+     "message_column": "Message"
+    }
+   ]
+  }
+ ],
+ "First Event to update": {
+  "Timestamp": "2024-03-30T05:13:07Z",
+  "Message": "Original Event Message 2",
+  "Description": "",
+  "OriginalEventField": "Extra field 2",
+  "Foo": "Older Bar 2",
+  "Notes": "An Earlier Foo is suspicious at being Older Bar!",
+  "_AnnotatedBy": "mike",
+  "_AnnotationID": "TtAAAAAAAAA=",
+  "_Source": "Annotation"
+ },
+ "Updated Annotations": [
+  {
+   "Timestamp": "2024-03-30T05:13:07Z",
+   "Message": "Original Event Message 2",
+   "Description": "",
+   "OriginalEventField": "Extra field 2",
+   "Foo": "Older Bar 2",
+   "Notes": "Updated First Annotation - all other fields remain",
+   "_AnnotatedBy": "admin",
+   "_AnnotationID": "TtAAAAAAAAA=",
+   "_Source": "Annotation"
+  },
+  {
+   "Timestamp": "2024-05-15T12:19:47Z",
+   "Message": "Original Event Message 1",
+   "Description": "",
+   "OriginalEventField": "Extra field 1",
+   "Foo": "Bar 1",
+   "Notes": "Foo is suspicious at being Bar!",
+   "_AnnotatedBy": "admin",
+   "_AnnotationID": "TdAAAAAAAAA=",
+   "_Source": "Annotation"
+  }
+ ]
+}

@@ -1,0 +1,92 @@
+{
+ "results/Custom.TestArtifactDependent.json.index": "\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000",
+ "results/Custom.TestArtifactDependent.json": [
+  {
+   "FooVar": "HelloFooVar"
+  }
+ ],
+ "log.json.index": "\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\ufffd\u0000\u0000\u0000\u0000\u0001\u0000\u0000\ufffd\u0000\u0000\u0000\u0000\u0001\u0000\u0000",
+ "log.json": [
+  {
+   "_ts": 1602103388,
+   "client_time": 1602103388,
+   "level": "DEFAULT",
+   "message": "Starting collection of Custom.TestArtifactDependent\n"
+  },
+  {
+   "_ts": 1602103388,
+   "client_time": 1602103388,
+   "level": "DEFAULT",
+   "message": "Collected 1 rows for Custom.TestArtifactDependent\n"
+  },
+  {
+   "_ts": 1602103388,
+   "client_time": 1602103388,
+   "level": "DEBUG",
+   "message": "Query Stats: {\"RowsScanned\":2,\"PluginsCalled\":1,\"FunctionsCalled\":0,\"ProtocolSearch\":0,\"ScopeCopy\":6}\n"
+  }
+ ],
+ "requests.json": "{\n \"items\": [\n  {\n   \"session_id\": \"F.1234\",\n   \"request_id\": 1,\n   \"VQLClientAction\": {\n    \"query_id\": 1,\n    \"total_queries\": 1,\n    \"env\": [\n     {\n      \"key\": \"FooVar\",\n      \"value\": \"HelloFooVar\"\n     }\n    ],\n    \"Query\": [\n     {\n      \"VQL\": \"LET Custom_TestArtifactDependent_0_0 = SELECT FooVar FROM scope()\"\n     },\n     {\n      \"Name\": \"Custom.TestArtifactDependent\",\n      \"VQL\": \"SELECT * FROM Custom_TestArtifactDependent_0_0\"\n     }\n    ],\n    \"max_row\": 1000\n   }\n  }\n ]\n}",
+ "custom_artifacts.json": [
+  {
+   "name": "Custom.TestArtifactDependent",
+   "parameters": [
+    {
+     "name": "FooVar"
+    }
+   ],
+   "type": "client",
+   "sources": [
+    {
+     "query": "SELECT FooVar FROM scope()"
+    }
+   ],
+   "reports": [
+    {
+     "type": "client",
+     "template": "This is a template.\n{{ Query \"SELECT * FROM source()\" | Table }}\n"
+    }
+   ]
+  }
+ ],
+ "client_info.json": "{\n \"Hostname\": \"TestHost\",\n \"HostID\": \"1234-56\",\n \"Name\": \"velociraptor\",\n \"BuildTime\": \"\",\n \"build_url\": \"\"\n}",
+ "collection_context.json": {
+  "session_id": "F.1234",
+  "request": {
+   "artifacts": [
+    "Custom.TestArtifactDependent"
+   ],
+   "specs": [
+    {
+     "artifact": "Custom.TestArtifactDependent",
+     "parameters": {
+      "env": [
+       {
+        "key": "FooVar",
+        "value": "HelloFooVar"
+       }
+      ]
+     }
+    }
+   ],
+   "max_upload_bytes": 1073741824
+  },
+  "create_time": 1602103388000000000,
+  "total_collected_rows": 1,
+  "total_logs": 1,
+  "total_requests": 1,
+  "state": 2,
+  "artifacts_with_results": [
+   "Custom.TestArtifactDependent"
+  ],
+  "query_stats": [
+   {
+    "names_with_response": [
+     "Custom.TestArtifactDependent"
+    ],
+    "log_rows": 1,
+    "result_rows": 1
+   }
+  ]
+ }
+}

@@ -1,0 +1,19 @@
+.notebook-filter label {
+    margin-bottom: 0px;
+}
+
+.notebook-filter input {
+    height: 1.5em;
+}
+
+.notebook-filter td.sort-element {
+    vertical-align: middle;
+}
+
+.notebook-output {
+    overflow-x: visible;
+}
+
+.notebook-parameters-form {
+    margin-top: 1em;
+}

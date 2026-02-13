@@ -1,0 +1,9 @@
+.global-messages {
+    margin-left: 55px;
+    margin-top: 5px;
+}
+
+.btn.global-messages.danger {
+    background-color: var(--color-level-error);
+    color: var(--color-foreground-inverse);
+}

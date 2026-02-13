@@ -1,0 +1,11 @@
+Queries:
+  - SELECT OSPath FROM glob(globs="/*", accessor="file")
+    WHERE Name =~ "C"
+  - SELECT OSPath FROM glob(globs="\\*", accessor="file")
+    WHERE Name =~ "C"
+  - SELECT OSPath FROM glob(globs="c:\\*", accessor="file")
+    WHERE Name =~ "Windows"
+
+  # Make sure we **do not** follow symlinks with the default accessors.
+  - SELECT OSPath FROM glob(globs="c:\\Users\\*link\\notepad.exe", accessor="file_links")
+  - SELECT OSPath FROM glob(globs="c:\\Users\\*link\\notepad.exe")

@@ -1,0 +1,67 @@
+# HashHunter Detection
+Query: SELECT Name,Size,Hash FROM Artifact.Generic.Detection.HashHunter(TargetGlob=srcDir + "/artifacts/testdata/files/*", SHA1List=SHA1s,SizeMax=30000)
+Output: [
+ {
+  "Name": "1.lnk",
+  "Size": 399,
+  "Hash": {
+   "MD5": "",
+   "SHA1": "c7ccf7f7c65e24137798b2af967620896bdc032c",
+   "SHA256": ""
+  }
+ },
+ {
+  "Name": "CSDump.bin",
+  "Size": 22000,
+  "Hash": {
+   "MD5": "",
+   "SHA1": "ba4a435cff1897ac653b4c6af43c40b4d01c154c",
+   "SHA256": ""
+  }
+ },
+ {
+  "Name": "lines.txt",
+  "Size": 75,
+  "Hash": {
+   "MD5": "",
+   "SHA1": "d4601077f1005bf0e23533e0ded7d2bc54945d7b",
+   "SHA256": ""
+  }
+ }
+]
+
+Query: SELECT Name,Size,Hash FROM Artifact.Generic.Detection.HashHunter(TargetGlob=srcDir + "/artifacts/testdata/files/*", MD5List=MD5s,SizeMin=20000,SizeMax=30000)
+Output: [
+ {
+  "Name": "CSDump.bin",
+  "Size": 22000,
+  "Hash": {
+   "MD5": "81d9b0a5308f6e46e06567ef9b889496",
+   "SHA1": "",
+   "SHA256": ""
+  }
+ }
+]
+
+Query: SELECT Name,Size,Hash FROM Artifact.Generic.Detection.HashHunter(TargetGlob=srcDir + "/artifacts/testdata/files/*", SHA256List=SHA256s,SizeMax=1000)
+Output: [
+ {
+  "Name": "1.lnk",
+  "Size": 399,
+  "Hash": {
+   "MD5": "",
+   "SHA1": "",
+   "SHA256": "162e56481955b032cd7b146e0fb08f943dc6bb5ec135a47714de77604b3e032d"
+  }
+ },
+ {
+  "Name": "lines.txt",
+  "Size": 75,
+  "Hash": {
+   "MD5": "",
+   "SHA1": "",
+   "SHA256": "1241d3651cba501b3b2151dafcf6f8481a12a74781afb95103f848255fd2ee2f"
+  }
+ }
+]
+

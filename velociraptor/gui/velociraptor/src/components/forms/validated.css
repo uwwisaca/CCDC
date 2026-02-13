@@ -1,0 +1,13 @@
+input.invalid.form-control {
+    background-color: var(--invalid-form-control-error);
+    background-image: var(--invalid-form-control-error);
+}
+
+input.invalid.form-control:focus {
+    background-color: var(--invalid-form-control-error);
+    background-image: var(--invalid-form-control-error);
+}
+
+textarea.invalid {
+    background-image: var(--invalid-form-control-error);
+}

@@ -1,0 +1,85 @@
+# Clear the old files if they are there.
+Query: LET X <= SELECT file_store_delete(path='/downloads/hunts/H.49ba8939/H.49ba8939-summary.zip') AS A, file_store_delete(path='/downloads/hunts/H.49ba8939/H.49ba8939.zip') AS B FROM scope()
+Output: []
+
+Query: SELECT create_hunt_download(hunt_id='H.49ba8939', wait=TRUE) FROM scope()
+Output: [
+ {
+  "create_hunt_download(hunt_id='H.49ba8939', wait=TRUE)": "fs:/downloads/hunts/H.49ba8939/H.49ba8939.zip"
+ }
+]
+
+# Pathspec for the full export zip
+Query: LET RootPath = pathspec( DelegatePath=srcDir + '/artifacts/testdata/server/downloads/hunts/H.49ba8939/H.49ba8939.zip', DelegateAccessor='file')
+Output: []
+
+# Pathspec for the summary zip
+Query: LET SummaryRootPath = pathspec( DelegatePath=srcDir + '/artifacts/testdata/server/downloads/hunts/H.49ba8939/H.49ba8939-summary.zip', DelegateAccessor='file')
+Output: []
+
+# Check the created zip file contains both combined and distinct results
+Query: SELECT OSPath.Basename AS OSPath, Size FROM glob(globs="**", root=RootPath, accessor='zip') WHERE NOT IsDir AND OSPath =~ "NetstatEnriched" ORDER BY OSPath
+Output: [
+ {
+  "OSPath": "All Windows.Network.NetstatEnriched%2FNetstat.json",
+  "Size": 58743
+ },
+ {
+  "OSPath": "Windows.Network.NetstatEnriched%2FNetstat.json",
+  "Size": 53955
+ }
+]
+
+Query: SELECT create_hunt_download(hunt_id='H.49ba8939', wait=TRUE, only_combined=TRUE) FROM scope()
+Output: [
+ {
+  "create_hunt_download(hunt_id='H.49ba8939', wait=TRUE, only_combined=TRUE)": "fs:/downloads/hunts/H.49ba8939/H.49ba8939-summary.zip"
+ }
+]
+
+# Check the created zip file contains both combined and distinct
+# results (NOTE the generated filename is different)
+Query: SELECT OSPath.Basename AS OSPath, Size FROM glob(globs="**", root=RootPath, accessor='zip') WHERE NOT IsDir AND OSPath =~ "NetstatEnriched" ORDER BY OSPath
+Output: [
+ {
+  "OSPath": "All Windows.Network.NetstatEnriched%2FNetstat.json",
+  "Size": 58743
+ },
+ {
+  "OSPath": "Windows.Network.NetstatEnriched%2FNetstat.json",
+  "Size": 53955
+ }
+]
+
+# Only store json files.
+Query: SELECT create_hunt_download(hunt_id='H.49ba8939', format="json", base="json-", wait=TRUE, only_combined=TRUE) FROM scope()
+Output: [
+ {
+  "create_hunt_download(hunt_id='H.49ba8939', format=\"json\", base=\"json-\", wait=TRUE, only_combined=TRUE)": "fs:/downloads/hunts/H.49ba8939/json-H.49ba8939-summary.zip"
+ }
+]
+
+Query: SELECT OSPath.Basename AS OSPath, Size FROM glob(globs="**", root=SummaryRootPath, accessor='zip') WHERE NOT IsDir AND OSPath =~ "NetstatEnriched" ORDER BY OSPath
+Output: [
+ {
+  "OSPath": "All Windows.Network.NetstatEnriched%2FNetstat.json",
+  "Size": 58743
+ }
+]
+
+# Only store csv files.
+Query: SELECT create_hunt_download(hunt_id='H.49ba8939', format="csv", base="csv-", wait=TRUE, only_combined=TRUE) FROM scope()
+Output: [
+ {
+  "create_hunt_download(hunt_id='H.49ba8939', format=\"csv\", base=\"csv-\", wait=TRUE, only_combined=TRUE)": "fs:/downloads/hunts/H.49ba8939/csv-H.49ba8939-summary.zip"
+ }
+]
+
+Query: SELECT OSPath.Basename AS OSPath, Size FROM glob(globs="**", root=SummaryRootPath, accessor='zip') WHERE NOT IsDir AND OSPath =~ "NetstatEnriched" ORDER BY OSPath
+Output: [
+ {
+  "OSPath": "All Windows.Network.NetstatEnriched%2FNetstat.json",
+  "Size": 58743
+ }
+]
+

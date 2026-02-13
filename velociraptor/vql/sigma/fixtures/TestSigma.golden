@@ -1,0 +1,2097 @@
+{
+ "Match single field": [
+  {
+   "Foo": "Bar",
+   "Integer": 4,
+   "List": [
+    1,
+    2,
+    3
+   ],
+   "Dict": {
+    "X": 1,
+    "Y": 2
+   },
+   "Baz": "Hello",
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection": true
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "SingleField",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "values": [
+           "Bar"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": {
+        "Name": "selection"
+       }
+      }
+     ]
+    }
+   },
+   "Details": null
+  }
+ ],
+ "Rule With Details": [
+  {
+   "Foo": "Bar",
+   "Integer": 4,
+   "List": [
+    1,
+    2,
+    3
+   ],
+   "Dict": {
+    "X": 1,
+    "Y": 2
+   },
+   "Baz": "Hello",
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection": true
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "RuleWithDetails",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "values": [
+           "Bar"
+          ]
+         },
+         {
+          "field": "Integer",
+          "values": [
+           4
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": {
+        "Name": "selection"
+       }
+      }
+     ]
+    },
+    "AdditionalFields": {
+     "details": "This is column Foo=%Foo% Int=%Integer% List=%List% Dict=%Dict%"
+    }
+   },
+   "Details": "This is column Foo=Bar Int=4 List=[1,2,3] Dict={\"X\":1,\"Y\":2}"
+  }
+ ],
+ "Rule With Details with arrays": [
+  {
+   "Foo": "Bar",
+   "Data": [
+    "Element1",
+    "Element2"
+   ],
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection": true
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "RuleWithDetailsWithArrays",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "values": [
+           "Bar"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": {
+        "Name": "selection"
+       }
+      }
+     ]
+    },
+    "AdditionalFields": {
+     "details": "This is column Foo=%Data[1]% Bar=%Data[2]% Exceeded=%Data[6]%"
+    }
+   },
+   "Details": "This is column Foo=Element1 Bar=Element2 Exceeded="
+  }
+ ],
+ "Default Details in callback": [
+  {
+   "Foo": "Bar",
+   "Integer": 4,
+   "List": [
+    1,
+    2,
+    3
+   ],
+   "Dict": {
+    "X": 1,
+    "Y": 2
+   },
+   "Baz": "Hello",
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection": true
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "RuleWithDetails",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "values": [
+           "Bar"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": {
+        "Name": "selection"
+       }
+      }
+     ]
+    }
+   },
+   "Details": "I'm a scope var:Default Detail Foo=Bar"
+  }
+ ],
+ "Match field with regex": [
+  {
+   "Foo": "Bar",
+   "Integer": 4,
+   "List": [
+    1,
+    2,
+    3
+   ],
+   "Dict": {
+    "X": 1,
+    "Y": 2
+   },
+   "Baz": "Hello",
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection": true
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "RegexField",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "re"
+          ],
+          "values": [
+           "b.r"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": {
+        "Name": "selection"
+       }
+      }
+     ]
+    }
+   },
+   "Details": null
+  }
+ ],
+ "Match field with logical operators": [
+  {
+   "Foo": "Bar",
+   "Integer": 4,
+   "List": [
+    1,
+    2,
+    3
+   ],
+   "Dict": {
+    "X": 1,
+    "Y": 2
+   },
+   "Baz": "Hello",
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection": true,
+     "selection2": true
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "AndRule",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "re"
+          ],
+          "values": [
+           "b.r"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection2": {
+       "event_matchers": [
+        [
+         {
+          "field": "Baz",
+          "modifiers": [
+           "re"
+          ],
+          "values": [
+           "h.+lo"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": [
+        {
+         "Name": "selection"
+        },
+        {
+         "Name": "selection2"
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "Details": null
+  }
+ ],
+ "Match field with logical or operator": [
+  {
+   "Foo": "Bar",
+   "Integer": 4,
+   "List": [
+    1,
+    2,
+    3
+   ],
+   "Dict": {
+    "X": 1,
+    "Y": 2
+   },
+   "Baz": "Hello",
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection": true,
+     "selection2": false
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "OrRule",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "re"
+          ],
+          "values": [
+           "b.r"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection2": {
+       "event_matchers": [
+        [
+         {
+          "field": "Baz",
+          "modifiers": [
+           "re"
+          ],
+          "values": [
+           "something"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": [
+        {
+         "Name": "selection"
+        },
+        {
+         "Name": "selection2"
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "Details": null
+  }
+ ],
+ "Match simple logsource": [
+  {
+   "System": {
+    "EventID": 2
+   },
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection": true
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "NoopRule",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection": {
+       "event_matchers": [
+        [
+         {
+          "field": "EID",
+          "values": [
+           2
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": {
+        "Name": "selection"
+       }
+      }
+     ]
+    }
+   },
+   "Details": null
+  }
+ ],
+ "Match field with vql operator": [
+  {
+   "Foo": "Bar",
+   "Baz": "Hello",
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection": true
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "VqlRule",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "vql"
+          ],
+          "values": [
+           "x=\u003elog(message=\"Field %v evaluated on Event %v\", args=[Rule.AdditionalFields.custom_field, Event])"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": {
+        "Name": "selection"
+       }
+      }
+     ]
+    },
+    "AdditionalFields": {
+     "custom_field": "Some Custom Field"
+    }
+   },
+   "Details": null
+  },
+  {
+   "Foo": "Baz",
+   "Baz": "Bye",
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection": true
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "VqlRule",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "vql"
+          ],
+          "values": [
+           "x=\u003elog(message=\"Field %v evaluated on Event %v\", args=[Rule.AdditionalFields.custom_field, Event])"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": {
+        "Name": "selection"
+       }
+      }
+     ]
+    },
+    "AdditionalFields": {
+     "custom_field": "Some Custom Field"
+    }
+   },
+   "Details": null
+  }
+ ],
+ "Match with no condition": [
+  {
+   "Foo": "bar",
+   "Baz": "Hello",
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection": true
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "NoConditions",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "values": [
+           "bar"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": {
+        "Name": "selection"
+       }
+      }
+     ]
+    }
+   },
+   "Details": null
+  }
+ ],
+ "Match with NULL": [
+  {
+   "Bar": 1,
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection": true
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "NullRule",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "values": [
+           null
+          ]
+         },
+         {
+          "field": "Bar",
+          "values": [
+           1
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": {
+        "Name": "selection"
+       }
+      }
+     ]
+    }
+   },
+   "Details": null
+  }
+ ],
+ "Unknown modifiers": [],
+ "All modifier": [
+  {
+   "Foo": "Bar",
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "contains_all_true": true,
+     "contains_no_match_false": false,
+     "contains_one_of_true": true
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "All Modifiers",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "contains_all_true": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "contains",
+           "all"
+          ],
+          "values": [
+           "a",
+           "B"
+          ]
+         }
+        ]
+       ]
+      },
+      "contains_no_match_false": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "contains"
+          ],
+          "values": [
+           "Z",
+           "C"
+          ]
+         }
+        ]
+       ]
+      },
+      "contains_one_of_true": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "contains"
+          ],
+          "values": [
+           "a",
+           "C"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": [
+        {
+         "Name": "contains_all_true"
+        },
+        {
+         "Name": "contains_one_of_true"
+        },
+        {
+         "Name": "contains_no_match_false"
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "Details": null
+  }
+ ],
+ "Test Modifiers": [
+  {
+   "uri": "https://1.2.3.4/ecp/default.aspx?__VIEWSTATEGENERATOR=1\u0026__VIEWSTATE=2",
+   "ip_address1": "192.1.10.1",
+   "ip_address2": "192.168.0.2",
+   "fieldname": "needle is a needle",
+   "fieldname_int": 15,
+   "CommandLine": "ping /f ―g —h ",
+   "CommandLineWide": "cABpAG4AZwAgAA==",
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "cidr_1": true,
+     "cidr_2": true,
+     "contains": true,
+     "contains_all": false,
+     "contains_any": true,
+     "endswith": true,
+     "gt": false,
+     "gte": true,
+     "lt": false,
+     "lte": true,
+     "naked_all": false,
+     "re": true,
+     "re_multiple": true,
+     "re_multiple_all": true,
+     "startswith": true,
+     "wide": true,
+     "wide_all": false,
+     "wide_any": true,
+     "windash": true,
+     "windash_all": false,
+     "windash_bar": true,
+     "windash_emdash": true
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "Test Modifiers",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "cidr_1": {
+       "event_matchers": [
+        [
+         {
+          "field": "ip_address1",
+          "modifiers": [
+           "cidr"
+          ],
+          "values": [
+           "192.0.0.0/8"
+          ]
+         }
+        ]
+       ]
+      },
+      "cidr_2": {
+       "event_matchers": [
+        [
+         {
+          "field": "ip_address2",
+          "modifiers": [
+           "cidr"
+          ],
+          "values": [
+           "192.168.0.0/23",
+           "192.168.1.0/23"
+          ]
+         }
+        ]
+       ]
+      },
+      "contains": {
+       "event_matchers": [
+        [
+         {
+          "field": "fieldname",
+          "modifiers": [
+           "contains"
+          ],
+          "values": [
+           "needle"
+          ]
+         }
+        ]
+       ]
+      },
+      "contains_all": {
+       "event_matchers": [
+        [
+         {
+          "field": "fieldname",
+          "modifiers": [
+           "contains",
+           "all"
+          ],
+          "values": [
+           "needle",
+           "haystack"
+          ]
+         }
+        ]
+       ]
+      },
+      "contains_any": {
+       "event_matchers": [
+        [
+         {
+          "field": "fieldname",
+          "modifiers": [
+           "contains"
+          ],
+          "values": [
+           "needle",
+           "haystack"
+          ]
+         }
+        ]
+       ]
+      },
+      "endswith": {
+       "event_matchers": [
+        [
+         {
+          "field": "fieldname",
+          "modifiers": [
+           "endswith"
+          ],
+          "values": [
+           "needle"
+          ]
+         }
+        ]
+       ]
+      },
+      "gt": {
+       "event_matchers": [
+        [
+         {
+          "field": "fieldname_int",
+          "modifiers": [
+           "gt"
+          ],
+          "values": [
+           15
+          ]
+         }
+        ]
+       ]
+      },
+      "gte": {
+       "event_matchers": [
+        [
+         {
+          "field": "fieldname_int",
+          "modifiers": [
+           "gte"
+          ],
+          "values": [
+           15
+          ]
+         }
+        ]
+       ]
+      },
+      "lt": {
+       "event_matchers": [
+        [
+         {
+          "field": "fieldname_int",
+          "modifiers": [
+           "lt"
+          ],
+          "values": [
+           15
+          ]
+         }
+        ]
+       ]
+      },
+      "lte": {
+       "event_matchers": [
+        [
+         {
+          "field": "fieldname_int",
+          "modifiers": [
+           "lte"
+          ],
+          "values": [
+           15
+          ]
+         }
+        ]
+       ]
+      },
+      "naked_all": {
+       "event_matchers": [
+        [
+         {
+          "modifiers": [
+           "all"
+          ],
+          "values": [
+           "ping",
+           "ip_address2"
+          ]
+         }
+        ]
+       ]
+      },
+      "re": {
+       "event_matchers": [
+        [
+         {
+          "field": "fieldname",
+          "modifiers": [
+           "re"
+          ],
+          "values": [
+           ".*needle$"
+          ]
+         }
+        ]
+       ]
+      },
+      "re_multiple": {
+       "event_matchers": [
+        [
+         {
+          "field": "fieldname",
+          "modifiers": [
+           "re"
+          ],
+          "values": [
+           ".*needle$",
+           "foobar"
+          ]
+         }
+        ]
+       ]
+      },
+      "re_multiple_all": {
+       "event_matchers": [
+        [
+         {
+          "field": "fieldname",
+          "modifiers": [
+           "re",
+           "all"
+          ],
+          "values": [
+           ".*needle$",
+           "is a"
+          ]
+         }
+        ]
+       ]
+      },
+      "startswith": {
+       "event_matchers": [
+        [
+         {
+          "field": "fieldname",
+          "modifiers": [
+           "startswith"
+          ],
+          "values": [
+           "needle"
+          ]
+         }
+        ]
+       ]
+      },
+      "wide": {
+       "event_matchers": [
+        [
+         {
+          "field": "CommandLineWide",
+          "modifiers": [
+           "wide",
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "ping"
+          ]
+         }
+        ]
+       ]
+      },
+      "wide_all": {
+       "event_matchers": [
+        [
+         {
+          "field": "CommandLineWide",
+          "modifiers": [
+           "wide",
+           "base64offset",
+           "contains",
+           "all"
+          ],
+          "values": [
+           "ping",
+           "pong"
+          ]
+         }
+        ]
+       ]
+      },
+      "wide_any": {
+       "event_matchers": [
+        [
+         {
+          "field": "CommandLineWide",
+          "modifiers": [
+           "wide",
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "ping",
+           "pong"
+          ]
+         }
+        ]
+       ]
+      },
+      "windash": {
+       "event_matchers": [
+        [
+         {
+          "field": "CommandLine",
+          "modifiers": [
+           "windash",
+           "contains"
+          ],
+          "values": [
+           " -param-name ",
+           " -f "
+          ]
+         }
+        ]
+       ]
+      },
+      "windash_all": {
+       "event_matchers": [
+        [
+         {
+          "field": "CommandLine",
+          "modifiers": [
+           "windash",
+           "contains",
+           "all"
+          ],
+          "values": [
+           " -param-name ",
+           " -f "
+          ]
+         }
+        ]
+       ]
+      },
+      "windash_bar": {
+       "event_matchers": [
+        [
+         {
+          "field": "CommandLine",
+          "modifiers": [
+           "windash",
+           "contains"
+          ],
+          "values": [
+           " -g "
+          ]
+         }
+        ]
+       ]
+      },
+      "windash_emdash": {
+       "event_matchers": [
+        [
+         {
+          "field": "CommandLine",
+          "modifiers": [
+           "windash",
+           "contains"
+          ],
+          "values": [
+           " -h "
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": {
+        "Name": "contains"
+       }
+      }
+     ]
+    }
+   },
+   "Details": null
+  }
+ ],
+ "Match single base64offset field": [
+  {
+   "Match": "Should match selection1 and selection2 contains single element (Shift 1)",
+   "Decoded": "ejfjefhellorfriufirtestkdkdg",
+   "Foo": "ZWpmamVmaGVsbG9yZnJpdWZpcnRlc3RrZGtkZw==",
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection1": true,
+     "selection2": true,
+     "selection3": false,
+     "selection4": false
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "Base64 offsets",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection1": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "hello"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection2": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "test"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection3": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains",
+           "all"
+          ],
+          "values": [
+           "sprite",
+           "pepsi"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection4": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "velo",
+           "ciraptorex"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": [
+        [
+         {
+          "Name": "selection1"
+         },
+         {
+          "Name": "selection2"
+         }
+        ],
+        {
+         "Name": "selection3"
+        },
+        {
+         "Name": "selection4"
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "Details": null
+  },
+  {
+   "Match": "Should match selection1 and selection2 contains single element (Shift 2)",
+   "Decoded": "jfjefhellorfriufirtestkdkdg",
+   "Foo": "amZqZWZoZWxsb3Jmcml1ZmlydGVzdGtka2Rn",
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection1": true,
+     "selection2": true,
+     "selection3": false,
+     "selection4": false
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "Base64 offsets",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection1": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "hello"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection2": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "test"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection3": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains",
+           "all"
+          ],
+          "values": [
+           "sprite",
+           "pepsi"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection4": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "velo",
+           "ciraptorex"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": [
+        [
+         {
+          "Name": "selection1"
+         },
+         {
+          "Name": "selection2"
+         }
+        ],
+        {
+         "Name": "selection3"
+        },
+        {
+         "Name": "selection4"
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "Details": null
+  },
+  {
+   "Match": "Should match selection1 and selection2 contains single element",
+   "Decoded": "jejfjefhellorfriufirtestkdkdg",
+   "Foo": "amVqZmplZmhlbGxvcmZyaXVmaXJ0ZXN0a2RrZGc=",
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection1": true,
+     "selection2": true,
+     "selection3": false,
+     "selection4": false
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "Base64 offsets",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection1": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "hello"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection2": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "test"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection3": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains",
+           "all"
+          ],
+          "values": [
+           "sprite",
+           "pepsi"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection4": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "velo",
+           "ciraptorex"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": [
+        [
+         {
+          "Name": "selection1"
+         },
+         {
+          "Name": "selection2"
+         }
+        ],
+        {
+         "Name": "selection3"
+        },
+        {
+         "Name": "selection4"
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "Details": null
+  },
+  {
+   "Match": "Should match selection3 with all",
+   "Decoded": "kgkrpepsigrgspriteefjefe",
+   "Foo": "a2drcnBlcHNpZ3Jnc3ByaXRlZWZqZWZl",
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection1": false,
+     "selection2": false,
+     "selection3": true,
+     "selection4": false
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "Base64 offsets",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection1": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "hello"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection2": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "test"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection3": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains",
+           "all"
+          ],
+          "values": [
+           "sprite",
+           "pepsi"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection4": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "velo",
+           "ciraptorex"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": [
+        [
+         {
+          "Name": "selection1"
+         },
+         {
+          "Name": "selection2"
+         }
+        ],
+        {
+         "Name": "selection3"
+        },
+        {
+         "Name": "selection4"
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "Details": null
+  },
+  {
+   "Match": "Should match selection4 with contains one of members",
+   "Decoded": "kgkrgrgveloefjefe",
+   "Foo": "a2drcmdyZ3ZlbG9lZmplZmU=",
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection1": false,
+     "selection2": false,
+     "selection3": false,
+     "selection4": true
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "Base64 offsets",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection1": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "hello"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection2": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "test"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection3": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains",
+           "all"
+          ],
+          "values": [
+           "sprite",
+           "pepsi"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection4": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "velo",
+           "ciraptorex"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": [
+        [
+         {
+          "Name": "selection1"
+         },
+         {
+          "Name": "selection2"
+         }
+        ],
+        {
+         "Name": "selection3"
+        },
+        {
+         "Name": "selection4"
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "Details": null
+  }
+ ],
+ "One of Condition": [
+  {
+   "Match": "Should match selection1 and selection2 contains single element",
+   "Decoded": "jejfjefhellorfriufirtestkdkdg",
+   "Foo": "amVqZmplZmhlbGxvcmZyaXVmaXJ0ZXN0a2RrZGc=",
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection1": true,
+     "selection2": true,
+     "selection3": false,
+     "selection4": false
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "One Of",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection1": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "hello"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection2": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "test"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection3": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains",
+           "all"
+          ],
+          "values": [
+           "sprite",
+           "pepsi"
+          ]
+         }
+        ]
+       ]
+      },
+      "selection4": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "modifiers": [
+           "base64offset",
+           "contains"
+          ],
+          "values": [
+           "velo",
+           "ciraptorex"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": {
+        "Pattern": "selection*"
+       }
+      }
+     ]
+    }
+   },
+   "Details": null
+  }
+ ],
+ "Test VQL Events": [
+  {
+   "Foo": 1,
+   "Bar": "Baz",
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "selection1": true,
+     "selection2": true
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "VQL Events",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "selection1": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "values": [
+           1
+          ]
+         }
+        ]
+       ]
+      },
+      "selection2": {
+       "event_matchers": [
+        [
+         {
+          "field": "Bar",
+          "modifiers": [
+           "contains"
+          ],
+          "values": [
+           "B"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": [
+        {
+         "Name": "selection1"
+        },
+        {
+         "Name": "selection2"
+        }
+       ]
+      }
+     ]
+    },
+    "AdditionalFields": {
+     "vql": "x=\u003edict(Foo=1, Bar=\"Baz\")"
+    }
+   },
+   "Details": null
+  }
+ ],
+ "Test Conditions": [
+  {
+   "Foo": 1,
+   "Bar": "Baz",
+   "Proc": 1,
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "process_creation": true,
+     "selection_1_1": true,
+     "selection_1_2": true
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "VQL Events",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "process_creation": {
+       "event_matchers": [
+        [
+         {
+          "field": "Proc",
+          "values": [
+           1
+          ]
+         }
+        ]
+       ]
+      },
+      "selection_1_1": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo",
+          "values": [
+           1
+          ]
+         }
+        ]
+       ]
+      },
+      "selection_1_2": {
+       "event_matchers": [
+        [
+         {
+          "field": "Bar",
+          "modifiers": [
+           "contains"
+          ],
+          "values": [
+           "B"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": [
+        {
+         "Name": "process_creation"
+        },
+        [
+         {
+          "Pattern": "selection_1_*"
+         },
+         {
+          "Pattern": "selection_1_*"
+         }
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   "Details": null
+  }
+ ],
+ "Automatic Field Mappings": [
+  {
+   "Foo": {
+    "Bar": {
+     "Baz": "Hello world"
+    }
+   },
+   "_Match": {
+    "match": true,
+    "search_results": {
+     "automaticField": true
+    },
+    "condition_results": [
+     true
+    ]
+   },
+   "_Rule": {
+    "Title": "Automatic Field Mappings",
+    "Logsource": {
+     "Product": "windows",
+     "Service": "application"
+    },
+    "Detection": {
+     "Searches": {
+      "automaticField": {
+       "event_matchers": [
+        [
+         {
+          "field": "Foo.Bar.Baz",
+          "modifiers": [
+           "contains"
+          ],
+          "values": [
+           "Hello"
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     "Condition": [
+      {
+       "Search": {
+        "Name": "automaticField"
+       }
+      }
+     ]
+    }
+   },
+   "Details": null
+  }
+ ]
+}

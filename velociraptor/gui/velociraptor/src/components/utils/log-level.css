@@ -1,0 +1,11 @@
+.log-level {
+    word-break: initial;
+}
+
+.log-level.level-DEFAULT {
+    display: none;
+}
+
+.log-level.level-ERROR {
+    color: var(--color-level-error);
+}

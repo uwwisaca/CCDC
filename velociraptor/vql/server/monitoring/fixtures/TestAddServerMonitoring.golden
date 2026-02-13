@@ -1,0 +1,28 @@
+{
+ "Add artifact": {
+  "artifacts": [
+   "Server.Monitor.Health",
+   "System.Hunt.Creation"
+  ],
+  "specs": [
+   {
+    "artifact": "System.Hunt.Creation",
+    "parameters": {
+     "env": [
+      {
+       "key": "syslogAuthLogPath",
+       "value": "AppliesToAll"
+      }
+     ]
+    }
+   }
+  ],
+  "max_upload_bytes": 1073741824
+ },
+ "Removing artifact from label": {
+  "artifacts": [
+   "Server.Monitor.Health"
+  ],
+  "max_upload_bytes": 1073741824
+ }
+}

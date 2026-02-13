@@ -1,0 +1,139 @@
+
+.transform-button {
+    margin-left: 5px;
+}
+
+.sort-button {
+    width: 100%;
+}
+
+table.paged-table-header {
+    width: 100%;
+}
+
+table.paged-table-header td {
+    vertical-align: middle;
+}
+
+table.paged-table-header tr {
+    height: 48px;
+}
+
+table.paged-table-header .sort-element {
+    float: right;
+    display: none;
+}
+
+table.paged-table-header:hover .sort-element {
+    display: block;
+}
+
+table.paged-table-header .sort-element {
+    display: block;
+}
+
+tr.paged-table-header th {
+
+}
+
+th.paged-table-header .sort-element {
+    visibility: hidden;
+}
+
+th.paged-table-header:hover .sort-element {
+    visibility: visible;
+}
+
+.btn-group > button.goto-start.btn.btn-default {
+    margin-left: 5px;
+}
+
+.goto-end {
+}
+
+
+.goto-input {
+    margin: 0;
+    padding: 0;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.goto-input input {
+    width: 100%;
+}
+
+.hidden-sorter {
+    width: 0px;
+    visibility: hidden;
+}
+
+input.hidden-edit {
+    display: none;
+}
+
+
+td.column-resizer {
+    width: 0px;
+    padding: 5px;
+    cursor: col-resize;
+    min-width: 5px;
+    max-width: 5px;
+    background-color: var(--color-table-heading-background);
+}
+
+.paged-table thead td.column-resizer {
+    background-color: var(--color-table-heading-background);
+}
+
+.paged-table thead td.column-resizer:hover,
+.paged-table tbody td.column-resizer:hover {
+    background-color: var(--color-table-row-selected);
+}
+
+.paged-table tbody tr td {
+    vertical-align: top;
+}
+
+.paged-table tbody tr td.compact > div {
+    max-height: 2em;
+}
+
+.paged-table tbody tr td.compact {
+    mask-image: -webkit-linear-gradient(top,rgba(0,0,0,1) 50%,rgba(0,0,0,0));
+}
+
+.column-name {
+    margin-right: 60px;
+}
+
+.transformed .column-name {
+    margin-right: 100px;
+}
+
+.transformed .sort-element .hover-buttons {
+    margin-left: -80px;
+}
+
+.sort-element .hover-buttons {
+    position: absolute;
+    margin-top: -8px;
+    margin-left: -40px;
+}
+
+th.paged-table-header {
+    white-space: nowrap;
+}
+
+.draggable {
+    cursor: move;
+    cursor: grab;
+}
+
+.draggable:active {
+    cursor: grabbing;
+}
+
+.transform-viewer {
+    margin-left: 5px;
+}

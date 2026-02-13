@@ -1,0 +1,13 @@
+Queries:
+  - SELECT *, basename(path=_OSPath) AS _OSPath
+    FROM Artifact.Windows.Forensics.UserAccessLogs(
+      source="Clients",
+      SUMGlob=srcDir+"/artifacts/testdata/files/*.mdb")
+    GROUP BY AuthenticatedUserName
+
+  - SELECT *, basename(path=_OSPath) AS _OSPath
+    FROM Artifact.Windows.Forensics.UserAccessLogs(
+      source="SystemIdentity",
+      SUMGlob=srcDir+"/artifacts/testdata/files/*.mdb")
+    ORDER BY CreationTime
+    LIMIT 1

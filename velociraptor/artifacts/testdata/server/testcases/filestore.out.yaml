@@ -1,0 +1,107 @@
+# Test the fs accessor. Glob should return an `fs:/path` path. Hash
+# should be able to read the data.
+Query: SELECT OSPath, hash(path=OSPath, accessor="fs") FROM glob( globs='/clients/C.4f5e52adf0a337a9/artifacts/**', accessor="fs") WHERE NOT IsDir ORDER BY OSPath
+Output: [
+ {
+  "OSPath": "fs:/clients/C.4f5e52adf0a337a9/artifacts/System.VFS.ListDirectory/F.BN2HJBD1R85EA.json",
+  "hash(path=OSPath, accessor=\"fs\")": {
+   "MD5": "5807c27988d9024a9d25ad1ca2f27fa7",
+   "SHA1": "0c3260ab5e098c812455bb7b39414d8edeea182e",
+   "SHA256": "d127fc0d6d52cdaf3f1eadb0ef3de17645b9ecf054b813f8d59e1ff0272a587e"
+  }
+ },
+ {
+  "OSPath": "fs:/clients/C.4f5e52adf0a337a9/artifacts/System.VFS.ListDirectory/F.BN2HJBD1R85EA.json.index",
+  "hash(path=OSPath, accessor=\"fs\")": {
+   "MD5": "7dea362b3fac8e00956a4952a3d4f474",
+   "SHA1": "05fe405753166f125559e7c9ac558654f107c7e9",
+   "SHA256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc"
+  }
+ },
+ {
+  "OSPath": "fs:/clients/C.4f5e52adf0a337a9/artifacts/Windows.Applications.ChocolateyPackages/F.BN2HP3OSS3LK6.csv",
+  "hash(path=OSPath, accessor=\"fs\")": {
+   "MD5": "ca13d7e0340c7c8ff772ec27c94f2b87",
+   "SHA1": "8d3bc1d4ca927beb9a79b356e8d973323f61b86c",
+   "SHA256": "c06ac434d9cc508174d20e1d454d7985815d11bd66e9f577d976c5964340eb9c"
+  }
+ },
+ {
+  "OSPath": "fs:/clients/C.4f5e52adf0a337a9/artifacts/Windows.Applications.ChocolateyPackages/F.BN2HP3OSS3LK6.json",
+  "hash(path=OSPath, accessor=\"fs\")": {
+   "MD5": "8b4d424194162d8cda89e75774e059da",
+   "SHA1": "8b53358799659b733185e913f5e5175772a04a52",
+   "SHA256": "9fb815a8514e364f668158a94bcc542c21a7c0ed690cff3040faa7be39102833"
+  }
+ },
+ {
+  "OSPath": "fs:/clients/C.4f5e52adf0a337a9/artifacts/Windows.Network.NetstatEnriched/F.BSJMEJIPT6P9I/Netstat.json",
+  "hash(path=OSPath, accessor=\"fs\")": {
+   "MD5": "59db7963182782188a514202412e6794",
+   "SHA1": "ad0157feb3d77dd729799743ec6bfa273f36122a",
+   "SHA256": "8b39ee335f2f7dd7a68f57900a687fa2bcaae0b1e6d31f3ee91100f195835d9b"
+  }
+ }
+]
+
+# We can read datastore files if the datastore and filestore
+# overlap. We can not currently find datastore objects with glob,
+# but we can open them using the fs accessor.
+Query: SELECT hash(path='ds:/clients/C.4f5e52adf0a337a9/ping.json.db', accessor="fs") FROM scope()
+Output: [
+ {
+  "hash(path='ds:/clients/C.4f5e52adf0a337a9/ping.json.db', accessor=\"fs\")": {
+   "MD5": "e97dcefe1bb39617d1f8e9562d7944be",
+   "SHA1": "570b6c0eba2344b1b4091a6ad37ed2102edb2fe2",
+   "SHA256": "0b7a67d3cbc83cca1f9a7994bd9b22a1242c9930ddab5284e9a7d94f411235c9"
+  }
+ }
+]
+
+# enumerate_flow emits some fs paths and some ds paths. Here we test
+# that we can read both these types. file_store operating on the
+# string version should be same as directly.
+Query: SELECT hash(path=Data.VFSPath, accessor="fs"), Data FROM enumerate_flow(client_id="C.4f5e52adf0a337a9", flow_id="F.BN2HP3OSS3LK6") WHERE Type IN ("Log", "CollectionContext", "Task", "Result")
+Output: [
+ {
+  "hash(path=Data.VFSPath, accessor=\"fs\")": {
+   "MD5": "8b4d424194162d8cda89e75774e059da",
+   "SHA1": "8b53358799659b733185e913f5e5175772a04a52",
+   "SHA256": "9fb815a8514e364f668158a94bcc542c21a7c0ed690cff3040faa7be39102833"
+  },
+  "Data": {
+   "VFSPath": "fs:/clients/C.4f5e52adf0a337a9/artifacts/Windows.Applications.ChocolateyPackages/F.BN2HP3OSS3LK6.json"
+  }
+ },
+ {
+  "hash(path=Data.VFSPath, accessor=\"fs\")": {
+   "MD5": "61598760c4a34c344913f6525e618d6e",
+   "SHA1": "81228b522560849761b3b8d4addd83aae5ae94de",
+   "SHA256": "43b04dd30474cafdc3cd06ae632402a116ae636d65a14fcfb4a838f6338f1dad"
+  },
+  "Data": {
+   "VFSPath": "fs:/clients/C.4f5e52adf0a337a9/collections/F.BN2HP3OSS3LK6/logs.json"
+  }
+ },
+ {
+  "hash(path=Data.VFSPath, accessor=\"fs\")": {
+   "MD5": "1b79132257746e3ce295e45e50160521",
+   "SHA1": "6d83deb9d14457496bf9560dd6b87f2ed7b7ef92",
+   "SHA256": "c337a4c3885ed775b50994f8018bdc7b3fa885f2efb81a2b766f12e81ac85394"
+  },
+  "Data": {
+   "VFSPath": "ds:/clients/C.4f5e52adf0a337a9/collections/F.BN2HP3OSS3LK6.json.db"
+  }
+ },
+ {
+  "hash(path=Data.VFSPath, accessor=\"fs\")": {
+   "MD5": "32f571cb37dcb9e9b3c3313919bd2426",
+   "SHA1": "e87f3065fad8d622194a5581e7b583cdd820217a",
+   "SHA256": "5888fe1c56fbc79e109f41441516d4b9ac061029f39e66f6f67b2e7f58285c90"
+  },
+  "Data": {
+   "VFSPath": "ds:/clients/C.4f5e52adf0a337a9/collections/F.BN2HP3OSS3LK6/task.db"
+  }
+ }
+]
+

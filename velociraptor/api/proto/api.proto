@@ -1,0 +1,647 @@
+syntax = "proto3";
+
+import "artifacts/proto/artifact.proto";
+import "flows/proto/artifact_collector.proto";
+import "flows/proto/vfs.proto";
+import "proto/semantic.proto";
+import "actions/proto/vql.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+// Files within the same directory must be imported relatively.
+import "artifacts.proto";
+import "clients.proto";
+import "datastore.proto";
+import "docs.proto";
+import "health.proto";
+import "hunts.proto";
+import "flows.proto";
+import "notebooks.proto";
+import "users.proto";
+import "csv.proto";
+import "download.proto";
+import "completions.proto";
+import "vfs_api.proto";
+import "scheduler.proto";
+import "secrets.proto";
+import "timeline_api.proto";
+
+package proto;
+
+option go_package = "www.velocidex.com/golang/velociraptor/api/proto";
+
+message StartFlowResponse {
+    string flow_id = 1;
+}
+
+message Approval {
+    string reason = 1;
+}
+
+message ApprovalList {
+    repeated Approval items = 1;
+}
+
+message VFSRefreshDirectoryRequest {
+    string client_id = 1 [(sem_type) = {
+            description: "The client to list",
+            type: "RDFURN",
+            label: HIDDEN,
+        }];
+
+    repeated string vfs_components = 4;
+
+    uint64 depth = 3 [(sem_type) = {
+            description: "Depth of directory refresh",
+        }];
+}
+
+message VFSFileBuffer {
+    string client_id = 1;
+    uint64 offset = 3;
+    uint32 length = 4;
+    bytes data = 5;
+    repeated string components = 6;
+    string org_id = 7;
+    optional bool padding = 8;
+}
+
+
+message NotificationRequest {
+    string client_id = 1;
+
+    bool notify_all = 2;
+}
+
+message EventRequest {
+    string queue = 1;
+
+    // The node who is requesting the event stream.
+    string node = 2;
+
+    string watcher_name = 3;
+
+    string org_id = 4;
+}
+
+message EventResponse {
+    // The originator of the event.
+    string source = 1;
+
+    // A sequence of events encoded as jsonl.
+    bytes jsonl = 2;
+}
+
+// Used to push rows into the artifact queue.
+message PushEventRequest {
+    string artifact = 1;
+    string client_id = 2;
+    string flow_id = 3;
+
+    bytes jsonl = 4;
+
+    int64 rows = 5;
+
+    string org_id = 6;
+
+    // If false we do not write but just broadcast to all
+    // listeners. But if true we also write to the local filestore.
+    bool write = 7;
+}
+
+
+service API {
+    // Hunts
+    rpc CreateHunt(Hunt) returns (StartFlowResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/CreateHunt",
+            body: "*"
+        };
+    }
+
+    // Returns an estimate of the number of clients that might be
+    // affected by a hunt.
+    rpc EstimateHunt(HuntEstimateRequest) returns (HuntStats) {
+        option (google.api.http) = {
+            post: "/api/v1/EstimateHunt",
+            body: "*"
+        };
+    }
+
+    rpc GetHuntTable(GetTableRequest) returns (GetTableResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/GetHuntTable",
+        };
+    }
+
+    // Deprecated - hunts are now listed with GetHuntTable()
+    rpc ListHunts(ListHuntsRequest) returns (ListHuntsResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/ListHunts",
+        };
+    }
+
+    rpc GetHunt(GetHuntRequest) returns (Hunt) {
+        option (google.api.http) = {
+            get: "/api/v1/GetHunt",
+        };
+    }
+
+    rpc GetHuntTags(google.protobuf.Empty) returns (HuntTags) {
+        option (google.api.http) = {
+            get: "/api/v1/GetHuntTags",
+        };
+    }
+
+    rpc ModifyHunt(HuntMutation) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/api/v1/ModifyHunt",
+            body: "*"
+        };
+    }
+
+    rpc GetHuntFlows(GetTableRequest) returns (GetTableResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/GetHuntFlows",
+        };
+    }
+
+    rpc GetHuntResults(GetHuntResultsRequest) returns (GetTableResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/GetHuntResults",
+        };
+    }
+
+    // Clients.
+    rpc NotifyClients(NotificationRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/api/v1/NotifyClient",
+            body: "*"
+        };
+    }
+
+    rpc LabelClients(LabelClientsRequest) returns (APIResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/LabelClients",
+            body: "*"
+        };
+    }
+
+    rpc ListClients(SearchClientsRequest) returns (SearchClientsResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/SearchClients",
+        };
+    }
+
+    rpc GetClient(GetClientRequest) returns (ApiClient) {
+        option (google.api.http) = {
+            get: "/api/v1/GetClient/{client_id}",
+        };
+    }
+
+    rpc GetClientMetadata(GetClientRequest) returns (ClientMetadata) {
+        option (google.api.http) = {
+            get: "/api/v1/GetClientMetadata/{client_id}",
+        };
+    }
+
+    rpc SetClientMetadata(SetClientMetadataRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/api/v1/SetClientMetadata",
+            body: "*"
+        };
+    }
+
+    rpc GetClientFlows(GetTableRequest) returns (GetTableResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/GetClientFlows",
+        };
+    }
+
+    // Users
+    rpc GetUserUITraits(google.protobuf.Empty) returns (ApiUser) {
+        option (google.api.http) = {
+           get: "/api/v1/GetUserUITraits",
+        };
+    }
+
+    rpc SetGUIOptions(SetGUIOptionsRequest) returns (SetGUIOptionsResponse) {
+        option (google.api.http) = {
+           post: "/api/v1/SetGUIOptions",
+           body: "*"
+        };
+    }
+
+    // List all the GUI users known on this server.
+    rpc GetUsers(google.protobuf.Empty) returns(Users) {
+        option (google.api.http) = {
+            get: "/api/v1/GetUsers",
+        };
+    }
+
+    // List all the GUI users in orgs in which we are a member
+    rpc GetGlobalUsers(google.protobuf.Empty) returns(Users) {
+        option (google.api.http) = {
+            get: "/api/v1/GetGlobalUsers",
+        };
+    }
+
+    rpc GetUserRoles(UserRequest) returns(UserRoles) {
+        option (google.api.http) = {
+            get: "/api/v1/GetUserRoles",
+        };
+    }
+
+    rpc SetUserRoles(UserRoles) returns(google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/api/v1/SetUserRoles",
+            body: "*",
+        };
+    }
+
+    rpc GetUser(UserRequest) returns(VelociraptorUser) {
+        option(google.api.http) = {
+            get: "/api/v1/GetUser/{name}",
+        };
+    }
+
+    rpc CreateUser(UpdateUserRequest) returns(google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/api/v1/CreateUser",
+            body: "*"
+        };
+    }
+
+    rpc GetUserFavorites(Favorite) returns(Favorites) {
+        option (google.api.http) = {
+            get: "/api/v1/GetUserFavorites",
+        };
+    }
+
+    rpc SetPassword(SetPasswordRequest) returns(google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/api/v1/SetPassword",
+            body: "*"
+        };
+    }
+
+    // VFS
+    rpc VFSListDirectory(VFSListRequest) returns (VFSListResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/VFSListDirectory/{client_id}",
+        };
+    }
+
+    rpc VFSListDirectoryFiles(GetTableRequest) returns (GetTableResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/VFSListDirectoryFiles",
+        };
+    }
+
+
+    rpc VFSRefreshDirectory(VFSRefreshDirectoryRequest) returns (ArtifactCollectorResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/VFSRefreshDirectory",
+            body: "*",
+        };
+    }
+
+    rpc VFSStatDirectory(VFSListRequest) returns (VFSListResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/VFSStatDirectory",
+        };
+    }
+
+    rpc VFSStatDownload(VFSStatDownloadRequest) returns (VFSDownloadInfo) {
+        option (google.api.http) = {
+            get: "/api/v1/VFSStatDownload",
+        };
+    }
+
+    rpc VFSDownloadFile(VFSStatDownloadRequest) returns (StartFlowResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/VFSDownloadFile",
+            body: "*",
+        };
+    }
+
+    rpc GetTable(GetTableRequest) returns (GetTableResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/GetTable",
+        };
+    }
+
+    // Facilitate the HexEditor search API
+    rpc SearchFile(SearchFileRequest) returns (SearchFileResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/SearchFile",
+            body: "*",
+        };
+    }
+
+    // Flows
+    rpc CollectArtifact(ArtifactCollectorArgs) returns (ArtifactCollectorResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/CollectArtifact",
+            body: "*"
+        };
+    }
+
+    rpc CancelFlow(ApiFlowRequest) returns (StartFlowResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/CancelFlow",
+            body: "*"
+        };
+    }
+
+    rpc ResumeFlow(ApiFlowRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/api/v1/ResumeFlow",
+            body: "*"
+        };
+    }
+
+    rpc GetFlowDetails(ApiFlowRequest) returns (FlowDetails) {
+        option (google.api.http) = {
+            get: "/api/v1/GetFlowDetails",
+        };
+    }
+
+    rpc GetFlowRequests(ApiFlowRequest) returns (ApiFlowRequestDetails) {
+        option (google.api.http) = {
+            get: "/api/v1/GetFlowRequests",
+        };
+    }
+
+    // VQL assistance
+    rpc GetKeywordCompletions(google.protobuf.Empty) returns (KeywordCompletions) {
+        option (google.api.http) = {
+            get: "/api/v1/GetKeywordCompletions",
+        };
+    }
+
+    rpc ReformatVQL(ReformatVQLMessage) returns (ReformatVQLMessage) {
+        option (google.api.http) = {
+            post: "/api/v1/ReformatVQL",
+            body: "*"
+        };
+    }
+
+    // Artifacts
+    rpc GetArtifacts(GetArtifactsRequest) returns (ArtifactDescriptors) {
+        option (google.api.http) = {
+            post: "/api/v1/GetArtifacts",
+            body: "*",
+        };
+    }
+
+    rpc GetArtifactFile(GetArtifactRequest) returns (GetArtifactResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/GetArtifactFile",
+        };
+    }
+
+    rpc SetArtifactFile(SetArtifactRequest) returns (SetArtifactResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/SetArtifactFile",
+            body: "*",
+        };
+    }
+
+    rpc LoadArtifactPack(LoadArtifactPackRequest) returns (LoadArtifactPackResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/LoadArtifactPack",
+            body: "*",
+        };
+    }
+
+    // Documentation
+    rpc SearchDocs(DocSearchRequest) returns (DocSearchResponses) {
+        option (google.api.http) = {
+            get: "/api/v1/SearchDocs",
+        };
+    }
+
+    // Tools
+    rpc GetToolInfo(Tool) returns (Tool) {
+        option (google.api.http) = {
+            get: "/api/v1/GetToolInfo",
+        };
+    }
+
+    rpc SetToolInfo(Tool) returns (Tool) {
+        option (google.api.http) = {
+            post: "/api/v1/SetToolInfo",
+            body: "*",
+        };
+    }
+
+    // Reporting and post processing.
+    rpc GetReport(GetReportRequest) returns (GetReportResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/GetReport",
+            body: "*",
+        };
+    }
+
+    // Server Monitoring Artifacts - manage the Server Monitoring
+    // Service..
+    rpc GetServerMonitoringState(google.protobuf.Empty) returns (ArtifactCollectorArgs) {
+        option (google.api.http) = {
+            get: "/api/v1/GetServerMonitoringState",
+        };
+    }
+
+    // Server Monitoring Artifacts - manage the Server Monitoring
+    // Service.
+    rpc SetServerMonitoringState(ArtifactCollectorArgs) returns (ArtifactCollectorArgs) {
+        option (google.api.http) = {
+            post: "/api/v1/SetServerMonitoringState",
+            body: "*",
+        };
+    }
+
+    // Client Monitoring Artifacts - manage the Client Monitoring
+    // Service.
+    rpc GetClientMonitoringState(GetClientMonitoringStateRequest) returns (ClientEventTable) {
+        option (google.api.http) = {
+            get: "/api/v1/GetClientMonitoringState",
+        };
+    }
+
+    // Client Monitoring Artifacts - manage the Client Monitoring
+    // Service.
+    rpc SetClientMonitoringState(ClientEventTable) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/api/v1/SetClientMonitoringState",
+            body: "*",
+        };
+    }
+
+  rpc ListAvailableEventResults(ListAvailableEventResultsRequest)
+        returns (ListAvailableEventResultsResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/ListAvailableEventResults",
+            body: "*",
+        };
+    }
+
+    // Schedule downloads.
+    rpc CreateDownloadFile(CreateDownloadRequest) returns (CreateDownloadResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/CreateDownload",
+            body: "*",
+        };
+    }
+
+    // Notebook management
+   rpc GetNotebooks(NotebookCellRequest) returns (Notebooks) {
+        option (google.api.http) = {
+            get: "/api/v1/GetNotebooks",
+        };
+    }
+
+   rpc NewNotebook(NotebookMetadata) returns (NotebookMetadata) {
+        option (google.api.http) = {
+            post: "/api/v1/NewNotebook",
+            body: "*",
+        };
+    }
+
+   rpc UpdateNotebook(NotebookMetadata) returns (NotebookMetadata) {
+        option (google.api.http) = {
+            post: "/api/v1/UpdateNotebook",
+            body: "*",
+        };
+    }
+
+   rpc DeleteNotebook(NotebookMetadata) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/api/v1/DeleteNotebook",
+            body: "*",
+        };
+    }
+
+    rpc NewNotebookCell(NotebookCellRequest) returns (NotebookMetadata) {
+        option (google.api.http) = {
+            post: "/api/v1/NewNotebookCell",
+            body: "*",
+        };
+    }
+
+   rpc GetNotebookCell(NotebookCellRequest) returns (NotebookCell) {
+        option (google.api.http) = {
+            get: "/api/v1/GetNotebookCell",
+        };
+    }
+
+   rpc UpdateNotebookCell(NotebookCellRequest) returns (NotebookCell) {
+        option (google.api.http) = {
+            post: "/api/v1/UpdateNotebookCell",
+            body: "*",
+        };
+    }
+
+   rpc RevertNotebookCell(NotebookCellRequest) returns (NotebookCell) {
+        option (google.api.http) = {
+            post: "/api/v1/RevertNotebookCell",
+            body: "*",
+        };
+    }
+
+   rpc CancelNotebookCell(NotebookCellRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/api/v1/CancelNotebookCell",
+            body: "*",
+        };
+    }
+
+    rpc CreateNotebookDownloadFile(NotebookExportRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/api/v1/CreateNotebookDownloadFile",
+            body: "*",
+        };
+    }
+
+    rpc UploadNotebookAttachment(NotebookFileUploadRequest) returns (NotebookFileUploadResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/UploadNotebookAttachment",
+            body: "*",
+        };
+    }
+
+    // Remove a notebook attachment.
+    rpc RemoveNotebookAttachment(NotebookFileUploadRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/api/v1/RemoveNotebookAttachment",
+            body: "*",
+        };
+    }
+
+    rpc AnnotateTimeline(AnnotationRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/api/v1/AnnotateTimeline",
+            body: "*",
+        };
+    }
+
+    // Secret management
+    rpc GetSecretDefinitions(google.protobuf.Empty) returns (SecretDefinitionList) {
+        option (google.api.http) = {
+            get: "/api/v1/GetSecretDefinitions",
+        };
+    }
+
+    rpc AddSecret(Secret) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/api/v1/AddSecret",
+            body: "*",
+        };
+    }
+
+    rpc ModifySecret(ModifySecretRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/api/v1/ModifySecret",
+            body: "*",
+        };
+    }
+
+    // Returns a redacted version of the secret.
+   rpc GetSecret(Secret) returns (Secret) {
+        option (google.api.http) = {
+            get: "/api/v1/GetSecret",
+        };
+    }
+
+    // The below are API client methods - not available over HTTP
+
+    // This can be used by API clients to fetch file content.
+    rpc VFSGetBuffer(VFSFileBuffer) returns (VFSFileBuffer) {
+        // Not accessible via the GUI - the gui can access the
+        // download handlers directly.
+    };
+
+    // Streaming free form VQL.
+    rpc Query(VQLCollectorArgs) returns (stream VQLResponse) {}
+
+    // Watch for events from the master.
+    rpc WatchEvent(EventRequest) returns (stream EventResponse) {}
+
+    // Push the events to the master
+    rpc PushEvents(PushEventRequest) returns (google.protobuf.Empty) {}
+
+    // Push monitoring event to the server.
+    rpc WriteEvent(VQLResponse) returns (google.protobuf.Empty) {}
+
+    // Scheduler endpoint for minion scheduling
+    rpc Scheduler(stream ScheduleRequest) returns (stream ScheduleResponse) {}
+
+    // Remote data store access.
+    rpc GetSubject(DataRequest) returns (DataResponse) {}
+    rpc SetSubject(DataRequest) returns (DataResponse) {}
+    rpc DeleteSubject(DataRequest) returns (google.protobuf.Empty) {}
+    rpc ListChildren(DataRequest) returns (ListChildrenResponse) {}
+
+    // Health check protocol as in https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+    rpc Check(HealthCheckRequest) returns (HealthCheckResponse);
+}

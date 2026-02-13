@@ -1,0 +1,108 @@
+Queries:
+  - LET zip_files = SELECT OSPath, Size FROM glob(
+      globs=srcDir+"/artifacts/testdata/files/**/*.zip")
+    WHERE Name =~ "test"
+
+  - SELECT OSPath.Basename as Name, Size FROM zip_files
+
+  # We use the new pathspec() objects.
+  - LET hits = SELECT * from foreach(row=zip_files, query= {
+       SELECT OSPath, Mtime, Size from glob(
+         globs=pathspec(DelegateAccessor='file',
+              DelegatePath=OSPath,
+              Path='/**/*.txt'),
+         accessor='zip')
+    } )
+
+  - SELECT OSPath.Path as Name, Size, Mtime from hits
+
+  # Make sure we can read the contents of zip members.
+  - SELECT Data, Offset, OSPath.Basename as Name
+    FROM foreach(row=hits, query={
+       SELECT *, OSPath from read_file(filenames=OSPath, accessor='zip')
+    })
+
+  - SELECT read_file(
+        filename=srcDir+'/artifacts/testdata/files/hi.gz',
+        accessor='gzip') AS Hi,
+     read_file(
+        filename=srcDir+'/artifacts/testdata/files/goodbye.bz2',
+        accessor='bzip2') AS Bye
+     FROM scope()
+
+  # Test Gzip a string - often the "data" accessor does not work here
+  # because the binary data can not be serialized to a pathspec
+  # properly. This is what the "scope" accessor is for. Define a
+  # reusable function.
+  - LET dynamic_gunzip(Data) = read_file(accessor="gzip",
+      filename=pathspec(DelegateAccessor="scope", DelegatePath="Data"))
+
+  # Now decompress a gzip string.
+  - SELECT dynamic_gunzip(Data=read_file(
+      filename=srcDir+"/artifacts/testdata/files/hi.gz")) FROM scope()
+
+  # Test the gzip accessor
+  - SELECT read_file(
+       filename=srcDir+'/artifacts/testdata/files/hi.gz',
+       accessor='gzip') AS Hi,
+     read_file(
+       filename=srcDir+'/artifacts/testdata/files/goodbye.bz2',
+       accessor='bzip2') AS Bye
+     FROM scope()
+
+  # Test the unzip() plugin
+  - LET tmpdir <= tempdir()
+  - SELECT OriginalPath, relpath(path=NewPath, base=tmpdir, sep="/"), Size
+    FROM unzip(filename=srcDir + '/artifacts/testdata/files/test.zip',
+       output_directory=tmpdir)
+
+  # Test the unzip() plugin on tar gz files
+  - LET tmpdir_tgz <= tempdir()
+  - SELECT OriginalPath, relpath(path=NewPath, base=tmpdir_tgz, sep="/"), Size
+    FROM unzip(filename=srcDir + '/artifacts/testdata/files/tar_test.tgz',
+       output_directory=tmpdir_tgz)
+
+  # Test that unzip works on virtual files.
+  - SELECT OriginalPath, relpath(path=NewPath, base=tmpdir, sep="/"), Size
+    FROM unzip(
+       filename=read_file(filename=srcDir + '/artifacts/testdata/files/test.zip'),
+       accessor="data", type="zip",
+       output_directory=tmpdir)
+
+  # We can pass a pathspec to zip accessor in glob root (root is on
+  # test directory inside the zip).
+  - SELECT OSPath.Path AS Member
+    FROM glob(globs="/*.txt", accessor="zip",
+     root=pathspec(
+         DelegateAccessor="file",
+         DelegatePath=srcDir + '/artifacts/testdata/files/test.zip',
+         Path="test"))
+
+  # Test that unzip can unencrypt zip files transparently.  Password
+  # is set in the scope so it can not leak in output
+  - LET ZIP_PASSWORDS = 'hello'
+  - |
+    SELECT read_file(filename=OSPath, accessor='zip'), OSPath.Basename
+    FROM glob(globs='**/BasicInformation.json',
+      accessor='zip',
+      root=pathspec(
+        DelegateAccessor='zip',
+        DelegatePath=pathspec(DelegateAccessor='file',
+          DelegatePath=srcDir + '/artifacts/testdata/files/encrypted_collector_password.zip',
+          Path='/data.zip')))
+
+  # Test no case accessor
+  - |
+    LET BasePath <= pathspec(
+      DelegateAccessor='zip',
+      DelegatePath=pathspec(
+        DelegateAccessor='file',
+        DelegatePath=srcDir + '/artifacts/testdata/files/encrypted_collector_password.zip',
+        Path='/data.zip'))
+  # Read the file with messed up casing.
+  # Check that OSPath Basename returns the correct casing so we can
+  # open it with the regular zip accessor.
+  - |
+    SELECT read_file(filename=OSPath, accessor='zip'), OSPath.Basename
+    FROM stat(filename=BasePath + '/generic.client.INFO/basicinformation.JSON',
+              accessor='zip_nocase')

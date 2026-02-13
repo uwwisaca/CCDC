@@ -1,0 +1,36 @@
+Parameters:
+  RemappingTemplate: |
+    remappings:
+      - type: mount
+        from:
+          accessor: zip
+          path_type: linux
+          prefix: |
+            {
+              "DelegateAccessor": "scope",
+              "DelegatePath": "Content",
+              "Path": "/"
+            }
+        on:
+          accessor: "auto"
+          prefix: "C:/"
+          path_type: "windows"
+
+Queries:
+  # Test the jumplist artifact
+  - SELECT AutomaticDestinationsPath.Basename, Stream,
+           ApplicationId, Application, LinkTarget,
+           FileSize , CreationTime , AccessTime, WriteTime
+    FROM Artifact.Windows.Forensics.JumpLists(
+        Globs=srcDir+"/artifacts/testdata/files/*-ms")
+
+  # Generate this file with
+  # SELECT copy(accessor="data", filename=xor(key="infected",
+  # string=read_file(filename="/tmp/malware.zip")),
+  # dest="/tmp/malware.zip.xor") FROM scope()
+  - LET Content <= xor(key="infected", string=read_file(
+        filename=srcDir+"/artifacts/testdata/files/malware.zip.xor"))
+  - LET _ <= remap(config=RemappingTemplate, copy=["zip", "scope"], clear=TRUE)
+
+  - SELECT Code, ModuleName FROM Artifact.Windows.Applications.OfficeMacros(
+        officeFileSearchGlob="C:/**")

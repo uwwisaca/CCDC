@@ -1,0 +1,134 @@
+{
+ "Notebook Metadata": {
+  "name": "Test Notebook",
+  "description": "This is a test",
+  "creator": "admin",
+  "artifacts": [
+   "Notebooks.Default"
+  ],
+  "parameters": [
+   {
+    "name": "ArtifactName",
+    "default": "Notebooks.Default",
+    "description": "Name of the artifact this notebook came from."
+   }
+  ],
+  "requests": [
+   {
+    "query_id": 1,
+    "total_queries": 1,
+    "env": [
+     {
+      "key": "ArtifactName",
+      "value": "Notebooks.Default"
+     },
+     {
+      "key": "ColumnTypes",
+      "value": "{}"
+     }
+    ],
+    "Query": [
+     {
+      "VQL": "LET ColumnTypes \u003c= parse_json(data=ColumnTypes)"
+     }
+    ],
+    "max_row": 1000
+   }
+  ],
+  "notebook_id": "N.01",
+  "cell_metadata": [
+   {
+    "summary": "Welcome to Velociraptor notebooks!",
+    "cell_id": "NC.02",
+    "type": "markdown",
+    "current_version": "03",
+    "available_versions": [
+     "03"
+    ]
+   }
+  ]
+ },
+ "Markdown Cell": {
+  "notebook_id": "N.01",
+  "input": "# Heading 1\n\nHello world\n",
+  "output": "\u003ch1\u003eHeading 1\u003c/h1\u003e\n\n\u003cp\u003eHello world\u003c/p\u003e\n",
+  "data": "{}",
+  "cell_id": "NC.02",
+  "messages": [
+   "DEBUG:Query Stats: {\"RowsScanned\":0,\"PluginsCalled\":0,\"FunctionsCalled\":1,\"ProtocolSearch\":0,\"ScopeCopy\":0}\n"
+  ],
+  "type": "markdown",
+  "current_version": "04",
+  "available_versions": [
+   "03",
+   "04"
+  ]
+ },
+ "VQL Cell": {
+  "notebook_id": "N.01",
+  "input": "SELECT _value AS X FROM range(end=2)",
+  "output": "\u003cdiv class=\"panel\"\u003e\u003cvelo-csv-viewer base-url=\"'v1/GetTable'\" params='%7B%22notebook_id%22%3A%22N.01%22%2C%22client_id%22%3A%22%22%2C%22cell_id%22%3A%22NC.02-05%22%2C%22table_id%22%3A1%2C%22TableOptions%22%3A%7B%7D%2C%22Version%22%3A%7D' /\u003e\u003c/div\u003e",
+  "data": "{}",
+  "cell_id": "NC.02",
+  "messages": [
+   "DEBUG:Query Stats: {\"RowsScanned\":2,\"PluginsCalled\":1,\"FunctionsCalled\":1,\"ProtocolSearch\":0,\"ScopeCopy\":5}\n"
+  ],
+  "type": "vql",
+  "current_version": "05",
+  "available_versions": [
+   "03",
+   "04",
+   "05"
+  ]
+ },
+ "Full Notebook after update": {
+  "name": "Test Notebook",
+  "description": "This is a test",
+  "creator": "admin",
+  "artifacts": [
+   "Notebooks.Default"
+  ],
+  "parameters": [
+   {
+    "name": "ArtifactName",
+    "default": "Notebooks.Default",
+    "description": "Name of the artifact this notebook came from."
+   }
+  ],
+  "requests": [
+   {
+    "query_id": 1,
+    "total_queries": 1,
+    "env": [
+     {
+      "key": "ArtifactName",
+      "value": "Notebooks.Default"
+     },
+     {
+      "key": "ColumnTypes",
+      "value": "{}"
+     }
+    ],
+    "Query": [
+     {
+      "VQL": "LET ColumnTypes \u003c= parse_json(data=ColumnTypes)"
+     }
+    ],
+    "max_row": 1000
+   }
+  ],
+  "notebook_id": "N.01",
+  "cell_metadata": [
+   {
+    "cell_id": "NC.02",
+    "type": "vql",
+    "current_version": "05",
+    "available_versions": [
+     "03",
+     "04",
+     "05"
+    ]
+   }
+  ]
+ }
+}

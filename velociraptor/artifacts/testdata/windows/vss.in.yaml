@@ -1,0 +1,14 @@
+Queries:
+  # Test for deduplication
+  - SELECT OSPath FROM Artifact.Windows.Search.VSS(SearchFilesGlob='c:\\Users\\test.txt')
+
+  # Test for multiple hits
+  - SELECT OSPath FROM Artifact.Windows.Search.VSS(SearchFilesGlob='c:\\Users\\test2.txt')
+
+  # Test evtx VSS support.
+
+  # Find COMSPEC service VSS test - should show two services created,
+  # even though the logs were cleared.
+  - SELECT EventID,ServiceName,Source FROM Artifact.Windows.EventLogs.ServiceCreationComspec(
+          EventLog="C:\\Windows\\system32\\winevt\\logs\\System.evtx",
+          VSSAnalysisAge=2)

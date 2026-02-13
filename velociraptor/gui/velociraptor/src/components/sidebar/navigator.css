@@ -1,0 +1,135 @@
+.navbar {
+  margin-bottom: 0; /* Bootstrap tweaks */
+  padding: 0px;
+}
+
+.navbar .space-right {
+  margin-right: 10px;
+}
+
+.navbar.navbar-static-top {
+  min-width: 1024px;
+}
+
+.navbar.navbar-fixed-bottom {
+  min-width: 1024px;
+}
+
+.navbar-brand {
+  font-size: 20px;
+  padding-left: 50px;
+  height: 50px;
+}
+
+img.velo-logo {
+  height: 36px;
+  width: 29px;
+  margin: 5px;
+}
+
+/* Sidebar navbar */
+
+nav.navigator a {
+  display: block;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  color: var(--color-sidebar-foreground);
+}
+
+nav.navigator li.nav-link {
+  padding: 0;
+}
+
+.navigator.nav-pills.nav li {
+  border-radius: 0;
+}
+
+.navigator.nav-pills.nav li:hover {
+  color: var(--color-sidebar-inactive-foreground-hover);
+  background: var(--color-sidebar-inactive-background-hover);
+}
+
+nav.navigator ul.navigator.nav-pills.nav .nav-link.disabled {
+  opacity: 30%;
+  pointer-events: none;
+}
+
+.navigator.nav-pills.nav {
+  font-weight: 400;
+  width: 260px;
+}
+
+.nav.nav-pills.navigator .nav-link:has(a.active) {
+  background-color: var(--color-sidebar-active-background);
+  color: var(--color-sidebar-active-foreground);
+}
+
+.nav-pills .nav-link {
+  font-weight: 400;
+  width: 260px;
+}
+
+button a.nav-link {
+  padding: 0px;
+  color: black;
+}
+
+.navicon {
+  margin-right: 18px;
+}
+
+#navigator {
+  height: 100%;
+  position: fixed;
+  z-index: 1000; /* Must be above everything else and below the modal shadow @ 1050; */
+  top: 50px;
+  left: 0;
+  overflow-x: hidden;
+  transition: 0.5s;
+  border-right: gray;
+  border-width: 2px;
+  border-right-style: solid;
+  background-color: var(--color-sidebar-background);
+}
+
+div#navigator {
+  width: 260px;
+  overflow-x: hidden;
+}
+
+div#navigator.collapsed {
+  width: var(--sidebar-collapsed-width);
+}
+
+div#navigator li a {
+    white-space: nowrap;
+}
+
+.nav-link span {
+  width: 18px;
+  margin-right: 12px;
+  display: inline-block;
+}
+
+#navigator.uncollapsed {
+  width: 260px;
+}
+
+button.hamburger {
+  float: left;
+  font-size: 30px;
+  cursor: pointer;
+  border: none;
+  background-color: var(--color-header-background);
+  padding-left: 12px;
+  padding-top: 5px;
+}
+
+a.disabled {
+  pointer-events: none;
+}
+
+.sidebar-icon {
+    width: 15px;
+    height: 15px;
+}

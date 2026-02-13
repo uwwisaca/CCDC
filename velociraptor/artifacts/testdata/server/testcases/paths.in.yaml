@@ -1,0 +1,93 @@
+Queries:
+  - SELECT basename(path="/foo/bar/baz", path_type='linux') FROM scope()
+  - SELECT dirname(path="/foo/bar/baz", path_type='linux') FROM scope()
+
+  - SELECT relpath(path=pathspec(parse="/foo/bar"), base="/foo", sep="/")
+    FROM scope()
+
+  # Test we handle proper escaping
+  - SELECT basename(path='/foo/bar/"http://www.google.com/"', path_type='generic') FROM scope()
+  - SELECT basename(path='c:\\foo\\bar\\"http://www.google.com/"', path_type='windows') FROM scope()
+  - SELECT basename(path='c:\\foo\\bar\\"http://www.google.com/"/Foobar', path_type='windows') FROM scope()
+  - SELECT dirname(path='c:\\foo\\bar\\"http://www.google.com/"/Foobar', path_type='windows') FROM scope()
+  - SELECT basename(path='c:\\foo\\bar\\"F:\\foobar.txt"', path='windows') FROM scope()
+  - SELECT basename(path='c:\\foo\\bar\\"F:\\foo/bar.txt"', path='windows') FROM scope()
+
+  # Get second last path component
+  - SELECT path_split(path="/a/b/c/d/e", path_type='linux')[-2] FROM scope()
+
+  # Make sure we handle overflow properly by wrapping
+  - SELECT path_split(path="/a/b", path_type='linux')[-20] FROM scope()
+
+  # Make sure pathspec parsing works.
+  - LET path_spec = pathspec(DelegateAccessor="file", DelegatePath="C:/Windows")
+  - |
+    SELECT
+       -- Serialize to JSON string
+       path_spec,
+
+       -- Parse from string
+       pathspec(parse=path_spec.String),
+
+       -- Parse from OSPath
+       pathspec(parse=path_spec),
+
+       -- Parse a windows path
+       pathspec(parse="C:\\Windows", path_type='windows'),
+
+       -- Parse a linux path
+       pathspec(parse="/usr/lib", path_type='linux'),
+
+       -- Parse a registry path (Expand hive)
+       pathspec(parse="HKU/Software", path_type='registry'),
+       pathspec(parse="HKU/Software", path_type='registry') + "Microsoft",
+
+       -- Access components from an OSPath
+       pathspec(parse="HKU/Software", path_type='registry').Components,
+
+       -- Addition operation on OSPath - adding a string parses the string as
+       -- a path and joins the components..
+       (pathspec(parse="C:\\Windows", path_type='windows') + "\\foo\\bar").Components,
+
+       -- adding a list of strings joins the components without parsing each one.
+       (pathspec(parse="C:\\Windows", path_type='windows') + ("foo/bar",)).Components
+
+
+    FROM scope()
+
+  # Complex Windows Paths
+  - LET shadow_path <= pathspec(parse="\\\\?\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy1\\Windows\\System32\\Notepad.exe", path_type="windows")
+  - SELECT shadow_path,
+     shadow_path.Dirname,
+     shadow_path.Dirname.Basename,
+     shadow_path.Basename,
+     shadow_path.Components
+    FROM scope()
+
+  # Handle paths with subscripts
+  - LET OSPath = pathspec(parse='''C:\Users\test\desktop.ini''', path_type="windows")
+  - |
+    SELECT OSPath,
+      OSPath.Components[0] AS Drive,
+      OSPath.Components[-2] AS UserName,
+      OSPath[:-1] AS HomeDirectory,
+      OSPath[1:] AS DriveRelative,
+      -- Adding components to an OSPath extends it into a new path.
+      pathspec(parse="D:", path_type="windows") + OSPath.Components[1:] AS PathOnDDrive
+    FROM scope()
+
+  # Complex nested pathspec. Use zip here instead of file to get
+  # consistant slash behavior on Linux and Windows.
+  - LET ComplexOSPath <= pathspec(
+      Path="ControlSet001",
+      DelegateAccessor="raw_ntfs",
+      DelegatePath=pathspec(
+         Path="/Windows/System32/Config/SYSTEM",
+         DelegateAccessor="offset",
+         DelegatePath=pathspec(
+            Path="122683392",
+            DelegateAccessor="zip",
+            DelegatePath="/shared/mnt/flat")))
+
+  - SELECT ComplexOSPath, ComplexOSPath.HumanString
+    FROM scope()

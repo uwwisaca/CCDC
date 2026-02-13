@@ -1,0 +1,76 @@
+Query: LET VQL_MATERIALIZE_ROW_LIMIT <= 2
+Output: []
+
+# This materialized query will contain 1 row and will be memory
+# resident.
+Query: LET Y <= SELECT "Hello" FROM scope()
+Output: []
+
+Query: SELECT * FROM Y
+Output: [
+ {
+  "\"Hello\"": "Hello"
+ }
+]
+
+# This should overflow and be disk resident. We can still select from
+# it normally.
+Query: LET X <= SELECT * FROM range(end=100)
+Output: []
+
+Query: SELECT * FROM X LIMIT 5
+Output: [
+ {
+  "_value": 0
+ },
+ {
+  "_value": 1
+ },
+ {
+  "_value": 2
+ },
+ {
+  "_value": 3
+ },
+ {
+  "_value": 4
+ }
+]
+
+# The following are not really supported for file backed materializers
+# because they may overflow the result JSON.
+Query: SELECT X, X[0] FROM scope()
+Output: [
+ {
+  "X": null,
+  "X[0]": null
+ }
+]
+
+# Same thing is OK for in memory materializers because these should be
+# small.
+Query: SELECT Y, Y[0] FROM scope()
+Output: [
+ {
+  "Y": [
+   {
+    "\"Hello\"": "Hello"
+   }
+  ],
+  "Y[0]": {
+   "\"Hello\"": "Hello"
+  }
+ }
+]
+
+# Check that log messages are emitted by VQL when switching to file
+# based
+Query: SELECT Log[:100] FROM test_read_logs()
+WHERE Log =~ "Materialize of LET X: Expand larger than 2 rows, VQL will switch to tempf" AND NOT Log =~ "SELECT"
+
+Output: [
+ {
+  "Log[:100]": "Velociraptor: WARN:Materialize of LET X: Expand larger than 2 rows, VQL will switch to tempfile back"
+ }
+]
+

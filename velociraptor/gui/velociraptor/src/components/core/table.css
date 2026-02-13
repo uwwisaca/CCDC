@@ -1,0 +1,65 @@
+.velo-table .react-bootstrap-table {
+    width: 100%;
+}
+
+.velo-table {
+    margin-top: 10px;
+    padding-left: 16px;
+}
+
+.table > :not(:last-child) > :last-child > *  {
+    border-bottom-color: transparent;
+}
+
+
+/* Collapse empty rows as much as possible */
+.velo-table td:empty {
+    padding: 0px;
+    -webkit-border-vertical-spacing: 0px;
+}
+
+a.btn.btn-default.active {
+    color: #808080;
+}
+
+
+.modal-90w {
+    width: 90%;
+    max-width: none!important;
+}
+
+.modal-70w {
+    width: 70%;
+    max-width: none!important;
+}
+
+.row.react-bootstrap-table-pagination {
+    width: 100%;
+}
+
+.selectable {
+    cursor: pointer;
+}
+
+.pagination-form {
+    height: 37.6px;
+    width: 8em;
+}
+
+td .number {
+    text-align: end;
+    white-space: nowrap;
+}
+
+.fixed-table-body td {
+    overflow: hidden;
+    word-break: break-word;
+}
+
+button.table-transformed.btn[disabled] {
+    color: var(--color-foreground);
+}
+
+.no-break {
+    white-space: pre;
+}

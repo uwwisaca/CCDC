@@ -1,0 +1,90 @@
+# First remove all labels from all clients.
+Query: LET _ <= SELECT label(client_id=client_id, op='remove', labels=labels), client_id
+FROM clients(search='label:*') ORDER BY client_id
+
+Output: []
+
+# Make sure no labels exist. NOTE: label:* does not select clients
+# with no labels.
+Query: SELECT client_id, labels FROM clients(search='label:*')
+Output: []
+
+# Now set labels on windows clients.
+Query: SELECT * FROM foreach(
+  row={
+     SELECT * FROM clients()
+     WHERE os_info.system = 'windows' ORDER BY client_id
+  }, query={
+     SELECT os_info.system, label(
+         client_id=client_id, labels=['WinBoxes'],
+         op='set')
+     FROM scope()
+  })
+
+Output: [
+ {
+  "os_info.system": "windows",
+  "label(client_id=client_id, labels=['WinBoxes'], op='set')": {
+   "ClientId": "C.4f5e52adf0a337a9",
+   "Labels": [
+    "WinBoxes"
+   ],
+   "Op": "set"
+  }
+ }
+]
+
+# Should be able to see our labels now.
+Query: SELECT client_id, labels FROM clients(search='label:*')
+Output: [
+ {
+  "client_id": "C.4f5e52adf0a337a9",
+  "labels": [
+   "WinBoxes"
+  ]
+ }
+]
+
+# Check for labels
+Query: SELECT label(client_id='C.4f5e52adf0a337a9', labels=['WinBoxes'], op='check') AS HasLabel FROM scope()
+Output: [
+ {
+  "HasLabel": {
+   "ClientId": "C.4f5e52adf0a337a9",
+   "Labels": [
+    "WinBoxes"
+   ],
+   "Op": "check"
+  }
+ }
+]
+
+# Should return Null - no such label
+Query: SELECT label(client_id='C.4f5e52adf0a337a9', labels=['XXXBoxes'], op='check') AS HasLabel FROM scope()
+Output: [
+ {
+  "HasLabel": false
+ }
+]
+
+# Clear everything
+Query: SELECT label(client_id=client_id, op='remove', labels=labels), client_id
+FROM clients(search='label:*') ORDER BY client_id
+
+Output: [
+ {
+  "label(client_id=client_id, op='remove', labels=labels)": {
+   "ClientId": "C.4f5e52adf0a337a9",
+   "Labels": [
+    "WinBoxes"
+   ],
+   "Op": "remove"
+  },
+  "client_id": "C.4f5e52adf0a337a9"
+ }
+]
+
+# Make sure no labels exist.
+Query: SELECT * FROM clients(search='label:*') ORDER BY client_id
+Output: []
+

@@ -1,0 +1,180 @@
+Query: SELECT mock(plugin='info', results=[dict(OS='windows'), dict(OS='windows')] ) FROM scope()
+Output: [
+ {
+  "mock(plugin='info', results=[dict(OS='windows'), dict(OS='windows')])": null
+ }
+]
+
+# Check the yara plugin works. For large block size the entire file
+# will be in memory.
+Query: SELECT String.Offset, str(str=String.Data) AS Hit
+FROM yara(rules=hiveSig, blocksize=10,
+files="regfXXXXXXXXXXXXXXXXXXXXXXprogram", accessor="data")
+
+Output: []
+
+Query: SELECT String.Offset, str(str=String.Data) AS Hit
+FROM yara(rules=hiveSig, blocksize=1000,
+files="regfXXXXXXXXXXXXXXXXXXXXXXprogram", accessor="data")
+
+Output: [
+ {
+  "String.Offset": 26,
+  "Hit": "program"
+ }
+]
+
+Query: SELECT String.Offset, str(str=String.Data) AS Hit
+FROM yara(rules=findX, number=1,
+files="regfXXXXXXXXXXXXXXXXXXXXXXprogram", accessor="data")
+
+Output: [
+ {
+  "String.Offset": 4,
+  "Hit": "X"
+ }
+]
+
+Query: SELECT String.Offset, str(str=String.Data) AS Hit
+FROM yara(rules=findX, number=2,
+files="regfXXXXXXXXXXXXXXXXXXXXXXprogram", accessor="data")
+
+Output: [
+ {
+  "String.Offset": 4,
+  "Hit": "X"
+ },
+ {
+  "String.Offset": 5,
+  "Hit": "X"
+ }
+]
+
+Query: SELECT String.Offset, str(str=String.Data) AS Hit
+FROM yara(rules=findX, start=10, number=1,
+files="regfXXXXXXXXXXXXXXXXXXXXXXprogram", accessor="data")
+
+Output: [
+ {
+  "String.Offset": 10,
+  "Hit": "X"
+ }
+]
+
+Query: SELECT String.Offset, str(str=String.Data) AS Hit
+FROM yara(rules=findX, start=10, end=12, number=20,
+files="regfXXXXXXXXXXXXXXXXXXXXXXprogram", accessor="data")
+
+Output: [
+ {
+  "String.Offset": 10,
+  "Hit": "X"
+ },
+ {
+  "String.Offset": 11,
+  "Hit": "X"
+ }
+]
+
+Query: SELECT String.Offset, str(str=String.Data) AS Hit
+FROM yara(rules=findX, number=1, context=2,
+files="regfXXXXXXXXXXXXXXXXXXXXXXprogram", accessor="data")
+
+Output: [
+ {
+  "String.Offset": 4,
+  "Hit": "gfXXX"
+ }
+]
+
+Query: SELECT String.Offset, str(str=String.Data) AS Hit
+FROM yara(rules=findX, number=1, context=10,
+files="regfXXXXXXXXXXXXXXXXXXXXXXprogram", accessor="data")
+
+Output: [
+ {
+  "String.Offset": 4,
+  "Hit": "regfXXXXXXXXXXX"
+ }
+]
+
+# For "file" accessors we mmap the file and so blocksize is
+# ignored. This should work as above.
+Query: SELECT String.Offset, str(str=String.Data) AS Hit
+FROM yara(rules=hiveSig, blocksize=10,
+files=srcDir+"/artifacts/testdata/files/Amcache.hve")
+
+Output: [
+ {
+  "String.Offset": 200759,
+  "Hit": "program"
+ }
+]
+
+Query: SELECT String.Offset, str(str=String.Data) AS Hit
+FROM yara(rules=hiveSig, context=10,
+files=srcDir+"/artifacts/testdata/files/yara_test.txt")
+
+Output: [
+ {
+  "String.Offset": 12,
+  "Hit": "gfXXXXXXXXprogram\n"
+ }
+]
+
+Query: SELECT String.Offset, str(str=String.Data) AS Hit
+FROM yara(rules=hiveSig, context=10, accessor="file",
+files=srcDir+"/artifacts/testdata/files/yara_test.txt")
+
+Output: [
+ {
+  "String.Offset": 12,
+  "Hit": "gfXXXXXXXXprogram\n"
+ }
+]
+
+# Imphash should also work
+Query: SELECT "imphash", basename(path=FileName)
+FROM yara(rules=imphashSig, accessor="file",
+files=srcDir+"/artifacts/testdata/files/3DBuilder.ResourceResolver.exe")
+
+Output: [
+ {
+  "\"imphash\"": "imphash",
+  "basename(path=FileName)": "3DBuilder.ResourceResolver.exe"
+ }
+]
+
+# Test we can apply compiled rules
+Query: SELECT * FROM yara(files='This is a secret', accessor="data",
+   rules=read_file(filename=srcDir+"/artifacts/testdata/files/test.yarac"))
+
+Output: [
+ {
+  "Rule": "Hit",
+  "Meta": null,
+  "Tags": null,
+  "String": {
+   "Name": "$A",
+   "Offset": 10,
+   "HexData": [
+    "00000000  73 65 63 72 65 74                                 |secret|",
+    ""
+   ],
+   "Data": "c2VjcmV0"
+  },
+  "File": {
+   "FullPath": "This is a secret",
+   "Size": 16,
+   "Mode": 420,
+   "ModeStr": "-rw-r--r--",
+   "ModTime": "0001-01-01T00:00:00Z",
+   "Data": {},
+   "Mtime": "0001-01-01T00:00:00Z",
+   "Ctime": "0001-01-01T00:00:00Z",
+   "Atime": "0001-01-01T00:00:00Z"
+  },
+  "FileName": "This is a secret"
+ }
+]
+

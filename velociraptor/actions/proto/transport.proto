@@ -1,0 +1,123 @@
+syntax = "proto3";
+
+// Protobufs for transferring bulk data.
+import "proto/semantic.proto";
+
+package proto;
+
+option go_package = "www.velocidex.com/golang/velociraptor/actions/proto";
+
+message Range {
+    // Range offset in the underlying file.
+    int64 file_offset = 1;
+
+    // Range offset in the underlying file
+    int64 original_offset = 2;
+
+    // The length of data that exists in the underlying file. May be 0
+    // if the range is sparse and has no underlying storage.
+    int64 file_length = 3;
+
+    // Length of this range.
+    int64 length = 4;
+}
+
+message Index {
+    repeated Range ranges = 1;
+}
+
+// A message to encode a filesystem path (maybe for raw access)
+// Next field: 15
+message PathSpec {
+    string path = 2 [(sem_type) = {
+            description: "The path passed to the Filesystem accessor. "
+            "This value is interpreted by the accessor in its own way.",
+        }];
+
+    repeated string components = 4;
+
+    string accessor = 3 [(sem_type) = {
+            description: "The accessor used to retrieve the file.",
+        }];
+};
+
+// The Velociraptor client sends back the buffer and the filename and
+// the server saves the entire file directly in the file storage
+// filesystem. This allows easy recovery as well as data expiration
+// policies (since the filestore is just a directory on disk with
+// regular files and timestamps).
+message FileBuffer {
+    PathSpec pathspec = 1;
+    uint64 offset = 2 [(sem_type) = {
+            description: "Offset of the buffer in the file."
+        }];
+
+    // Expected size of file.
+    uint64 size = 7;
+    uint64 stored_size = 8;
+    bool is_sparse = 9;
+
+    bytes data = 3;
+
+    // If this is > 0 then then data field contains already compressed
+    // data. The length of the uncompressed data will be given here.
+    uint64 uncompressed_length = 17;
+
+    // For uploaders that do not transfer the bulk data inside the
+    // data field, we need a way to specify how much data was
+    // transferred in thie buffer. In the usual uploader this will be
+    // the len(data).
+    uint64 data_length = 16;
+
+    string flow_id = 4;
+    bool eof = 5;
+
+    // Set when the file is sparse.
+    Index index = 6;
+
+    int64 mtime = 10;
+    int64 atime = 11;
+    int64 ctime = 12;
+    int64 btime = 13;
+
+    // Set when the actual file is stored somewhere else (e.g. S3)
+    string reference = 14;
+
+    // An incrementing number of uploads across the entire
+    // collection. Velociraptor file uploads are stored per collection
+    // and not per query so this number is unique across all the
+    // queries in the collection. It amounts to the row id on the
+    // collections uploads result set.
+    int64 upload_number = 15;
+}
+
+message ForemanCheckin {
+    uint64 last_hunt_timestamp = 1;
+    uint64 last_event_table_version = 2;
+}
+
+// An UploadTransaction represents an intention for the client to
+// begin an upload. The upload will proceed in the future. The actual
+// upload may be cancelled or timed out and then can be resumed by the
+// user.
+//
+// The goal of this message is to capture state as much as possible to
+// allow the upload to resume, i.e. reflect the uploader interface
+// args.
+message UploadTransaction {
+    string filename = 1;
+    string accessor = 2;
+    string store_as_name = 3;
+    repeated string components = 13;
+    int64 expected_size = 4;
+    int64 mtime = 5;
+    int64 atime = 6;
+    int64 ctime = 7;
+    int64 btime = 8;
+    int64 mode = 9;
+    int64 start_offset = 10;
+    int64 upload_id = 11;
+
+    // A JSON object that represents the result of the upload
+    string response = 12;
+}

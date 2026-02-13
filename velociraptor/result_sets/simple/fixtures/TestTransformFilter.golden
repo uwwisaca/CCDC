@@ -1,0 +1,42 @@
+{
+ "Filtered by Str Sort Asc": [
+  {
+   "Str": "This is a string",
+   "Int": 6
+  },
+  {
+   "Str": "Another string",
+   "Int": 12
+  }
+ ],
+ "Filtered out by Str Sort Asc": [
+  {
+   "Str": "Hello world",
+   "Int": 12
+  },
+  {
+   "Str": null,
+   "Int": -10
+  }
+ ],
+ "Filtered by Str - nil": [
+  {
+   "Str": null,
+   "Int": -10
+  }
+ ],
+ "Filtered by Int Sort Asc": [
+  {
+   "Str": "Hello world",
+   "Int": 12
+  },
+  {
+   "Str": "Another string",
+   "Int": 12
+  },
+  {
+   "Str": null,
+   "Int": -10
+  }
+ ]
+}

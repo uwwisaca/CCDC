@@ -1,0 +1,56 @@
+Queries:
+  # Make parsing timezone default to Brisbane time.
+  - LET PARSE_TZ <= "Australia/Brisbane"
+
+  # This setting causes logging of errors in timestamp parsing.
+  - LET DEBUG <= TRUE
+  - |
+    SELECT timestamp(string='March 3 2019'),
+           timestamp(string='March 3 2019') < '2021-10-01',
+           timestamp(string='07/25/2019 5pm'),
+
+           -- This is in Brisbane time since no timezone is specified.
+           timestamp(string="2021-10-01T10:53:32"),
+
+           -- This is in UTC time because timezone is specified.
+           timestamp(string="2021-10-01T10:53:32Z"),
+
+           -- Formatting time as String produced RFC3339 encoding.
+           format(format="The time is %s",
+                  args=timestamp(string='March 3 2019').String),
+
+           -- Test epoch as second, ms and us
+           timestamp(epoch=1630414425) AS Time1,
+           timestamp(epoch=1630414425000) AS Time2,
+           timestamp(epoch=1630414425000000) AS Time3,
+
+           -- Test an explicit format specifier (Default timezone is +10)
+           timestamp(string="8/30/2021 6:01:28 PM",
+                     format="1/2/2006 3:04:05 PM") AS FormattedTime
+
+    FROM scope()
+
+  # Start the clock immediately - this should not block due to LIMIT 1
+  - SELECT Unix > 1630414425 FROM clock(period=60, start=0) LIMIT 1
+
+  # Test time comparison operators. Comparing times vs int, float and
+  # strings
+  - |
+    SELECT timestamp(epoch=1723428985) < 1118628985,
+         1118628985 < timestamp(epoch=1723428985),
+         timestamp(epoch=1723428985) < timestamp(epoch=1118628985),
+         timestamp(epoch=1118628985) < timestamp(epoch=1723428985),
+         timestamp(epoch=1723428985) > 1118628985,
+         1118628985 > timestamp(epoch=1723428985),
+         timestamp(epoch=1723428985) > timestamp(epoch=1118628985),
+         timestamp(epoch=1118628985) > timestamp(epoch=1723428985),
+         timestamp(epoch=1723428985) < 1118628985.0,
+         1118628985.0 < timestamp(epoch=1723428985),
+         timestamp(epoch=1723428985) > 1118628985.0,
+         1118628985.0 > timestamp(epoch=1723428985),
+         timestamp(epoch=1723428985),
+         timestamp(epoch=1723428985) < "2024-08-12T02:15:25.176Z",
+         "2024-08-12T02:15:25.176Z" < timestamp(epoch=1723428985),
+         timestamp(epoch=1723428985) > "2024-08-12T02:15:25.176Z",
+         "2024-08-12T02:15:25.176Z" > timestamp(epoch=1723428985)
+    FROM scope()

@@ -1,0 +1,54 @@
+Parameters:
+  Broken1: |
+    name: BrokenYaml
+    someweirdfield: 1
+
+  Broken2: |
+    name: BrokenQuery
+    sources:
+    - query: SELECT * FROM nosuchplugin()
+
+  Broken3: |
+    name: BrokenSubArtifact
+    sources:
+    - query: SELECT * FROM Artifact.No.Such.Artifact()
+
+  Warn1: |
+    name: WarnningExecve
+    sources:
+    - query: SELECT * FROM execve(argv=["ls"])
+
+  Override1: |
+    name: Generic.Client.Info
+    sources:
+    - query: SELECT * FROM scope()
+  
+  Override2: |
+    name: Override2
+    sources:
+    - query: SELECT * FROM scope()
+
+
+Queries:
+  # Basic verification of some artifacts.
+  - SELECT verify(artifact=Broken1) AS Broken1,
+           verify(artifact=Broken2) AS Broken2,
+           verify(artifact=Broken3) AS Broken3,
+           verify(artifact=Warn1) AS Warn1
+    FROM scope()
+
+  # Check the Server.Utils.ArtifactVerifier works on some bad
+  # artifacts. Filter out the absolute path to make test reproducible
+  - SELECT summary, artifacts, {
+       SELECT *, basename(path=path) as path
+       FROM results
+    } AS results
+    FROM Artifact.Server.Utils.ArtifactVerifier(
+       SearchGlob=srcDir+"/artifacts/testdata/files/artifacts/*")
+
+  # Check the "disable_override" argument produces an error when overriding a built-in,
+  # but not when creating a new artifact when True is specified.
+  - SELECT 
+      verify(artifact=Override1, disable_override=True) AS Override1,
+      verify(artifact=Override2, disable_override=True) AS Override2
+    FROM scope()

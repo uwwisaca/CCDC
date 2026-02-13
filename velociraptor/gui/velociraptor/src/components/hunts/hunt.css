@@ -1,0 +1,23 @@
+.hunt-toolbar {
+    display: block;
+    box-sizing: content-box;
+    overflow: visible;
+    margin: 5px;
+    width: 100%;
+    margin-bottom: 5px;
+    margin-right: 20px;
+    margin-left: 20px;
+}
+
+div .hunt-status-icon {
+    text-align: center;
+}
+
+.org-selector {
+    flex: 1 1 auto;
+}
+
+.delete-hunt-table {
+    overflow-y: auto;
+    max-height: 60vh;
+}

@@ -1,0 +1,737 @@
+Query: SELECT mock(plugin='info', results=[dict(OS='windows'), dict(OS='windows')] ) FROM scope()
+Output: [
+ {
+  "mock(plugin='info', results=[dict(OS='windows'), dict(OS='windows')])": null
+ }
+]
+
+# Test listing a direcctory with Key named the same as a value. This
+# should show both key and value as separate entities with the same
+# name. Glob should be able to handle this because raw registry
+# accessor presents the UniqueName() interface to allow Globs to see
+# them as different entities.
+Query: SELECT OSPath.Path AS Key, Data, Data.type AS Type FROM glob(globs="*", accessor="raw_reg", root=pathspec( Path="/Local Settings/Software/Microsoft/Windows/Shell/BagMRU", DelegatePath=srcDir+"/artifacts/testdata/files/UsrClass.dat")) WHERE OSPath.Basename =~ "0" ORDER BY Type
+Output: [
+ {
+  "Key": "\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\\0",
+  "Data": {
+   "type": "Key"
+  },
+  "Type": "Key"
+ },
+ {
+  "Key": "\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\\0",
+  "Data": {
+   "type": "REG_BINARY",
+   "data_len": 22,
+   "value": "FAAfgMuFn2cgAoBAsptVQMwFqrYAAA=="
+  },
+  "Type": "REG_BINARY"
+ }
+]
+
+# Now test read_file on values. If there is a value and a key of the
+# same name an Open() will prefer the value.
+Query: SELECT format(format="%02x", args=read_file(accessor='raw_reg', filename=pathspec( Path="/Local Settings/Software/Microsoft/Windows/Shell/BagMRU/0", DelegatePath=srcDir+"/artifacts/testdata/files/UsrClass.dat"))) AS ValueContent FROM scope()
+Output: [
+ {
+  "ValueContent": "14001f80cb859f6720028040b29b5540cc05aab60000"
+ }
+]
+
+# This artifact uses the raw registry parser.
+Query: SELECT * FROM Artifact.Windows.Forensics.Amcache( amCacheGlob=srcDir+"/artifacts/testdata/files/Amcache.hve") LIMIT 5
+Output: [
+ {
+  "Timestamp": "2019-03-02T08:21:12Z",
+  "Name": "AM_Base.exe",
+  "ProductName": "microsoft malware protection",
+  "ProductVersion": "1.289.0.0",
+  "Size": 73585544,
+  "Usn": 21453008,
+  "SHA1": "85ec26beb5c422b02c5d059bbc966bf99eb3892a",
+  "FullPath": "c:\\windows\\softwaredistribution\\download\\install\\am_base.exe",
+  "OriginalFileName": null,
+  "BinaryType": "pe64_amd64",
+  "LinkDate": "02/26/2019 18:16:35",
+  "AppxPackageFullName": null,
+  "_Source": "Windows.Forensics.Amcache/InventoryApplicationFile"
+ },
+ {
+  "Timestamp": "2019-03-02T08:21:18Z",
+  "Name": "AM_Delta.exe",
+  "ProductName": "microsoft malware protection",
+  "ProductVersion": "1.289.263.0",
+  "Size": 1994928,
+  "Usn": 21459976,
+  "SHA1": "499688da430f3e0534a8c822154588c998062abb",
+  "FullPath": "c:\\windows\\softwaredistribution\\download\\install\\am_delta.exe",
+  "OriginalFileName": null,
+  "BinaryType": "pe64_amd64",
+  "LinkDate": "03/02/2019 05:01:09",
+  "AppxPackageFullName": null,
+  "_Source": "Windows.Forensics.Amcache/InventoryApplicationFile"
+ },
+ {
+  "Timestamp": "2019-03-02T08:20:48Z",
+  "Name": "AM_Engine.exe",
+  "ProductName": "microsoft malware protection",
+  "ProductVersion": "1.1.15700.9",
+  "Size": 5634728,
+  "Usn": 21438368,
+  "SHA1": "95e04fb4f1c8f64240970d1937323473cdc3b42d",
+  "FullPath": "c:\\windows\\softwaredistribution\\download\\install\\am_engine.exe",
+  "OriginalFileName": null,
+  "BinaryType": "pe64_amd64",
+  "LinkDate": "02/21/2019 14:56:50",
+  "AppxPackageFullName": null,
+  "_Source": "Windows.Forensics.Amcache/InventoryApplicationFile"
+ },
+ {
+  "Timestamp": "2019-03-02T08:10:03Z",
+  "Name": "autochk.exe",
+  "ProductName": "microsoft® windows® operating system",
+  "ProductVersion": "10.0.17763.1",
+  "Size": 956416,
+  "Usn": 0,
+  "SHA1": "2e6c38958917fb86f09026d41337c7460efbe5f5",
+  "FullPath": "c:\\windows\\system32\\autochk.exe",
+  "OriginalFileName": null,
+  "BinaryType": "pe64_amd64",
+  "LinkDate": "05/22/1991 07:17:28",
+  "AppxPackageFullName": null,
+  "_Source": "Windows.Forensics.Amcache/InventoryApplicationFile"
+ },
+ {
+  "Timestamp": "2019-03-02T08:11:12Z",
+  "Name": "chrmstp.exe",
+  "ProductName": "google chrome installer",
+  "ProductVersion": "72.0.3626.121",
+  "Size": 2640880,
+  "Usn": 19751544,
+  "SHA1": "5417796e422db7aa90da0e7bdced0e3d609010e6",
+  "FullPath": "c:\\program files (x86)\\google\\chrome\\application\\72.0.3626.121\\installer\\chrmstp.exe",
+  "OriginalFileName": null,
+  "BinaryType": "pe64_amd64",
+  "LinkDate": "02/28/2019 05:00:00",
+  "AppxPackageFullName": null,
+  "_Source": "Windows.Forensics.Amcache/InventoryApplicationFile"
+ }
+]
+
+# Test the shell bags artifact
+Query: SELECT ModTime, basename(path=Hive), KeyPath, Slot, Description, _Parsed FROM Artifact.Windows.Forensics.Shellbags(SearchSpecs=[ dict( HiveGlob=srcDir+"/artifacts/testdata/files/UsrClass.dat", KeyGlob='''\Local Settings\Software\Microsoft\Windows\Shell\BagMRU\**'''),]) ORDER BY KeyPath
+Output: [
+ {
+  "ModTime": "2021-06-01T06:28:19Z",
+  "basename(path=Hive)": "UsrClass.dat",
+  "KeyPath": "Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU",
+  "Slot": "0",
+  "Description": {
+   "LongName": "Quick Access",
+   "GUID": "679F85CB-0220-4080-B29B-5540CC05AAB6",
+   "Type": "Root"
+  },
+  "_Parsed": {
+   "ItemIDSize": 20,
+   "Offset": 0,
+   "Type": 31,
+   "TypeHex": "0x1f",
+   "ShellBag": {
+    "Type": 20,
+    "UserPropertyType": 203,
+    "UserPropertyName": "\ufffdU@",
+    "GUID": {
+     "Value": "679F85CB-0220-4080-B29B-5540CC05AAB6"
+    },
+    "Description": {
+     "LongName": "Quick Access",
+     "GUID": "679F85CB-0220-4080-B29B-5540CC05AAB6",
+     "Type": "Root"
+    }
+   }
+  }
+ },
+ {
+  "ModTime": "2021-06-01T06:28:19Z",
+  "basename(path=Hive)": "UsrClass.dat",
+  "KeyPath": "Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU",
+  "Slot": "1",
+  "Description": {
+   "LongName": "My Computer",
+   "GUID": "20D04FE0-3AEA-1069-A2D8-08002B30309D",
+   "Type": "Root"
+  },
+  "_Parsed": {
+   "ItemIDSize": 20,
+   "Offset": 0,
+   "Type": 31,
+   "TypeHex": "0x1f",
+   "ShellBag": {
+    "Type": 20,
+    "UserPropertyType": 224,
+    "UserPropertyName": "\ufffd\u0008",
+    "GUID": {
+     "Value": "20D04FE0-3AEA-1069-A2D8-08002B30309D"
+    },
+    "Description": {
+     "LongName": "My Computer",
+     "GUID": "20D04FE0-3AEA-1069-A2D8-08002B30309D",
+     "Type": "Root"
+    }
+   }
+  }
+ },
+ {
+  "ModTime": "2021-06-01T06:28:19Z",
+  "basename(path=Hive)": "UsrClass.dat",
+  "KeyPath": "Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU",
+  "Slot": "2",
+  "Description": {
+   "Type": "UserPropertyType",
+   "LongName": "D:\\"
+  },
+  "_Parsed": {
+   "ItemIDSize": 85,
+   "Offset": 0,
+   "Type": 31,
+   "TypeHex": "0x1f",
+   "ShellBag": {
+    "Type": 85,
+    "UserPropertyType": 47,
+    "UserPropertyName": "D:\\",
+    "GUID": {
+     "Value": "B710002F-F5A6-0019-2F44-3A5C00000000"
+    },
+    "Description": {
+     "Type": "UserPropertyType",
+     "LongName": "D:\\"
+    }
+   }
+  }
+ },
+ {
+  "ModTime": "2021-06-01T06:28:19Z",
+  "basename(path=Hive)": "UsrClass.dat",
+  "KeyPath": "Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU",
+  "Slot": "3",
+  "Description": {
+   "LongName": "Computers and Devices",
+   "GUID": "F02C1A0D-BE21-4350-88B0-7367FC96EF3C",
+   "Type": "Root"
+  },
+  "_Parsed": {
+   "ItemIDSize": 20,
+   "Offset": 0,
+   "Type": 31,
+   "TypeHex": "0x1f",
+   "ShellBag": {
+    "Type": 20,
+    "UserPropertyType": 13,
+    "UserPropertyName": "\ufffdsg",
+    "GUID": {
+     "Value": "F02C1A0D-BE21-4350-88B0-7367FC96EF3C"
+    },
+    "Description": {
+     "LongName": "Computers and Devices",
+     "GUID": "F02C1A0D-BE21-4350-88B0-7367FC96EF3C",
+     "Type": "Root"
+    }
+   }
+  }
+ },
+ {
+  "ModTime": "2021-06-01T06:27:57Z",
+  "basename(path=Hive)": "UsrClass.dat",
+  "KeyPath": "Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\\1",
+  "Slot": "0",
+  "Description": {
+   "LongName": "Downloads",
+   "ShortName": "Downloads",
+   "GUID": "088E3905-0323-4B02-9826-5D99428E115F",
+   "Type": "Volume"
+  },
+  "_Parsed": {
+   "ItemIDSize": 20,
+   "Offset": 0,
+   "Type": 46,
+   "TypeHex": "0x2e",
+   "ShellBag": {
+    "Subtype": 0,
+    "Name": "Downloads",
+    "Description": {
+     "LongName": "Downloads",
+     "ShortName": "Downloads",
+     "GUID": "088E3905-0323-4B02-9826-5D99428E115F",
+     "Type": "Volume"
+    }
+   }
+  }
+ },
+ {
+  "ModTime": "2021-06-01T06:28:10Z",
+  "basename(path=Hive)": "UsrClass.dat",
+  "KeyPath": "Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\\3",
+  "Slot": "0",
+  "Description": {
+   "Type": "Variable",
+   "Properties": {
+    "GUID not known": true,
+    "System.ItemNameDisplay": "vmware-host",
+    "Network Provider": "VMware Shared Folders",
+    "0x3": 2
+   },
+   "LongName": "vmware-host"
+  },
+  "_Parsed": {
+   "ItemIDSize": 538,
+   "Offset": 0,
+   "Type": 0,
+   "TypeHex": "0x00",
+   "ShellBag": {
+    "DataSize": 532,
+    "DataSig": 999534523,
+    "PropertySheetListSize": 518,
+    "IdentifierSize": 4,
+    "IdentifierData": "",
+    "PropertyList": [
+     {
+      "StorageSize": 69,
+      "Offset": 18,
+      "Version": "1SPS",
+      "Format": "D5CDD502-2E9C-101B-9397-08002B2CF9AE",
+      "PropertyValue": [
+       {
+        "ValueSize": 41,
+        "Offset": 42,
+        "GuidId": "D5CDD502-2E9C-101B-9397-08002B2CF9AE/2",
+        "Description": {
+         "Offset": 46,
+         "Type": 2
+        },
+        "Type": 4127,
+        "Value": null
+       }
+      ]
+     },
+     {
+      "StorageSize": 214,
+      "Offset": 87,
+      "Version": "1SPS",
+      "Format": "0AE54373-43BE-4FAD-85E4-69DC8633986E",
+      "PropertyValue": [
+       {
+        "ValueSize": 17,
+        "Offset": 111,
+        "GuidId": "0AE54373-43BE-4FAD-85E4-69DC8633986E/11",
+        "Description": "GUID not known",
+        "Type": 11,
+        "Value": true
+       },
+       {
+        "ValueSize": 169,
+        "Offset": 128,
+        "GuidId": "0AE54373-43BE-4FAD-85E4-69DC8633986E/7",
+        "Description": "GUID not known",
+        "Type": 31,
+        "Value": "Provider\\Microsoft.Networking.Netbios//VMware Shared Folders::\\\\vmware-host"
+       }
+      ]
+     },
+     {
+      "StorageSize": 69,
+      "Offset": 301,
+      "Version": "1SPS",
+      "Format": "B725F130-47EF-101A-A5F1-02608C9EEBAC",
+      "PropertyValue": [
+       {
+        "ValueSize": 41,
+        "Offset": 325,
+        "GuidId": "B725F130-47EF-101A-A5F1-02608C9EEBAC/10",
+        "Description": "System.ItemNameDisplay",
+        "Type": 31,
+        "Value": "vmware-host"
+       }
+      ]
+     },
+     {
+      "StorageSize": 28,
+      "Offset": 370,
+      "Version": "1SPS",
+      "Format": "656A3BB3-ECC0-43FD-8477-4AE0404A96CD",
+      "PropertyValue": []
+     },
+     {
+      "StorageSize": 89,
+      "Offset": 398,
+      "Version": "1SPS",
+      "Format": "28636AA6-953D-11D2-B5D6-00C04FD918D0",
+      "PropertyValue": [
+       {
+        "ValueSize": 61,
+        "Offset": 422,
+        "GuidId": "28636AA6-953D-11D2-B5D6-00C04FD918D0/31",
+        "Description": "Network Provider",
+        "Type": 31,
+        "Value": "VMware Shared Folders"
+       }
+      ]
+     },
+     {
+      "StorageSize": 45,
+      "Offset": 487,
+      "Version": "1SPS",
+      "Format": "DEBDA43A-37B3-4383-91E7-4498DA2995AB",
+      "PropertyValue": [
+       {
+        "ValueSize": 17,
+        "Offset": 511,
+        "GuidId": "DEBDA43A-37B3-4383-91E7-4498DA2995AB/3",
+        "Description": "0x3",
+        "Type": 19,
+        "Value": 2
+       }
+      ]
+     }
+    ],
+    "Properties": {
+     "GUID not known": true,
+     "System.ItemNameDisplay": "vmware-host",
+     "Network Provider": "VMware Shared Folders",
+     "0x3": 2
+    },
+    "Description": {
+     "Type": "Variable",
+     "Properties": {
+      "GUID not known": true,
+      "System.ItemNameDisplay": "vmware-host",
+      "Network Provider": "VMware Shared Folders",
+      "0x3": 2
+     },
+     "LongName": "vmware-host"
+    }
+   }
+  }
+ },
+ {
+  "ModTime": "2021-06-01T06:28:10Z",
+  "basename(path=Hive)": "UsrClass.dat",
+  "KeyPath": "Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\\3\\0",
+  "Slot": "0",
+  "Description": null,
+  "_Parsed": {
+   "ItemIDSize": 58,
+   "Offset": 0,
+   "Type": 195,
+   "TypeHex": "0xc3",
+   "ShellBag": {}
+  }
+ },
+ {
+  "ModTime": "2021-06-01T06:28:12Z",
+  "basename(path=Hive)": "UsrClass.dat",
+  "KeyPath": "Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\\3\\0\\0",
+  "Slot": "0",
+  "Description": {
+   "Type": [
+    "Directory",
+    "Unicode"
+   ],
+   "Modified": "2021-05-28T03:04:52Z",
+   "LastAccessed": "2021-05-31T08:50:34Z",
+   "CreateDate": "2021-05-28T03:04:52Z",
+   "ShortName": "shared",
+   "LongName": "shared",
+   "MFTID": 49548416,
+   "MFTSeq": 0
+  },
+  "_Parsed": {
+   "ItemIDSize": 84,
+   "Offset": 0,
+   "Type": 49,
+   "TypeHex": "0x31",
+   "ShellBag": {
+    "Size": 84,
+    "Type": 49,
+    "SubType": [
+     "Directory",
+     "Unicode"
+    ],
+    "LastModificationTime": "2021-05-28T03:04:52Z",
+    "ShortName": "shared",
+    "Extension": {
+     "Size": 62,
+     "Version": 9,
+     "Signature": "0xbeef0004",
+     "CreateDate": "2021-05-28T03:04:52Z",
+     "LastAccessed": "2021-05-31T08:50:34Z",
+     "MFTReference": {
+      "MFTID": 49548416,
+      "SequenceNumber": 0
+     },
+     "LongName": "shared"
+    },
+    "Description": {
+     "Type": [
+      "Directory",
+      "Unicode"
+     ],
+     "Modified": "2021-05-28T03:04:52Z",
+     "LastAccessed": "2021-05-31T08:50:34Z",
+     "CreateDate": "2021-05-28T03:04:52Z",
+     "ShortName": "shared",
+     "LongName": "shared",
+     "MFTID": 49548416,
+     "MFTSeq": 0
+    }
+   }
+  }
+ },
+ {
+  "ModTime": "2021-06-01T06:28:19Z",
+  "basename(path=Hive)": "UsrClass.dat",
+  "KeyPath": "Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\\3\\0\\0\\0",
+  "Slot": "0",
+  "Description": {
+   "Type": [
+    "Directory",
+    "Unicode"
+   ],
+   "Modified": "2021-05-31T16:57:36Z",
+   "LastAccessed": "2021-05-31T16:57:36Z",
+   "CreateDate": "2021-05-31T16:57:36Z",
+   "ShortName": "tmp",
+   "LongName": "tmp",
+   "MFTID": 8651087,
+   "MFTSeq": 0
+  },
+  "_Parsed": {
+   "ItemIDSize": 74,
+   "Offset": 0,
+   "Type": 49,
+   "TypeHex": "0x31",
+   "ShellBag": {
+    "Size": 74,
+    "Type": 49,
+    "SubType": [
+     "Directory",
+     "Unicode"
+    ],
+    "LastModificationTime": "2021-05-31T16:57:36Z",
+    "ShortName": "tmp",
+    "Extension": {
+     "Size": 56,
+     "Version": 9,
+     "Signature": "0xbeef0004",
+     "CreateDate": "2021-05-31T16:57:36Z",
+     "LastAccessed": "2021-05-31T16:57:36Z",
+     "MFTReference": {
+      "MFTID": 8651087,
+      "SequenceNumber": 0
+     },
+     "LongName": "tmp"
+    },
+    "Description": {
+     "Type": [
+      "Directory",
+      "Unicode"
+     ],
+     "Modified": "2021-05-31T16:57:36Z",
+     "LastAccessed": "2021-05-31T16:57:36Z",
+     "CreateDate": "2021-05-31T16:57:36Z",
+     "ShortName": "tmp",
+     "LongName": "tmp",
+     "MFTID": 8651087,
+     "MFTSeq": 0
+    }
+   }
+  }
+ }
+]
+
+# Test the SAM parsers
+Query: SELECT ParsedF, ParsedV FROM Artifact.Windows.Forensics.SAM( SAMPath=srcDir+"/artifacts/testdata/files/SAM", source="Parsed")
+Output: [
+ {
+  "ParsedF": {
+   "LastLoginDate": "1601-01-01T00:00:00Z",
+   "PasswordResetDate": "1601-01-01T00:00:00Z",
+   "PasswordFailDate": "1601-01-01T00:00:00Z",
+   "RID": 500,
+   "Flags": [
+    "Account Disabled",
+    "Normal user account",
+    "Password does not expire"
+   ],
+   "FailedLoginCount": 0,
+   "LoginCount": 0
+  },
+  "ParsedV": {
+   "AccountType": "0xf4",
+   "username": "Administrator",
+   "fullname": "",
+   "comment": "Built-in account for administering the computer/domain",
+   "driveletter": "",
+   "logon_script": "",
+   "profile_path": "",
+   "workstation": "",
+   "lmpwd_hash": "\u0002\u0002",
+   "ntpwd_hash": "\u0002\u0002"
+  }
+ },
+ {
+  "ParsedF": {
+   "LastLoginDate": "1601-01-01T00:00:00Z",
+   "PasswordResetDate": "1601-01-01T00:00:00Z",
+   "PasswordFailDate": "1601-01-01T00:00:00Z",
+   "RID": 501,
+   "Flags": [
+    "Account Disabled",
+    "Normal user account",
+    "Password does not expire",
+    "Password not required"
+   ],
+   "FailedLoginCount": 0,
+   "LoginCount": 0
+  },
+  "ParsedV": {
+   "AccountType": "0xe8",
+   "username": "Guest",
+   "fullname": "",
+   "comment": "Built-in account for guest access to the computer/domain",
+   "driveletter": "",
+   "logon_script": "",
+   "profile_path": "",
+   "workstation": "",
+   "lmpwd_hash": "\u0002\u0002",
+   "ntpwd_hash": "\u0002\u0002"
+  }
+ },
+ {
+  "ParsedF": {
+   "LastLoginDate": "1601-01-01T00:00:00Z",
+   "PasswordResetDate": "1601-01-01T00:00:00Z",
+   "PasswordFailDate": "1601-01-01T00:00:00Z",
+   "RID": 503,
+   "Flags": [
+    "Account Disabled",
+    "Normal user account",
+    "Password does not expire",
+    "Password not required"
+   ],
+   "FailedLoginCount": 0,
+   "LoginCount": 0
+  },
+  "ParsedV": {
+   "AccountType": "0x10c",
+   "username": "DefaultAccount",
+   "fullname": "",
+   "comment": "A user account managed by the system.",
+   "driveletter": "",
+   "logon_script": "",
+   "profile_path": "",
+   "workstation": "",
+   "lmpwd_hash": "\u0002\u0002",
+   "ntpwd_hash": "\u0002\u0002"
+  }
+ },
+ {
+  "ParsedF": {
+   "LastLoginDate": "1601-01-01T00:00:00Z",
+   "PasswordResetDate": "2021-10-08T00:50:53Z",
+   "PasswordFailDate": "1601-01-01T00:00:00Z",
+   "RID": 504,
+   "Flags": [
+    "Account Disabled",
+    "Normal user account"
+   ],
+   "FailedLoginCount": 0,
+   "LoginCount": 0
+  },
+  "ParsedV": {
+   "AccountType": "0x10c",
+   "username": "WDAGUtilityAccount",
+   "fullname": "",
+   "comment": "A user account managed and used by the system for Windows Defender Application Guard scenarios.",
+   "driveletter": "",
+   "logon_script": "",
+   "profile_path": "",
+   "workstation": "",
+   "lmpwd_hash": "\u0002\u0002",
+   "ntpwd_hash": "\u0002\u0002\u0010"
+  }
+ },
+ {
+  "ParsedF": {
+   "LastLoginDate": "2021-12-01T12:40:21Z",
+   "PasswordResetDate": "2021-10-07T08:07:32Z",
+   "PasswordFailDate": "2021-10-13T13:33:34Z",
+   "RID": 1001,
+   "Flags": [
+    "Normal user account",
+    "Password does not expire",
+    "Password not required"
+   ],
+   "FailedLoginCount": 0,
+   "LoginCount": 112
+  },
+  "ParsedV": {
+   "AccountType": "0xf4",
+   "username": "test",
+   "fullname": "",
+   "comment": "",
+   "driveletter": "",
+   "logon_script": "",
+   "profile_path": "",
+   "workstation": "",
+   "lmpwd_hash": "\u0002\u0002",
+   "ntpwd_hash": "\u0002\u0002\u0010"
+  }
+ }
+]
+
+Query: SELECT * FROM Artifact.Windows.Forensics.SAM( SAMPath=srcDir+"/artifacts/testdata/files/SAM", source="CreateTimes")
+Output: [
+ {
+  "Username": "Administrator",
+  "CreatedTime": "2021-10-08T00:54:13Z",
+  "_Source": "Windows.Forensics.SAM/CreateTimes"
+ },
+ {
+  "Username": "DefaultAccount",
+  "CreatedTime": "2021-10-08T00:54:13Z",
+  "_Source": "Windows.Forensics.SAM/CreateTimes"
+ },
+ {
+  "Username": "Guest",
+  "CreatedTime": "2021-10-08T00:54:13Z",
+  "_Source": "Windows.Forensics.SAM/CreateTimes"
+ },
+ {
+  "Username": "WDAGUtilityAccount",
+  "CreatedTime": "2021-10-08T00:54:13Z",
+  "_Source": "Windows.Forensics.SAM/CreateTimes"
+ },
+ {
+  "Username": "test",
+  "CreatedTime": "2021-10-07T08:07:32Z",
+  "_Source": "Windows.Forensics.SAM/CreateTimes"
+ }
+]
+
+# Check raw reg can read values as files - REG_SZ.
+Query: SELECT utf16(string=read_file(filename=pathspec( Path="\\Root\\DeviceCensus\\Processor\\ProcessorIdentifier", DelegatePath=srcDir+"/artifacts/testdata/files/Amcache.hve", DelegateAccessor='file'), accessor="raw_reg")) FROM scope()
+Output: [
+ {
+  "utf16(string=read_file(filename=pathspec(Path=\"\\\\Root\\\\DeviceCensus\\\\Processor\\\\ProcessorIdentifier\", DelegatePath=srcDir + \"/artifacts/testdata/files/Amcache.hve\", DelegateAccessor='file'), accessor=\"raw_reg\"))": "Intel64 Family 6 Model 62 Stepping 4\u0000"
+ }
+]
+
+# Check raw reg can read values as files - REG_DWORD
+Query: SELECT utf16(string=read_file(filename=pathspec( Path="\\Root\\DeviceCensus\\WritePermissionsCheck", DelegatePath=srcDir+"/artifacts/testdata/files/Amcache.hve", DelegateAccessor='file'), accessor="raw_reg")) FROM scope()
+Output: [
+ {
+  "utf16(string=read_file(filename=pathspec(Path=\"\\\\Root\\\\DeviceCensus\\\\WritePermissionsCheck\", DelegatePath=srcDir + \"/artifacts/testdata/files/Amcache.hve\", DelegateAccessor='file'), accessor=\"raw_reg\"))": "\u0001\u0000"
+ }
+]
+

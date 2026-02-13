@@ -1,0 +1,472 @@
+{
+ "Unspecified Artifacts Request": {
+  "name": "Unspecified Artifacts",
+  "description": "Should return the default notebook artifact"
+ },
+ "Unspecified Artifacts Response": {
+  "name": "PrivateNotebook",
+  "parameters": [
+   {
+    "name": "ArtifactName",
+    "default": "Notebooks.Default",
+    "description": "Name of the artifact this notebook came from."
+   }
+  ],
+  "sources": [
+   {
+    "notebook": [
+     {
+      "template": "# Welcome to Velociraptor notebooks!\n",
+      "type": "markdown"
+     }
+    ]
+   }
+  ]
+ },
+ "Unspecified Artifacts Spec": {
+  "artifact": "PrivateNotebook",
+  "parameters": {}
+ },
+ "Client artifact Request": {
+  "name": "Client artifact",
+  "description": "Notebook based on a client artifact with no custom notebooks.",
+  "artifacts": [
+   "Generic.Client.Info"
+  ],
+  "notebook_id": "N.F.1234-C.1235"
+ },
+ "Client artifact Response": {
+  "name": "PrivateNotebook",
+  "parameters": [
+   {
+    "name": "FirstParameter",
+    "default": "1982-12-10",
+    "type": "timestamp"
+   },
+   {
+    "name": "ArtifactName",
+    "default": "Generic.Client.Info",
+    "description": "Name of the artifact this notebook came from."
+   },
+   {
+    "name": "ClientId",
+    "default": "C.1235",
+    "description": "Implied client id from notebook"
+   },
+   {
+    "name": "FlowId",
+    "default": "F.1234",
+    "description": "Implied flow id from notebook"
+   }
+  ],
+  "sources": [
+   {
+    "notebook": [
+     {
+      "template": "\n/*\n# Generic.Client.Info\n*/\nSELECT * FROM source(artifact=\"Generic.Client.Info\")\nLIMIT 50\n",
+      "type": "vql"
+     }
+    ]
+   },
+   {
+    "notebook": [
+     {
+      "template": "\n/*\n# Flow logs\n*/\n\nSELECT * FROM flow_logs(client_id=ClientId, flow_id=FlowId)\n",
+      "type": "vql_suggestion",
+      "name": "Collection logs"
+     }
+    ]
+   }
+  ]
+ },
+ "Client artifact Spec": {
+  "artifact": "PrivateNotebook",
+  "parameters": {
+   "env": [
+    {
+     "key": "FirstParameter",
+     "value": "2022-11-10"
+    }
+   ]
+  }
+ },
+ "Custom.Generic.Client.Info Request": {
+  "name": "Custom.Generic.Client.Info",
+  "description": "Based on custom notebook cells",
+  "artifacts": [
+   "Custom.Generic.Client.Info"
+  ],
+  "notebook_id": "N.F.1235-C.1235"
+ },
+ "Custom.Generic.Client.Info Response": {
+  "name": "PrivateNotebook",
+  "parameters": [
+   {
+    "name": "ArtifactName",
+    "default": "Custom.Generic.Client.Info",
+    "description": "Name of the artifact this notebook came from."
+   },
+   {
+    "name": "ClientId",
+    "default": "C.1235",
+    "description": "Implied client id from notebook"
+   },
+   {
+    "name": "FlowId",
+    "default": "F.1235",
+    "description": "Implied flow id from notebook"
+   }
+  ],
+  "sources": [
+   {
+    "notebook": [
+     {
+      "template": "# Custom.Generic.Client.Info template\n",
+      "type": "markdown"
+     }
+    ]
+   },
+   {
+    "notebook": [
+     {
+      "template": "\n/*\n# Flow logs\n*/\n\nSELECT * FROM flow_logs(client_id=ClientId, flow_id=FlowId)\n",
+      "type": "vql_suggestion",
+      "name": "Collection logs"
+     }
+    ]
+   }
+  ]
+ },
+ "Custom.Generic.Client.Info Spec": {
+  "artifact": "PrivateNotebook",
+  "parameters": {}
+ },
+ "EventArtifact Request": {
+  "name": "EventArtifact",
+  "description": "Building a notebook from an event artifact adds StartTime and EndTime",
+  "artifacts": [
+   "Generic.Events"
+  ],
+  "notebook_id": "N.E.Generic.Events-C.1235",
+  "env": [
+   {
+    "key": "StartTime",
+    "value": "2020-01-10"
+   }
+  ]
+ },
+ "EventArtifact Response": {
+  "name": "PrivateNotebook",
+  "parameters": [
+   {
+    "name": "Arg1",
+    "default": "Foo"
+   },
+   {
+    "name": "ArtifactName",
+    "default": "Generic.Events",
+    "description": "Name of the artifact this notebook came from."
+   },
+   {
+    "name": "ClientId",
+    "default": "C.1235",
+    "description": "Implied client id from notebook"
+   },
+   {
+    "name": "StartTime",
+    "description": "Start of time range to consider",
+    "type": "timestamp"
+   },
+   {
+    "name": "EndTime",
+    "description": "End of time range to consider",
+    "type": "timestamp"
+   }
+  ],
+  "sources": [
+   {
+    "notebook": [
+     {
+      "template": "\n/*\n# Events from Generic.Events\n\nFrom {{ Scope \"StartTime\" }} to {{ Scope \"EndTime\" }}\n*/\n\nSELECT timestamp(epoch=_ts) AS ServerTime, *\n FROM source(start_time=StartTime, end_time=EndTime, artifact=\"Generic.Events\")\nLIMIT 50\n",
+      "type": "vql"
+     }
+    ]
+   }
+  ]
+ },
+ "EventArtifact Spec": {
+  "artifact": "PrivateNotebook",
+  "parameters": {
+   "env": [
+    {
+     "key": "Arg1",
+     "value": "Custom Arg1"
+    },
+    {
+     "key": "StartTime",
+     "value": "2020-01-10"
+    }
+   ]
+  }
+ },
+ "EventArtifact Default Request": {
+  "name": "EventArtifact Default",
+  "description": "Building a notebook from an event artifact without custom notebooks. This should populate the spec from the installed client event monitoring table.",
+  "artifacts": [
+   "Generic.Events"
+  ],
+  "notebook_id": "N.E.Generic.Events-C.1235",
+  "env": [
+   {
+    "key": "StartTime",
+    "value": "2024-10"
+   }
+  ]
+ },
+ "EventArtifact Default Response": {
+  "name": "PrivateNotebook",
+  "parameters": [
+   {
+    "name": "Arg1",
+    "default": "Foo"
+   },
+   {
+    "name": "ArtifactName",
+    "default": "Generic.Events",
+    "description": "Name of the artifact this notebook came from."
+   },
+   {
+    "name": "ClientId",
+    "default": "C.1235",
+    "description": "Implied client id from notebook"
+   },
+   {
+    "name": "StartTime",
+    "description": "Start of time range to consider",
+    "type": "timestamp"
+   },
+   {
+    "name": "EndTime",
+    "description": "End of time range to consider",
+    "type": "timestamp"
+   }
+  ],
+  "sources": [
+   {
+    "notebook": [
+     {
+      "template": "\n/*\n# Events from Generic.Events\n\nFrom {{ Scope \"StartTime\" }} to {{ Scope \"EndTime\" }}\n*/\n\nSELECT timestamp(epoch=_ts) AS ServerTime, *\n FROM source(start_time=StartTime, end_time=EndTime, artifact=\"Generic.Events\")\nLIMIT 50\n",
+      "type": "vql"
+     }
+    ]
+   }
+  ]
+ },
+ "EventArtifact Default Spec": {
+  "artifact": "PrivateNotebook",
+  "parameters": {
+   "env": [
+    {
+     "key": "Arg1",
+     "value": "Custom Arg1"
+    },
+    {
+     "key": "StartTime",
+     "value": "2024-10"
+    }
+   ]
+  }
+ },
+ "Create GlobalNotebook Request": {
+  "name": "Create GlobalNotebook",
+  "description": "Creating a global notebook with specs",
+  "artifacts": [
+   "GlobalNotebook"
+  ],
+  "specs": [
+   {
+    "artifact": "GlobalNotebook",
+    "parameters": {
+     "env": [
+      {
+       "key": "Arg1",
+       "value": "Hello"
+      },
+      {
+       "key": "Arg2",
+       "value": "World"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "Create GlobalNotebook Response": {
+  "name": "PrivateNotebook",
+  "parameters": [
+   {
+    "name": "Arg1",
+    "default": "Foo"
+   },
+   {
+    "name": "Arg2",
+    "default": "Bar"
+   },
+   {
+    "name": "ArtifactName",
+    "default": "GlobalNotebook",
+    "description": "Name of the artifact this notebook came from."
+   }
+  ],
+  "sources": [
+   {
+    "notebook": [
+     {
+      "template": "SELECT Arg1 FROM scope()\n",
+      "type": "vql"
+     }
+    ]
+   }
+  ]
+ },
+ "Create GlobalNotebook Spec": {
+  "artifact": "PrivateNotebook",
+  "parameters": {
+   "env": [
+    {
+     "key": "Arg1",
+     "value": "Hello"
+    },
+    {
+     "key": "Arg2",
+     "value": "World"
+    }
+   ]
+  }
+ },
+ "Create Hunt Notebook Request": {
+  "name": "Create Hunt Notebook",
+  "description": "Creating a notebook from hunt view",
+  "artifacts": [
+   "Generic.Client.Info"
+  ],
+  "notebook_id": "N.H.1234"
+ },
+ "Create Hunt Notebook Response": {
+  "name": "PrivateNotebook",
+  "parameters": [
+   {
+    "name": "FirstParameter",
+    "default": "1982-12-10",
+    "type": "timestamp"
+   },
+   {
+    "name": "ArtifactName",
+    "default": "Generic.Client.Info",
+    "description": "Name of the artifact this notebook came from."
+   },
+   {
+    "name": "HuntId",
+    "default": "H.1234",
+    "description": "Implied hunt id from notebook"
+   }
+  ],
+  "sources": [
+   {
+    "notebook": [
+     {
+      "template": "\n/*\n# Generic.Client.Info\n*/\nSELECT * FROM source(artifact=\"Generic.Client.Info\")\nLIMIT 50\n",
+      "type": "vql"
+     }
+    ]
+   },
+   {
+    "notebook": [
+     {
+      "template": "\n\nLET ColumnTypes \u003c= dict(\n   ClientId=\"client_id\",\n   FlowId=\"flow\",\n   StartedTime=\"timestamp\"\n)\n\n/*\n# Flows with ERROR status\n*/\nLET ERRORS = SELECT ClientId,\n       client_info(client_id=ClientId).os_info.hostname AS Hostname,\n       FlowId, Flow.start_time As StartedTime,\n       Flow.state AS FlowState, Flow.status as FlowStatus,\n       Flow.execution_duration as Duration,\n       Flow.total_uploaded_bytes as TotalBytes,\n       Flow.total_collected_rows as TotalRows\nFROM hunt_flows(hunt_id=HuntId)\nWHERE FlowState =~ 'ERROR'\n\n-- Uncomment the below to reissue the exact same hunt to the errored clients\n-- SELECT *,\n--    hunt_add(client_id=ClientId, hunt_id=HuntId, relaunch=TRUE) AS NewCollection\n-- FROM ERRORS\n\n-- Uncomment the below to reissue a new collection and add to the same hunt.\n-- You will have to also change \"UpdateArtifactName\" and add a spec for\n-- the parameters. (See docs for collect_client())\n-- SELECT *,\n--   hunt_add(client_id=ClientId, hunt_id=HuntId,\n--     flow_id=collect_client(artifacts=\"UpdateArtifactName\",\n--                            client_id=ClientId).flow_id) AS NewCollection\n-- FROM ERRORS\nSELECT * FROM ERRORS\n\n/*\n## Flows with RUNNING status\n*/\nSELECT ClientId,\n       client_info(client_id=ClientId).os_info.hostname AS Hostname,\n       FlowId, Flow.start_time As StartedTime,\n       Flow.state AS FlowState, Flow.status as FlowStatus,\n       Flow.execution_duration as Duration,\n       Flow.total_uploaded_bytes as TotalBytes,\n       Flow.total_collected_rows as TotalRows\nFROM hunt_flows(hunt_id=HuntId)\nWHERE FlowState =~ 'RUNNING'\n\n/*\n## Flows with FINISHED status\n*/\nSELECT ClientId,\n       client_info(client_id=ClientId).os_info.hostname AS Hostname,\n       FlowId, Flow.start_time As StartedTime,\n       Flow.state AS FlowState, Flow.status as FlowStatus,\n       Flow.execution_duration as Duration,\n       Flow.total_uploaded_bytes as TotalBytes,\n       Flow.total_collected_rows as TotalRows\nFROM hunt_flows(hunt_id=HuntId)\nWHERE FlowState =~ 'Finished'\nLIMIT 1000\n",
+      "type": "vql_suggestion",
+      "name": "Hunt Progress"
+     }
+    ]
+   }
+  ]
+ },
+ "Create Hunt Notebook Spec": {
+  "artifact": "PrivateNotebook",
+  "parameters": {
+   "env": [
+    {
+     "key": "FirstParameter",
+     "value": "2021-11-10"
+    }
+   ]
+  }
+ },
+ "Notebook with exports Request": {
+  "name": "Notebook with exports",
+  "artifacts": [
+   "NotebookWithImport"
+  ]
+ },
+ "Notebook with exports Response": {
+  "name": "PrivateNotebook",
+  "parameters": [
+   {
+    "name": "ArtifactName",
+    "default": "NotebookWithImport",
+    "description": "Name of the artifact this notebook came from."
+   }
+  ],
+  "sources": [
+   {
+    "notebook": [
+     {
+      "template": "SELECT NotebookExport, ArtifactExport FROM scope()",
+      "type": "vql"
+     }
+    ]
+   }
+  ],
+  "export": "LET NotebookExport = 2\nLET ArtifactExport = 1\n"
+ },
+ "Notebook with exports Spec": {
+  "artifact": "PrivateNotebook",
+  "parameters": {}
+ },
+ "Notebook with suggestions Request": {
+  "name": "Notebook with suggestions",
+  "description": "Adding a custom notebook with suggestion will add the default notebook",
+  "artifacts": [
+   "NotebookWithSugegstions"
+  ]
+ },
+ "Notebook with suggestions Response": {
+  "name": "PrivateNotebook",
+  "parameters": [
+   {
+    "name": "ArtifactName",
+    "default": "NotebookWithSugegstions",
+    "description": "Name of the artifact this notebook came from."
+   }
+  ],
+  "sources": [
+   {
+    "notebook": [
+     {
+      "template": "SELECT * FROM info()",
+      "type": "vql_suggestion",
+      "name": "A good suggestion."
+     },
+     {
+      "template": "\n/*\n# NotebookWithSugegstions\n*/\nSELECT * FROM source(artifact=\"NotebookWithSugegstions\")\nLIMIT 50\n",
+      "type": "vql"
+     }
+    ]
+   }
+  ]
+ },
+ "Notebook with suggestions Spec": {
+  "artifact": "PrivateNotebook",
+  "parameters": {}
+ }
+}

@@ -1,0 +1,304 @@
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.toolbar-buttons {
+    height: 40px;
+    vertical-align: middle;
+    padding: 5px;
+}
+
+#content {
+  position: absolute;
+  left: 0;
+  top: 50px;
+  bottom: 40px;
+  right: 0;
+  min-width: 1024px;
+  min-height: 400px;
+  background-color: var(--color-canvas-background);
+  margin-left: var(--sidebar-collapsed-width);
+}
+
+/* Style the ACE setup windows */
+#ace_settingsmenu,
+#ace_settingsmenu button,
+#ace_settingsmenu input,
+#ace_settingsmenu select
+{
+    background-color: var(--color-canvas-background);
+    color: var(--color-foreground);
+}
+
+/* Lineup the search bar's btn group so all buttons have the same height */
+.btn-group .btn,
+.btn-group select
+{
+    height: 38px;
+}
+
+.pagination .page-link {
+    height: 37px;
+}
+
+.btn-group input.text {
+    height: 27px;
+}
+
+/* outline buttons have no background */
+.btn.btn-outline-info,
+.btn.btn-link {
+    background: none;
+    color: var(--color-btn-outline-link);
+    text-align: left;
+}
+
+.report-viewer .btn-group a.btn {
+  color: var(--color-foreground);
+}
+
+.input-group-text.disabled {
+    opacity: 0.65;
+}
+
+.dropdown-item,
+.dropdown-item:focus {
+  color: var(--color-foreground);
+  background: var(--color-btn-default-background);
+  font-family: var(--font-family-sans-serif);
+  font-size: var(--font-size-base);
+}
+
+.dropdown-item:hover,
+.dropdown-item.active:hover {
+  background: var(--color-accent-75);
+}
+
+.dropdown-item.active,
+.dropdown-item.active:focus {
+  background: var(--color-accent-50);
+  color: var(--color-foreground);
+}
+
+.list-group-item {
+    background-color: var(--color-canvas-background);
+    color: var(--color-foreground);
+}
+
+.btn-tooltip[data-tooltip] {
+    position: relative;
+    z-index: 1000;
+}
+
+.btn-tooltip[data-tooltip]:hover::before {
+  visibility: visible;
+  opacity: 1;
+}
+
+.btn-tooltip[data-tooltip]::before {
+  pointer-events: none;
+  text-align:center;
+  content: attr(data-tooltip);
+  visibility: hidden;
+  opacity: 0;
+  min-width: 100%;
+  width: max-content;
+  height: max-content;
+  position: absolute;
+  box-sizing: border-box;
+  display: block;
+  margin: 0 auto;
+  padding: 4px 8px;
+  background-color: var(--color-tooltip-background);
+  border: none;
+  border-radius: 4px;
+  color: var(--color-foreground);
+  font-family: var(--font-family-sans-serif);
+  font-size: var(--font-size-base);
+  font-weight: normal;
+  padding: 4px 8px;
+  white-space: nowrap;
+  transition: opacity ease-out 150ms, bottom ease-out 150ms;
+  transition-property: opacity;
+  transition-delay: 300ms;
+  z-index: 10000;
+  box-shadow: 4px 4px 4px rgba(0,0,0,.5);
+}
+
+.btn-tooltip[data-position='top']::before {
+  bottom: 100%;
+}
+.btn-tooltip[data-position='right']::before {
+  left: 100%;
+  top: -15px;
+  bottom: 0;
+  margin: auto 0;
+}
+
+.btn-tooltip[data-position='bottom']::before {
+  top: 100%;
+}
+
+.btn-tooltip[data-position='left']::before {
+  right: 100%;
+  top: -15px;
+  bottom: 0;
+  margin: auto 0;
+}
+
+.btn-tooltip:disabled:hover::before {
+    display: none;
+}
+
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+    color: var(--color-foreground);
+}
+
+table.table td {
+    background-color: var(--color-canvas-background);
+}
+
+table.table th {
+    color: var(--color-foreground);
+}
+
+.paged-table-header td {
+    padding: 0.3rem;
+}
+
+
+.nav button.nav-link:hover {
+    background: var(--color-btn-outline-link-hover);
+    border-color: var(--color-btn-border);
+}
+
+.nav button.nav-link {
+    background: var(--color-tab);
+    color: var(--color-foreground);
+    border-top-color: var(--color-btn-border);
+    border-right-color: var(--color-btn-border);
+    border-bottom-color: var(--color-btn-border);
+    border-left-color: var(--color-btn-border);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-left-style: solid;
+    border-right-style: solid;
+    border-top-color: var(--color-btn-border);
+    border-top-style: solid;
+    border-top-width: 1px;
+}
+
+.nav button.nav-link.active {
+    background: var(--color-tab-active);
+    color: var(--color-foreground);
+    border-top-color: var(--color-btn-border);
+    border-right-color: var(--color-btn-border);
+    border-bottom-color: transparent;
+    border-left-color: var(--color-btn-border);
+}
+
+.nav.nav-tab {
+    border-bottom: 1px solid var(--color-btn-border);
+}
+
+.nav.nav-tab .nav-item button {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.float-right {
+    float: right;
+}
+
+div.dropdown-menu hr {
+    margin-top: 2px;
+    margin-bottom: 3px;
+}
+
+
+.form-switch input.form-check-input:checked {
+    background-color: var(--accent-color);
+    border-color: var(--color-btn-default-background-hover);
+    color: var(--color-foreground);
+}
+
+
+input[type='checkbox'] {
+    transform: scale(1.2);
+    background-color: var(--color-btn-border);
+    box-shadow: none;
+}
+
+.react-bootstrap-table .table td {
+    background-color: var(--color-table-row-stripe);
+    color: var(--color-foreground);
+}
+
+
+.paged-table.table td {
+    background-color: var(--color-table-row-stripe);
+    color: var(--color-foreground);
+}
+
+.paged-table.table thead th {
+    padding-left: 8px;
+}
+
+.paged-table.table thead th,
+.paged-table.table thead tr:hover,
+.paged-table.table thead th td {
+    background: var(--color-table-heading-background);
+}
+
+.paged-table.table tr:hover,
+.paged-table.table tbody tr:nth-of-type(2n):hover {
+    background-color: var(--color-table-row-hover);
+}
+
+
+.paged-table.table tbody tr:nth-of-type(2n) {
+  background-color: var(--color-table-row-stripe);
+}
+
+.paged-table.table tbody tr.row_selected td,
+.paged-table.table tbody tr.row-selected {
+    background-color: var(--color-table-row-selected);
+    color: var(--color-table-row-selected-text);
+}
+
+.table-striped tr td {
+    background-color: var(--color-table-row);
+    color: var(--color-foreground);
+}
+
+
+.table-striped tr:nth-of-type(odd) > *  {
+    background-color: var(--color-table-row-stripe);
+}
+
+.table.table-striped thead tr th,
+.table.table-sm thead tr th {
+    background-color: var(--color-table-heading-background);
+    color: var(--color-foreground);
+}
+
+.velo-form.row, form > .row {
+    margin-bottom: 1rem;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+
+button.link {
+    border: none;
+    background-color: initial;
+    color: var(--color-foreground);
+}
+
+
+.Pane .fill-parent, .Pane {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-scrollbar-main) var(--color-scrollbar-background);
+}

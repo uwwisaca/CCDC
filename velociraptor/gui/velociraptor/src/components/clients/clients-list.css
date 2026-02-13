@@ -1,0 +1,23 @@
+.icon-small {
+  width: 14px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+button.btn.online-status {
+  background: none;
+}
+
+.deleted-client-list {
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.selection-cell input {
+    vertical-align: text-bottom;
+    padding: 0.3rem;
+}
+
+.online-status {
+
+}

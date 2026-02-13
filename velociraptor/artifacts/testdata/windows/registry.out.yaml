@@ -1,0 +1,248 @@
+# Test some edge cases of the registry filesystem accessor.
+Query: SELECT OSPath FROM glob(globs="/*", accessor="registry")
+Output: [
+ {
+  "OSPath": "HKEY_CLASSES_ROOT"
+ },
+ {
+  "OSPath": "HKEY_CURRENT_CONFIG"
+ },
+ {
+  "OSPath": "HKEY_CURRENT_USER"
+ },
+ {
+  "OSPath": "HKEY_LOCAL_MACHINE"
+ },
+ {
+  "OSPath": "HKEY_PERFORMANCE_DATA"
+ },
+ {
+  "OSPath": "HKEY_USERS"
+ }
+]
+
+Query: SELECT OSPath FROM glob(globs="\\*", accessor="registry")
+Output: [
+ {
+  "OSPath": "HKEY_CLASSES_ROOT"
+ },
+ {
+  "OSPath": "HKEY_CURRENT_CONFIG"
+ },
+ {
+  "OSPath": "HKEY_CURRENT_USER"
+ },
+ {
+  "OSPath": "HKEY_LOCAL_MACHINE"
+ },
+ {
+  "OSPath": "HKEY_PERFORMANCE_DATA"
+ },
+ {
+  "OSPath": "HKEY_USERS"
+ }
+]
+
+Query: SELECT OSPath FROM glob(globs="\\HKEY_LOCAL_MACHINE\\S*", accessor="registry")
+Output: [
+ {
+  "OSPath": "HKEY_LOCAL_MACHINE\\SAM"
+ },
+ {
+  "OSPath": "HKEY_LOCAL_MACHINE\\SOFTWARE"
+ },
+ {
+  "OSPath": "HKEY_LOCAL_MACHINE\\SYSTEM"
+ }
+]
+
+# No leading \\
+Query: SELECT OSPath FROM glob(globs="HKEY_LOCAL_MACHINE\\S*", accessor="registry")
+Output: [
+ {
+  "OSPath": "HKEY_LOCAL_MACHINE\\SAM"
+ },
+ {
+  "OSPath": "HKEY_LOCAL_MACHINE\\SOFTWARE"
+ },
+ {
+  "OSPath": "HKEY_LOCAL_MACHINE\\SYSTEM"
+ }
+]
+
+# A value with path seperators in it. Should return OSPath with
+# value name quoted.
+Query: SELECT OSPath FROM glob( globs="HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*", accessor="registry")
+Output: [
+ {
+  "OSPath": "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\\"c:\\windows\\system32\\msht.exe\""
+ }
+]
+
+Query: SELECT OSPath FROM stat( filename="HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\\"c:\\windows\\system32\\msht.exe\"", accessor="registry")
+Output: [
+ {
+  "OSPath": "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\\"c:\\windows\\system32\\msht.exe\""
+ }
+]
+
+# A key with path separators in it.
+Query: SELECT OSPath, Name FROM glob(globs="HKEY_USERS\\S-1-5-18\\http*\\*", accessor='registry')
+Output: [
+ {
+  "OSPath": "HKEY_USERS\\S-1-5-18\\\"http://www.google.com\"\\\"\\a\\b\\c\\d\"",
+  "Name": "\\a\\b\\c\\d"
+ }
+]
+
+Query: SELECT Name, OSPath, OSPath.Basename, dirname(path=OSPath, path_type='windows') FROM glob(globs="HKEY_CURRENT_USER\\Software\\Microsoft\\Office\\16.0\\Word\\Security\\Trusted Documents\\TrustRecords\\*", accessor="registry")
+Output: [
+ {
+  "Name": "%USERPROFILE%/Desktop/test.docx",
+  "OSPath": "HKEY_CURRENT_USER\\Software\\Microsoft\\Office\\16.0\\Word\\Security\\Trusted Documents\\TrustRecords\\\"%USERPROFILE%/Desktop/test.docx\"",
+  "OSPath.Basename": "%USERPROFILE%/Desktop/test.docx",
+  "dirname(path=OSPath, path_type='windows')": "HKEY_CURRENT_USER\\Software\\Microsoft\\Office\\16.0\\Word\\Security\\Trusted Documents\\TrustRecords"
+ }
+]
+
+# Check for PortProxy glob test parsing of fields and limit on type
+Query: SELECT OSPath FROM glob(globs='HKEY_LOCAL_MACHINE\\SYSTEM\\*ControlSet*\\services\\PortProxy\\**', accessor='registry') WHERE Data.type = "key" ORDER BY OSPath
+Output: [
+ {
+  "OSPath": "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Services\\PortProxy\\v4tov4"
+ },
+ {
+  "OSPath": "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Services\\PortProxy\\v4tov4\\tcp"
+ },
+ {
+  "OSPath": "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\PortProxy\\v4tov4"
+ },
+ {
+  "OSPath": "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\PortProxy\\v4tov4\\tcp"
+ }
+]
+
+# Check for value creation
+Query: LET KeyPath = '''HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\WINEVT\Channels\"Microsoft-Windows-Application Server-Applications/Debug"/Foobar2/'''
+Output: []
+
+Query: SELECT reg_set_value(path=KeyPath + "Value", value="Hello", type="SZ", create=TRUE) FROM scope()
+Output: [
+ {
+  "reg_set_value(path=KeyPath + \"Value\", value=\"Hello\", type=\"SZ\", create=TRUE)": true
+ }
+]
+
+# Disabled registry accessor cache
+Query: LET REG_CACHE_SIZE <= -1
+Output: []
+
+# We should be able to see the new value in there
+Query: SELECT OSPath, Data FROM glob(globs=KeyPath + "/*", accessor="registry")
+Output: [
+ {
+  "OSPath": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\WINEVT\\Channels\\\"Microsoft-Windows-Application Server-Applications/Debug\"\\Foobar2\\Value",
+  "Data": {
+   "type": "SZ",
+   "value": "Hello"
+  }
+ }
+]
+
+# Remove the key (this only works for keys without key children).
+Query: SELECT reg_rm_key(path=KeyPath) FROM scope()
+Output: [
+ {
+  "reg_rm_key(path=KeyPath)": true
+ }
+]
+
+# Check that its gone now.
+Query: SELECT OSPath, Data FROM glob(globs=KeyPath + "/*", accessor="registry")
+Output: [
+ {
+  "OSPath": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\WINEVT\\Channels\\\"Microsoft-Windows-Application Server-Applications/Debug\"\\Foobar2\\Value",
+  "Data": {
+   "type": "SZ",
+   "value": "Hello"
+  }
+ }
+]
+
+# Test read_reg_key with glob
+Query: SELECT *, Key.OSPath AS Key, Key.Name AS Name FROM read_reg_key(globs="*", root='''HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion''') WHERE Name = "Run"
+Output: [
+ {
+  "c:\\windows\\system32\\msht.exe": "Hello",
+  "Key": "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+  "Name": "Run"
+ }
+]
+
+# Test read_reg_key with no glob but a root
+Query: SELECT *,  Key.OSPath AS Key FROM read_reg_key(root='''HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run''')
+Output: [
+ {
+  "c:\\windows\\system32\\msht.exe": "Hello",
+  "Key": "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"
+ }
+]
+
+# Check for sysinternal eula - must be last because it remaps the hives.
+Query: SELECT User, ProgramName FROM Artifact.Windows.Registry.Sysinternals.Eulacheck(source="RegistryAPI")
+Output: [
+ {
+  "User": "runneradmin",
+  "ProgramName": "AutoRuns"
+ },
+ {
+  "User": "runneradmin",
+  "ProgramName": "PsExec"
+ }
+]
+
+# Test default value handling - The key itself looks like a regular directory
+Query: SELECT OSPath.Path AS Key, Data FROM glob(globs='Test', root='HKEY_CURRENT_USER/Software', accessor='registry')
+Output: [
+ {
+  "Key": "HKEY_CURRENT_USER\\Software\\Test",
+  "Data": {
+   "type": "key"
+  }
+ }
+]
+
+# Listing the key shows a value with name @ as well as one subkey
+# with name KeyWithValue and a value with name KeyWithValue. We can
+# have key and values with the same name.
+# Reading such a path with read_file() will open the value in preference to the key.
+Query: SELECT OSPath.Path AS Key, Data, Data.type AS Type, read_file(accessor='registry', filename=OSPath) AS Content FROM glob(globs='Test/*', root='HKEY_CURRENT_USER/Software', accessor='registry') ORDER BY Type
+Output: [
+ {
+  "Key": "HKEY_CURRENT_USER\\Software\\Test\\@",
+  "Data": {
+   "type": "SZ",
+   "value": "Test Data"
+  },
+  "Type": "SZ",
+  "Content": "Test Data"
+ },
+ {
+  "Key": "HKEY_CURRENT_USER\\Software\\Test\\KeyWithValue",
+  "Data": {
+   "type": "SZ",
+   "value": "Test Data"
+  },
+  "Type": "SZ",
+  "Content": "Test Data"
+ },
+ {
+  "Key": "HKEY_CURRENT_USER\\Software\\Test\\KeyWithValue",
+  "Data": {
+   "type": "key"
+  },
+  "Type": "key",
+  "Content": "Test Data"
+ }
+]
+

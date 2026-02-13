@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+import "crypto/proto/jobs.proto";
+import "flows/proto/artifact_collector.proto";
+
+package proto;
+
+option go_package = "www.velocidex.com/golang/velociraptor/api/proto";
+
+message ContainerMemberStats {
+    string name = 1;
+    uint64 uncompressed_size = 2;
+    uint64 compressed_size = 3;
+}
+
+// Stats about exported containers
+message ContainerStats {
+    // Seconds since epoch
+    uint64 timestamp = 8;
+
+    uint64 total_uploaded_files = 1;
+    uint64 total_uploaded_bytes = 2;
+
+    // Total number of bytes written to the container. NOTE: Due to
+    // caching this number can increase substantially before the
+    // container size actually changes so this is a better measure of
+    // progress than the compressed size.
+    uint64 total_uncompressed_bytes = 3;
+    uint64 total_compressed_bytes = 4;
+    uint64 total_container_files = 5;
+
+    // The hash of the written container - this is only populated
+    // **after** the container is closed.
+    string hash = 6;
+
+    // Total number of seconds taken to compress.
+    uint64 total_duration = 9;
+
+    // Where the file can be downloaded from the filestore
+    repeated string components = 7;
+
+    string type = 10;
+
+    string error = 11;
+
+    // A string representation of the file path
+    string vfs_path = 12;
+
+    repeated ContainerMemberStats active_members = 13;
+
+}
+
+message AvailableDownloadFile {
+    string name = 1;
+    string path = 5;
+
+    // Deprecated things are now stored in the stats.
+    string type = 6;
+    bool complete = 2;
+    uint64 size = 3;
+    string date = 4;
+
+    ContainerStats stats = 8;
+}
+
+message AvailableDownloads {
+    repeated AvailableDownloadFile files = 1;
+}
+
+message FlowDetails {
+    ArtifactCollectorContext context = 1;
+    AvailableDownloads available_downloads = 16;
+}
+
+// This shows the requests that were actually sent to the client. When
+// the user selects artifacts to send they are compiled into raw VQL
+// for sending to the client. NOTE: Clients do not know anything about
+// artifacts - they only interprect raw VQL as compiled by the server.
+message ApiFlowRequestDetails {
+    repeated VeloMessage items = 1;
+    string client_id = 2;
+    string flow_id = 3;
+}
+
+message ApiFlowResultDetails {
+    repeated VeloMessage items = 1;
+}
+
+message ApiFlowLogDetails {
+    repeated LogMessage items = 1;
+}
+
+message ApiFlowRequest {
+    string client_id = 1;
+    string flow_id = 2;
+    uint64 offset = 3;
+    uint64 count = 4;
+    bool include_archived = 5;
+
+    // If specified we only return flows that collected this artifact.
+    string artifact = 6;
+}
+
+message ApiFlowResponse {
+    uint64 total = 1;
+    repeated ArtifactCollectorContext items = 2;
+}

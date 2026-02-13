@@ -1,0 +1,243 @@
+syntax = "proto3";
+
+import "proto/semantic.proto";
+import "acls/proto/acl.proto";
+import "config/proto/config.proto";
+import "flows/proto/artifact_collector.proto";
+
+import "orgs.proto";
+
+package proto;
+
+option go_package = "www.velocidex.com/golang/velociraptor/api/proto";
+
+message Strings {
+    repeated string strings = 1;
+}
+
+message VelociraptorUser {
+    string name = 1 [(sem_type) = {
+            description: "The username"
+        }];
+
+    bytes password_hash = 2 [(sem_type) = {
+            description: "SHA256 hash of the password."
+        }];
+    bytes password_salt = 3;
+
+    string email = 4;
+    string picture = 5;
+    bool verified_email = 6;
+
+    bool read_only = 7 [(sem_type) = {
+            description: "A read only user can use the GUI but is not allowed to launch flows or hunts.",
+        }];
+
+    bool locked = 8 [(sem_type) = {
+           description: "If set the user is not allowed to log in.",
+        }];
+
+    ApiClientACL Permissions = 9;
+
+    // A list of org id's the user belongs to.
+    repeated OrgRecord orgs = 11;
+
+    // Only used by the GUI/API to determine the currently selected
+    // org the user wants to see.
+    string current_org = 12;
+}
+
+message UpdateUserRequest {
+    string name = 1 [(sem_type) = {
+        description: "The username"
+    }];
+
+    string password = 2 [(sem_type) = {
+        description: "The cleartext password"
+    }];
+
+    repeated string orgs = 3;
+
+    repeated string roles = 4;
+
+    bool add_new_user = 5;
+}
+
+message DeleteUserRequest {
+    string name = 1 [(sem_type) = {
+        description: "The username"
+    }];
+
+    repeated string orgs = 2 [(sem_type) = {
+        description: "The org IDs to remove this user (empty means all orgs)"
+    }];
+}
+
+message UserRequest {
+    string name = 1;
+    string org = 2;
+}
+
+// These traits are used to control the GUI App. Many of these fields
+// are constructed from the VelociraptorUser, the config file, the
+// GUIOptions etc.
+message ApiUserInterfaceTraits {
+    ApiClientACL Permissions = 9;
+    GUICustomizations customizations = 10;
+
+    string lang = 22;
+
+    // Set if the authenticator is password less (e.g. OAuth, SAML
+    // etc)
+    bool password_less = 25;
+    string picture = 20;
+
+    repeated GUILink links = 21;
+
+    // Get the user's preferred theme.
+    string theme = 2;
+    string timezone = 23;
+
+    // Downloads will be protected using this password.
+    string default_password = 3;
+
+    // Offer to protect download exports by default.
+    bool default_downloads_lock = 4;
+
+    // An opaque setting object stored by the GUI.
+    string ui_settings = 1;
+
+    // Current selected Org.
+    string org = 24;
+
+    // The user's specific base path - only used for crazy reverse
+    // proxy configurations.
+    string base_path = 29;
+
+    // Optional features of the UI to disable.
+    bool disable_server_events = 26;
+    string auth_redirect_template = 27;
+    bool disable_quarantine_button = 28;
+};
+
+message GlobalUserMessage {
+    string key = 1;
+    string level = 2;
+    string message = 3;
+}
+
+// Describe the user to the GUI.
+message ApiUser {
+    string username = 1 [(sem_type) = {
+            description: "The name of the user."
+        }];
+
+    // Gets constructed from the users.GetUserOptions()
+    ApiUserInterfaceTraits interface_traits = 3 [(sem_type) = {
+            description: "User's interface traits (what they can and can't do "
+            "in the UI)."
+        }];
+
+    enum UserType {
+        USER_TYPE_NONE = 0;
+        USER_TYPE_STANDARD = 1;
+        USER_TYPE_ADMIN = 2;
+    }
+    UserType user_type = 4;
+
+    repeated OrgRecord orgs = 11;
+    bool org_admin = 12 [(sem_type) = {
+        description: "Whether this user is an OrgAdmin"
+    }];
+
+    repeated GlobalUserMessage global_messages = 13;
+}
+
+// Contol the GUI per user.
+message GUICustomizations {
+    bool disable_server_events = 1;
+    bool disable_user_management = 2;
+    bool disable_quarantine_button = 3;
+
+    // Updated from config_obj.Defaults.HuntExpiryHours
+    int64 hunt_expiry_hours = 4;
+
+    repeated string indexed_client_metadata = 5;
+}
+
+message SetGUIOptionsRequest {
+    string theme = 2;
+    string timezone = 6;
+    string lang = 5;
+
+    // Downloads will be protected using this password. If this is
+    // empty we do not update the password. If it is set to "-" we
+    // reset the password to the empty string.
+    string default_password = 3;
+
+    // Offer to protect download exports by default.
+    bool default_downloads_lock = 4;
+
+    string options = 1;
+
+    // Current org id
+    string org = 7;
+
+    GUICustomizations customizations = 8;
+
+    repeated GUILink links = 9;
+
+    // Optional features of the UI to disable:
+    // TODO: Move to GUICustomizations.
+    bool disable_server_events = 26;
+    string auth_redirect_template = 27;
+    bool disable_quarantine_button = 28;
+}
+
+message SetGUIOptionsResponse {
+    // If this is specifed the GUI will redirect to the specified
+    // URL. This helps when there are multiple servers that can handle
+    // the user and a better one is needed. Normally this is really
+    // set by any middleware (e.g. custom authenticators).
+    string redirect_url = 1;
+}
+
+
+message Users {
+    repeated VelociraptorUser users = 1;
+}
+
+
+// Get the roles and permissions of a user within the org.
+message UserRoles {
+    string name = 1;
+    string org = 2;
+    string org_name = 8;
+
+    repeated string permissions = 3;
+    repeated string roles = 4;
+
+    // Expanded permissions as above.
+    repeated string effective_permissions = 5;
+
+    repeated string all_roles = 6;
+    repeated string all_permissions = 7;
+};
+
+message SetPasswordRequest {
+    string password = 1;
+    string username = 2;
+}
+
+// Store favorite collections (essential preset collection specs)
+message Favorite {
+    string name = 1;
+    string description = 2;
+    repeated ArtifactSpec spec = 3;
+
+    string type = 4;
+}
+
+message Favorites {
+    repeated Favorite items = 1;
+}

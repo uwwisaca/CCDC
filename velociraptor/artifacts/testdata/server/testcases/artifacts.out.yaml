@@ -1,0 +1,285 @@
+# Check the extension on file_store()
+Query: SELECT *, basename(path=file_store(path=vfs_path)) FROM uploads(client_id=CLIENT_ID, flow_id='F.BN2HJCPOF5U7U')
+Output: [
+ {
+  "Timestamp": 1573198259,
+  "started": "2019-11-08 07:30:59.920512962 +0000 UTC",
+  "vfs_path": "fs:/clients/C.4f5e52adf0a337a9/collections/F.BN2HJCPOF5U7U/uploads/auto/C:/1.zip",
+  "_Components": [
+   "clients",
+   "C.4f5e52adf0a337a9",
+   "collections",
+   "F.BN2HJCPOF5U7U",
+   "uploads",
+   "auto",
+   "C:",
+   "1.zip"
+  ],
+  "file_size": 1319,
+  "uploaded_size": 1319,
+  "client_path": "C:\\1.zip",
+  "Upload": {
+   "Path": "C:\\1.zip",
+   "Size": 1319,
+   "StoredSize": 1319,
+   "Components": [
+    "clients",
+    "C.4f5e52adf0a337a9",
+    "collections",
+    "F.BN2HJCPOF5U7U",
+    "uploads",
+    "auto",
+    "C:",
+    "1.zip"
+   ],
+   "UploadId": 0
+  },
+  "basename(path=file_store(path=vfs_path))": "1.zip"
+ },
+ {
+  "Timestamp": 1573198259,
+  "started": "2019-11-08 07:30:59.920512962 +0000 UTC",
+  "vfs_path": "fs:/clients/C.4f5e52adf0a337a9/collections/F.BN2HJCPOF5U7U/uploads/file/C:/old_style.zip",
+  "expected_size": 1319,
+  "client_path": "",
+  "Upload": {
+   "Path": "/clients/C.4f5e52adf0a337a9/collections/F.BN2HJCPOF5U7U/uploads/file/C:/old_style.zip",
+   "Size": 0,
+   "UploadId": 0
+  },
+  "basename(path=file_store(path=vfs_path))": "old_style.zip"
+ }
+]
+
+# Schedule an artifact collection
+Query: SELECT collect_client( client_id=CLIENT_ID, artifacts='Windows.Search.FileFinder', env=dict(SearchFilesGlobTable ='Glob\nC:/*.txt\n')).request AS Flow FROM scope()
+Output: [
+ {
+  "Flow": {
+   "creator": "VelociraptorServer",
+   "user_data": "",
+   "client_id": "C.4f5e52adf0a337a9",
+   "flow_id": "",
+   "urgent": false,
+   "artifacts": [
+    "Windows.Search.FileFinder"
+   ],
+   "specs": [
+    {
+     "artifact": "Windows.Search.FileFinder",
+     "parameters": {
+      "env": [
+       {
+        "key": "SearchFilesGlobTable",
+        "value": "Glob\nC:/*.txt\n",
+        "comment": ""
+       }
+      ]
+     },
+     "cpu_limit": 0,
+     "max_batch_wait": 0,
+     "max_batch_rows": 0,
+     "max_batch_rows_buffer": 0,
+     "timeout": 0
+    }
+   ],
+   "cpu_limit": 0,
+   "iops_limit": 0,
+   "progress_timeout": 0,
+   "timeout": 0,
+   "max_rows": 0,
+   "max_logs": 0,
+   "max_upload_bytes": 1073741824,
+   "trace_freq_sec": 0,
+   "allow_custom_overrides": false,
+   "log_batch_time": 0,
+   "compiled_collector_args": [],
+   "ops_per_second": 0
+  }
+ }
+]
+
+# Schedule using a new style spec decleration.
+Query: SELECT collect_client( client_id=CLIENT_ID, artifacts='Windows.Search.FileFinder', spec=dict(`Windows.Search.FileFinder`=dict( SearchFilesGlobTable ='Glob\nC:/*.txt\n'))).request AS Flow FROM scope()
+Output: [
+ {
+  "Flow": {
+   "creator": "VelociraptorServer",
+   "user_data": "",
+   "client_id": "C.4f5e52adf0a337a9",
+   "flow_id": "",
+   "urgent": false,
+   "artifacts": [
+    "Windows.Search.FileFinder"
+   ],
+   "specs": [
+    {
+     "artifact": "Windows.Search.FileFinder",
+     "parameters": {
+      "env": [
+       {
+        "key": "SearchFilesGlobTable",
+        "value": "Glob\nC:/*.txt\n",
+        "comment": ""
+       }
+      ]
+     },
+     "cpu_limit": 0,
+     "max_batch_wait": 0,
+     "max_batch_rows": 0,
+     "max_batch_rows_buffer": 0,
+     "timeout": 0
+    }
+   ],
+   "cpu_limit": 0,
+   "iops_limit": 0,
+   "progress_timeout": 0,
+   "timeout": 0,
+   "max_rows": 0,
+   "max_logs": 0,
+   "max_upload_bytes": 1073741824,
+   "trace_freq_sec": 0,
+   "allow_custom_overrides": false,
+   "log_batch_time": 0,
+   "compiled_collector_args": [],
+   "ops_per_second": 0
+  }
+ }
+]
+
+# Check that artifact_definitions work
+Query: SELECT name FROM artifact_definitions(deps=TRUE, names='Windows.Search.FileFinder') ORDER BY name
+Output: [
+ {
+  "name": "Windows.Search.FileFinder"
+ }
+]
+
+# Make sure we can return all names
+Query: SELECT name FROM artifact_definitions() WHERE name =~ 'Windows.Search.FileFinder'
+Output: [
+ {
+  "name": "Windows.Search.FileFinder"
+ }
+]
+
+# Test the "fs" accessor
+Query: SELECT OSPath FROM glob( globs="/clients/" + CLIENT_ID + "/collections/F.BN2HJCPOF5U7U/uploads/**", accessor="fs")
+Output: [
+ {
+  "OSPath": "fs:/clients/C.4f5e52adf0a337a9/collections/F.BN2HJCPOF5U7U/uploads/file"
+ },
+ {
+  "OSPath": "fs:/clients/C.4f5e52adf0a337a9/collections/F.BN2HJCPOF5U7U/uploads/file/C:"
+ },
+ {
+  "OSPath": "fs:/clients/C.4f5e52adf0a337a9/collections/F.BN2HJCPOF5U7U/uploads/file/C:/1.zip"
+ }
+]
+
+# Test that we can not overwrite built in artifacts
+Query: SELECT artifact_set(definition=_value).name FROM items(item={ SELECT * FROM artifact_definitions(names="Generic.Client.Info") WHERE name =~ "Generic.Client.Info" })
+Output: [
+ {
+  "artifact_set(definition=_value).name": null
+ }
+]
+
+Query: SELECT * FROM test_read_logs() WHERE Log =~ "Unable to override built in artifact" LIMIT 1
+Output: [
+ {
+  "Log": "Velociraptor: artifact_set: Unable to override built in artifact Generic.Client.Info\n"
+ }
+]
+
+# Should be able to set a custom copy of it
+Query: SELECT artifact_set(definition=patch( item=_value, merge=dict(name="Custom.Generic.Client.Info"))).name FROM items(item={ SELECT * FROM artifact_definitions(names="Generic.Client.Info") WHERE name =~ "Generic.Client.Info" })
+Output: [
+ {
+  "artifact_set(definition=patch(item=_value, merge=dict(name=\"Custom.Generic.Client.Info\"))).name": "Custom.Generic.Client.Info"
+ }
+]
+
+# Set artifact metadata
+Query: SELECT artifact_set_metadata(name="Custom.Generic.Client.Info", hidden=TRUE) FROM scope()
+Output: [
+ {
+  "artifact_set_metadata(name=\"Custom.Generic.Client.Info\", hidden=TRUE)": {
+   "hidden": true
+  }
+ }
+]
+
+Query: SELECT name, metadata FROM artifact_definitions(names="Custom.Generic.Client.Info")
+Output: [
+ {
+  "name": "Custom.Generic.Client.Info",
+  "metadata": {
+   "hidden": true,
+   "basic": false,
+   "tags": []
+  }
+ }
+]
+
+# Set artifact tags
+Query: SELECT artifact_set_metadata(name="Custom.Generic.Client.Info", tags=["OneTag"]) FROM scope()
+Output: [
+ {
+  "artifact_set_metadata(name=\"Custom.Generic.Client.Info\", tags=[\"OneTag\"])": {
+   "hidden": true,
+   "tags": [
+    "OneTag"
+   ]
+  }
+ }
+]
+
+Query: SELECT artifact_set_metadata(name="Custom.Generic.Client.Info", tags="OneTag") FROM scope()
+Output: [
+ {
+  "artifact_set_metadata(name=\"Custom.Generic.Client.Info\", tags=\"OneTag\")": {
+   "hidden": true,
+   "tags": [
+    "OneTag"
+   ]
+  }
+ }
+]
+
+# Single tag list
+Query: SELECT artifact_set_metadata(name="Custom.Generic.Client.Info", tags=["OneTag",]) FROM scope()
+Output: [
+ {
+  "artifact_set_metadata(name=\"Custom.Generic.Client.Info\", tags=[\"OneTag\", ])": {
+   "hidden": true,
+   "tags": [
+    "OneTag"
+   ]
+  }
+ }
+]
+
+Query: SELECT artifact_set_metadata(name="Custom.Generic.Client.Info", tags=["OneTag", "TwoTags"]) FROM scope()
+Output: [
+ {
+  "artifact_set_metadata(name=\"Custom.Generic.Client.Info\", tags=[\"OneTag\", \"TwoTags\"])": {
+   "hidden": true,
+   "tags": [
+    "OneTag",
+    "TwoTags"
+   ]
+  }
+ }
+]
+
+# Clear the tags
+Query: SELECT artifact_set_metadata(name="Custom.Generic.Client.Info", tags=[]) FROM scope()
+Output: [
+ {
+  "artifact_set_metadata(name=\"Custom.Generic.Client.Info\", tags=[])": {
+   "hidden": true
+  }
+ }
+]
+

@@ -1,0 +1,47 @@
+.regex_array_item {
+    display: flex;
+}
+
+.regex_array_item .regex-form {
+    width: 100%;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.velo-form .form-switch {
+    margin-top: 7px;
+    margin-left: 20px;
+}
+
+.csv-table tr td,
+.csv-table tr th.metadata-control {
+    padding: 0px;
+}
+
+div.velo__menu {
+    z-index: 100;
+}
+
+.form-control:disabled {
+    opacity: 0.5;
+}
+
+.multichoice-select .btn,
+.left-joined-btn {
+    max-width: 30.5px;
+    padding-left: 9px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.multichoice-select .velo {
+    width: 100%;
+}
+
+.multichoice-select  .velo__control,
+.regex-form .velo-ace-editor {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}

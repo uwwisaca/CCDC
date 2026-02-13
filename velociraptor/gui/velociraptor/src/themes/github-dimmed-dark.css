@@ -1,0 +1,1080 @@
+@font-face {
+  font-family: "Noto Sans";
+  font-style: normal;
+  font-weight: 400;
+  src: local(""),
+    url("../fonts/noto-sans-v27-latin-ext_latin-regular.woff2") format("woff2");
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Noto Sans";
+  font-style: bold;
+  font-weight: 600;
+  src: local(""),
+    url("../fonts/noto-sans-v27-latin-ext_latin-600.woff2") format("woff2");
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Iosevka Term";
+  font-style: normal;
+  font-weight: 500;
+  src: local(""),
+    url("../fonts/iosevka-term-medium-subset.woff2") format("woff2");
+    unicode-range: U+0020-007E, U+0080-00FF;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Iosevka Term";
+  font-style: bold;
+  font-weight: 700;
+  src: local(""),
+    url("../fonts/iosevka-term-bold-subset.woff2") format("woff2");
+  unicode-range: U+0020-007E, U+0080-00FF;
+  font-display: block;
+}
+
+.github-dimmed-dark {
+  --font-size-large: 16px;
+  --font-size-base: 14px;
+  --font-size-small: 13px;
+  --font-family-sans-serif: "Noto Sans", -apple-system,BlinkMacSystemFont,
+    "Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+  --font-family-monospace: "Iosevka Term", Iosevka-Term, SFMono-Regular, Menlo, Monaco,
+    "Ubuntu Mono", Consolas, "Liberation Mono", "Courier New", monospace;
+
+  --accent-color: #539bf5; /* https://github.com/w3c/csswg-drafts/issues/5187 */
+  --color-accent: 83, 155, 245; /* --color-accent-fg */
+  --color-accent-complement: #f5ac53;
+  --color-accent-100: rgba(var(--color-accent), 1);
+  --color-accent-75: rgba(var(--color-accent), 0.75);
+  --color-accent-50: rgba(var(--color-accent), 0.5);
+  --color-accent-25: rgba(var(--color-accent), 0.25);
+
+  --color-header-background: #2d333b; /* --color-header-bg */
+  --color-footer-background: var(--color-header-background);
+  --color-canvas-background: #22272e; /* --color-canvas-default */
+  --color-canvas-background-complement: #3b352d;
+  --color-form-control-background: var(--color-canvas-background);
+
+  --color-foreground: #cdd9e5; /* --color-scale-white */
+  --color-foreground-inverse: #32261a;
+  --color-foreground-dimmed: #909dab; /* --color-scale-gray-2 */
+
+  --color-sidebar-inactive-foreground-hover: var(--color-sidebar-foreground);
+  --color-sidebar-inactive-background-hover: var(--color-btn-border);
+  --color-sidebar-foreground: var(--color-foreground);
+  --color-sidebar-disabled-foreground: var(--color-foreground-dimmed);
+  --color-sidebar-background: var(--color-canvas-background);
+  --color-sidebar-active-foreground: var(--color-foreground);
+  --color-sidebar-active-background: var(--color-table-row-selected);
+
+  --color-client-link: #57ab5a;
+  --color-client-link-hover: var(--color-foreground-dimmed);
+  --color-tooltip-background: var(--color-btn-default-background);
+
+  --color-no-content: var(--color-foreground-dimmed);
+  --color-btn-border: #373e47; /* --color-border-muted  --color-scale-gray-7 */
+  --color-btn-default-border: #636e7b; /* --color-btn-border */
+  --color-btn-default-border-hover: #A4B7CC;
+  --color-btn-default-background: #373e47; /* --color-btn-bg --color-scale-gray-7 */
+  --color-btn-default-background-hover: #545d68; /* --color-scale-gray-5 */
+  --color-btn-outline-link: #373e47; /* --color-btn-bg --color-scale-gray-7 */
+  --color-btn-outline-link-hover: var(--color-accent-50);
+  --color-card-heading-background: var(--color-header-background);
+  --color-cell-toolbar-background: #222222;
+  --color-monospace-color: var(--color-foreground);
+
+  --color-page-link-active-background: var(--color-accent-75);
+  --color-page-link-hover-background: var(--color-accent-25);
+  --color-page-link-background: var(--color-canvas-background);
+  --color-pagination-disabled: var(--color-btn-default-border);
+
+  --color-table-row-selected: rgba(83, 155, 245, 0.5);
+  --color-table-row-hover: var(--color-accent-25);
+
+  --color-resizer: #373e47;
+  --color-scrollbar-track: var(--color-canvas-background);
+  --color-scrollbar-thumb: var(--color-accent-25);
+  --color-scrollbar-thumb-hover: var(--color-accent-75);
+  --color-scrollbar-main: var(--color-accent-25);
+  --color-scrollbar-background: rgba(var(--color-accent), 0.1);
+
+  --color-tab: var(--color-canvas-background);
+  --color-tab-active: var(--color-canvas-background);
+  --color-tab-active-border: #ec775c;
+  --color-table-row-stripe: rgba(0, 0, 0, 0.1);
+  --color-table-row: var(--color-canvas-background);
+  --color-table-heading-foreground: var(--color-foreground-dimmed);
+  --color-table-heading-background: var(--color-card-heading-background);
+  --color-client-link-hover: var(--color-btn-outline-link-hover);
+
+  --color-timeline-header: #cdcdcd20;
+  --color-timeline-table-shown: #dd4b3920;
+  --color-timeline-1: #dff0d820;
+  --color-timeline-2: #a9444220;
+  --color-timeline-3: #2aabd2;
+  --color-timeline-4: #f0c36d;
+  --color-timeline-5: #bbb;
+  --color-timeline-6: #008000;
+  --color-timeline-7: #471ecb;
+
+  --color-vfs-files-timestomped: #ed5d40;
+  --color-calendar-background: #121212;
+  --color-calendar-background: var(--color-canvas-background);
+
+  --background-calendar-tile-now: #feffe0;
+
+  --color-level-error: #aa0000;
+  --invalid-form-control-error: #aa0000;
+
+  --hljs-color: #FFFFFF;
+  --hljs-comment: #4EC9B0;
+  --hljs-keyword: #2aabd2;
+}
+
+body.github-dimmed-dark {
+  background: var(--color-canvas-background);
+  font-family: var(--font-family-sans-serif);
+  font-size: var(--font-size-base);
+  font-weight: 400;
+  letter-spacing: 0.4px;
+}
+
+.github-dimmed-dark dl {
+  font-family: var(--font-family-sans-serif);
+  font-size: var(--font-size-base);
+}
+
+.github-dimmed-dark h1,
+.github-dimmed-dark h2,
+.github-dimmed-dark h3 {
+  color: var(--color-foreground);
+}
+
+.github-dimmed-dark a {
+  color: var(--color-accent-complement);
+}
+
+.github-dimmed-dark code,
+.github-dimmed-dark pre,
+.github-dimmed-dark .monospace {
+  font-family: var(--font-family-monospace);
+  font-size: var(--font-size-base);
+  color: var(--color-accent-100);
+}
+
+/* Top Navbar */
+
+.github-dimmed-dark .main-navbar {
+  background: var(--color-header-background);
+}
+
+.github-dimmed-dark .hamburger {
+  color: var(--color-sidebar-foreground);
+}
+
+.github-dimmed-dark .nav-link {
+    border-radius: 0;
+}
+
+.github-dimmed-dark .dropdown .dropdown-toggle.btn.btn-default {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left-width: 0;
+}
+
+.github-dimmed-dark .client-summary {
+  font-family: var(--font-family-sans-serif);
+  color: var(--color-foreground);
+}
+
+.github-dimmed-dark .client-status .client-name {
+  color: whitesmoke;
+  background: var(--color-btn-default-background);
+  text-decoration: none !important;
+  text-shadow: none;
+  padding: 6px 10px 8px 10px;
+  border-radius: 3px;
+  margin: 5px;
+  font-size: var(--font-size-base);
+  border-color: var(--color-btn-default-border);
+}
+
+.github-dimmed-dark .client-status .client-name:hover {
+  background: var(--color-client-link-hover);
+}
+
+.github-dimmed-dark .react-autosuggest__input {
+  background: var(--color-form-control-background);
+  border: 1px solid var(--color-btn-default-border);
+  color: var(--color-foreground);
+  font-family: var(--font-family-sans-serif);
+  font-size: var(--font-size-base);
+  text-decoration: none !important;
+  text-shadow: none;
+}
+
+.github-dimmed-dark .react-autosuggest__suggestions-container--open {
+  background: var(--color-form-control-background);
+  font-family: var(--font-family-sans-serif);
+  font-size: var(--font-size-base);
+  color: var(--color-foreground);
+  border: 1px solid var(--color-btn-default-border);
+}
+
+.github-dimmed-dark .react-autosuggest__suggestion--highlighted {
+  background: var(--color-accent-50);
+}
+
+/* Sidebar navbar */
+
+.github-dimmed-dark div#navigator {
+    font-size: var(--font-size-base);
+  font-family: var(--font-family-sans-serif);
+  color: var(--color-sidebar-foreground);
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+  border-width: 0;
+  background: var(--color-canvas-background);
+}
+
+.github-dimmed-dark .navigator.nav-pills.nav li:hover {
+  color: var(--color-sidebar-inactive-foreground-hover);
+  background: var(--color-sidebar-inactive-background-hover);
+}
+
+.github-dimmed-dark .navigator.nav-pills.nav li:has(a.active) {
+  background: var(--color-sidebar-active-background);
+}
+
+.github-dimmed-dark .navigator.nav-pills.nav li a.active {
+  color: var(--color-sidebar-active-foreground);
+}
+
+.github-dimmed-dark .navigator.nav-pills.nav .nav-link.disabled {
+  color: var(--color-sidebar-disabled-foreground);
+  background: var(--color-sidebar-background);
+  pointer-events: none;
+}
+
+/* Buttons */
+
+.github-dimmed-dark .button.close:focus {
+  outline: none;
+}
+
+.github-dimmed-dark .btn,
+.github-dimmed-dark .btn-default {
+  font-family: var(--font-family-sans-serif);
+  font-size: var(--font-size-base);
+  color: var(--color-foreground);
+  border-color: var(--color-btn-default-border);
+  background: var(--color-btn-default-background);
+  text-shadow: none;
+  box-shadow: none;
+}
+
+.github-dimmed-dark .input-group-text:hover,
+.github-dimmed-dark .btn:hover,
+.github-dimmed-dark .btn-default:hover {
+  background: var(--color-btn-default-background-hover);
+  box-shadow: none;
+  color: var(--color-foreground);
+  text-shadow: none;
+  text-decoration: none;
+}
+
+.github-dimmed-dark .btn.active.btn-default {
+  background: var(--color-btn-default-background-hover);
+  box-shadow: none;
+  color: var(--color-foreground);
+  text-shadow: none;
+}
+
+.github-dimmed-dark .btn[disabled] {
+  color: var(--color-foreground-dimmed);
+  background: var(--color-canvas-background);
+}
+
+.github-dimmed-dark .btn-primary {
+  text-shadow: none;
+  box-shadow: none;
+  background: var(--color-accent-50);
+}
+
+.github-dimmed-dark .btn-primary:hover:not(:disabled):not(.disabled) {
+  background: var(--color-accent-75);
+}
+
+.github-dimmed-dark .btn-secondary {
+  text-shadow: none;
+  box-shadow: none;
+  background: var(--color-canvas-background);
+}
+
+.github-dimmed-dark .btn-default {
+  text-shadow: none;
+  box-shadow: none;
+  background: var(--color-btn-default-background);
+}
+
+.github-dimmed-dark .btn-outline-default {
+  border: none;
+  background: none;
+}
+
+.github-dimmed-dark .btn-outline-info,
+.github-dimmed-dark .btn-link {
+  color: var(--color-foreground);
+  background: var(--color-btn-outline-link);
+  text-shadow: none;
+  margin: 1px;
+}
+
+.github-dimmed-dark .client-link.btn.btn-outline-info {
+  width: unset;
+}
+
+.github-dimmed-dark .btn-outline-info:hover {
+  color: whitesmoke !important;
+  background: var(--color-btn-outline-link-hover) !important;
+  text-shadow: none !important;
+}
+
+.github-dimmed-dark .btn-outline-info:active {
+  color: whitesmoke !important;
+  background: var(--color-btn-outline-link-hover) !important;
+  text-shadow: none !important;
+}
+
+.github-dimmed-dark .client-link {
+  color: var(--color-foreground);
+  background: var(--color-btn-outline-link);
+  text-shadow: none;
+  font-family: var(--font-family-sans-serif);
+  font-size: inherit;
+}
+
+.github-dimmed-dark .btn.btn-link {
+  border-color: transparent;
+  width: 100%;
+  background: rgba(83, 155, 245, 0.1);
+  color: var(--color-foreground);
+}
+
+.github-dimmed-dark .alert-secondary {
+  color: var(--color-foreground);
+  background: var(--color-table-heading-background);
+}
+
+.github-dimmed-dark .alert-secondary th {
+  border: 1px solid var(--color-table-heading-background);
+}
+
+.github-dimmed-dark .btn-danger:disabled,
+.github-dimmed-dark .btn-danger[disabled] {
+  color: var(--color-foreground);
+  border-color: var(--color-btn-default-border);
+  background: var(--color-btn-default-background);
+}
+
+.github-dimmed-dark .btn-danger:not(:disabled):not(.disabled) {
+  color: whitesmoke;
+  background: var(--color-danger-emphasis);
+  border-color: var(--color-danger-emphasis);
+  /* box-shadow: 0 0 0 0.2rem rgba(201 60 55 / 0.5); */
+}
+
+/* Pagination */
+.github-dimmed-dark .page-item .page-link {
+  background: var(--color-btn-default-background);
+  border-color: var(--color-btn-default-border);
+  color: var(--color-foreground);
+}
+
+.github-dimmed-dark .page-item.disabled span {
+  color: var(--color-pagination-disabled);
+}
+
+.github-dimmed-dark .page-item input {
+  background: var(--color-btn-default-background-hover);
+  color: var(--color-foreground);
+  border: 1px solid var(--color-btn-default-border);
+}
+
+.github-dimmed-dark .page-item.active .page-link:hover,
+.github-dimmed-dark .page-item.active .page-link {
+  background: var(--color-page-link-active-background);
+  border-color: var(--color-btn-default-border);
+}
+
+.github-dimmed-dark .page-item .page-link:hover {
+  background: var(--color-page-link-hover-background);
+}
+
+.github-dimmed-dark .react-bootstrap-table-pagination-total {
+  color: var(--color-foreground);
+  padding-left: 15px;
+}
+
+/* Tables */
+
+.github-dimmed-dark .table-bordered {
+  border: 1px solid var(--color-canvas-background);
+  box-shadow: none;
+  font-weight: 400;
+}
+
+.github-dimmed-dark .table-bordered .notebook-filter td {
+  border: none;
+  text-shadow: none;
+  background: var(--color-table-heading-background);
+}
+
+.github-dimmed-dark .table-bordered thead th {
+  color: var(--color-foreground);
+  font-weight: 700;
+}
+
+.github-dimmed-dark .table thead th {
+  color: var(--color-foreground);
+  font-weight: 700;
+  vertical-align: text-bottom;
+  background: var(--color-table-heading-background);
+}
+
+.github-dimmed-dark .table {
+  background: var(--color-canvas-background);
+  color: var(--color-foreground);
+  vertical-align: middle;
+  font-weight: 400;
+  font-size: var(--font-size-base);
+  text-shadow: none;
+  box-shadow: none;
+}
+
+.github-dimmed-dark .table tbody tr td {
+  border: none;
+}
+
+.github-dimmed-dark .new-artifact-search-table.selectable .table.table-bordered,
+.github-dimmed-dark .new-artifact-search-table.selectable .table.table-bordered tbody tr,
+.github-dimmed-dark .new-artifact-search-table.selectable .table.table-bordered thead th {
+  background: none;
+  border: none;
+}
+
+.github-dimmed-dark .new-artifact-search-table.selectable .table.table-bordered tbody tr > td > button.btn.btn-link:hover {
+  background: var(--color-btn-outline-link-hover);
+}
+
+.github-dimmed-dark .new-artifact-search-table.selectable .table.table-bordered tbody > tr.row-selected > td > button.btn.btn-link,
+.github-dimmed-dark .new-artifact-search-table.selectable .table.table-bordered tbody > tr.row-selected > td > button.btn.btn-link:hover {
+  background: var(--color-accent-75);
+  color: var(--color-foreground);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.github-dimmed-dark .new-artifact-search-table .btn-link:hover,
+.github-dimmed-dark .new-artifact-search-table .btn-link:focus,
+.github-dimmed-dark .new-artifact-search-table .btn-link.focus {
+  text-decoration: none;
+}
+
+.github-dimmed-dark .table tbody tr.row-selected,
+.github-dimmed-dark .table tbody tr.row_selected td {
+  background: var(--color-table-row-selected);
+  color: var(--color-foreground);
+}
+
+/* Column search screen */
+.github-dimmed-dark th.sortable input {
+  background: var(--color-canvas-background);
+  color: var(--color-foreground);
+  border-color: var(--color-btn-border);
+  font-weight: 400;
+}
+
+/* Resizer dividers */
+.github-dimmed-dark .Resizer.horizontal {
+  border: none;
+  background: var(--color-resizer);
+  height: 5px;
+}
+
+.github-dimmed-dark .Resizer.horizontal:hover {
+  background: var(--color-resizer);
+}
+
+.github-dimmed-dark .Resizer.vertical {
+  border: none;
+  background: var(--color-btn-border);
+  width: 3px;
+}
+
+.github-dimmed-dark .Resizer.vertical:hover {
+  background: var(--color-resizer);
+}
+
+.github-dimmed-dark .Resizer:hover {
+  transition: all 200ms ease-in-out;
+}
+
+/* Cards */
+
+.github-dimmed-dark .card {
+  background: var(--color-canvas-background);
+  border-color: var(--color-btn-border);
+}
+
+.github-dimmed-dark .dashboard .card {
+  border: none;
+}
+
+.github-dimmed-dark .card-header {
+  background: var(--color-card-heading-background);
+  color: var(--color-foreground);
+  font-weight: 600;
+}
+
+.github-dimmed-dark .card-body {
+  background: var(--color-canvas-background);
+  color: var(--color-foreground);
+}
+
+.github-dimmed-dark .card-body dt,
+.github-dimmed-dark .card-body label {
+  font-weight: 600;
+  color: var(--color-accent-100);
+}
+
+/* Json container */
+.github-dimmed-dark div.pretty-json-container {
+  font-family: var(--font-family-monospace);
+  filter: invert(0);
+}
+
+.github-dimmed-dark .invalid.form-control,
+.github-dimmed-dark .invalid.form-control:focus {
+  background: var(--invalid-form-control-error);
+}
+
+/* Tabs */
+.github-dimmed-dark .tab-content {
+  color: var(--color-foreground);
+  padding-block-start: 3px;
+}
+
+.github-dimmed-dark .nav-tabs,
+.github-dimmed-dark .nav-tabs .nav-item {
+  border-bottom: none;
+}
+
+.github-dimmed-dark .nav-tabs .nav-link {
+  background: var(--color-tab);
+  color: var(--color-foreground-dimmed);
+  border-top-color: var(--color-canvas-background);
+  border-right-color: var(--color-canvas-background);
+  border-left-color: var(--color-canvas-background);
+  border-bottom: 2px transparent;
+  font-weight: 600;
+}
+
+.github-dimmed-dark .nav-tabs .nav-link:hover {
+  color: var(--color-foreground);
+  border-bottom: 2px solid var(--color-btn-default-border);
+}
+
+.github-dimmed-dark .nav-tabs .nav-link:active {
+  background: var(--color-btn-border);
+  color: var(--color-foreground);
+  border-bottom: 2px solid var(--color-tab-active-border);
+  /* font-weight: 600; */
+}
+
+.github-dimmed-dark .nav-tabs .nav-link.active {
+  background: var(--color-tab-active);
+  color: var(--color-foreground);
+  border-bottom: 2px solid var(--color-tab-active-border);
+  /* font-weight: 600; */
+}
+
+/* Form controls */
+
+.github-dimmed-dark .custom-switch .custom-control-input:disabled:checked~.custom-control-label:before {
+  background-color: var(--color-accent-25);
+}
+
+.github-dimmed-dark .labels,
+.github-dimmed-dark .form-control,
+.github-dimmed-dark .velo__menu {
+  background: var(--color-form-control-background);
+  color: var(--color-foreground) !important;
+  border-color: var(--color-btn-default-border);
+  font-size: var(--font-size-base);
+  box-shadow: none;
+}
+
+.github-dimmed-dark .velo__control {
+  background: var(--color-form-control-background);
+  border-color: var(--color-btn-default-border);
+  color: var(--color-foreground);
+}
+
+.github-dimmed-dark .velo__control--is-focused,
+.github-dimmed-dark .velo__control--menu-is-open {
+  box-shadow: none;
+  border-color: var(--color-btn-default-border);
+}
+
+.github-dimmed-dark .velo__control:hover {
+  box-shadow: none;
+  border-color: var(--color-btn-default-border);
+}
+
+.github-dimmed-dark .accordion,
+.github-dimmed-dark .accordion > .card,
+.github-dimmed-dark .accordion > .card > .card-header {
+  background: var(--color-form-control-background);
+  border-color: var(--color-btn-default-border);
+  color: var(--color-foreground);
+}
+
+.github-dimmed-dark .form-control:focus,
+.github-dimmed-dark .velo__control:focus{
+  box-shadow: none;
+}
+
+.github-dimmed-dark .form-control:hover,
+.github-dimmed-dark .velo__control:hover {
+  border-color: var(--color-btn-default-border-hover);
+  box-shadow: none;
+}
+
+.github-dimmed-dark .input-group-text {
+  background: var(--color-btn-default-background-hover);
+  box-shadow: none;
+  color: var(--color-foreground);
+  text-shadow: none;
+  border: 1px solid var(--color-btn-default-border);
+  font-size: var(--font-size-base);
+}
+
+.github-dimmed-dark .input-group .custom-file-label {
+  background: var(--color-canvas-background);
+  color: var(--color-accent-100);
+  border: 1px solid var(--color-btn-default-border);
+  font-size: var(--font-size-base);
+}
+
+.github-dimmed-dark .input-group .custom-file-label:after {
+  background: var(--color-btn-default-background);
+  box-shadow: none;
+  color: var(--color-foreground);
+  text-shadow: none;
+  font-weight: 400;
+}
+
+/* Artifact viewer screen */
+
+.github-dimmed-dark .report-viewer .description-content {
+  font-family: var(--font-family-sans-serif);
+  font-size: var(--font-size-large);
+  border-radius: 5px;
+  border: 1px solid var(--color-btn-default-border);
+  padding: 12px;
+}
+
+.github-dimmed-dark .report-viewer h1 {
+  color: var(--color-accent-100);
+}
+
+.github-dimmed-dark .report-viewer h2 {
+  color: var(--color-accent-100);
+}
+
+.github-dimmed-dark .report-viewer h3 {
+  margin-top: 2rem;
+  color: #daaa3f;
+}
+
+.github-dimmed-dark .report-viewer h4 {
+  color: #57ab5a;
+}
+
+.github-dimmed-dark .report-viewer h5 {
+  color: #57ab5a;
+}
+
+.github-dimmed-dark .artifact-search-table a {
+  color: var(--color-foreground);
+}
+
+.github-dimmed-dark .report-viewer {
+  color: var(--color-foreground);
+}
+
+.github-dimmed-dark .report-viewer pre {
+    filter: invert(1);
+    background: rgba(255,255,255,.05);
+    color: var(--color-canvas-background);
+    border-radius: 4px;
+    border: none;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.github-dimmed-dark .report-viewer code {
+  background: rgba(255,255,255,.1);
+  border-radius: 4px;
+  border: none;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.github-dimmed-dark span.chromaln {
+  color: var(--color-foreground-dimmed);
+}
+
+.github-dimmed-dark .report-viewer pre > a {
+  color: var(--color-accent-complement);
+}
+
+.github-dimmed-dark .artifact-search-table.selectable.container tbody tr:hover {
+  background: var(--color-table-row-hover);
+}
+
+.github-dimmed-dark .artifact-search-table.selectable.container tr.row-selected,
+.github-dimmed-dark .artifact-search-table.selectable.container tr.row-selected:hover,
+.github-dimmed-dark .artifact-search-table.selectable.container tr.row_selected > td {
+  background: var(--color-table-row-selected);
+  color: var(--color-foreground);
+}
+
+/* Modal dialogs */
+.github-dimmed-dark .modal-content {
+  background: var(--color-canvas-background);
+  color: var(--color-foreground);
+  font-family: var(--font-family-sans-serif);
+}
+
+.github-dimmed-dark .modal-content dt {
+  color: var(--color-accent-100);
+}
+
+.github-dimmed-dark .modal-header {
+  border-bottom: 2px solid var(--color-btn-default-border);
+}
+
+.github-dimmed-dark .modal-header .btn-close {
+  color: var(--color-foreground-dimmed);
+  opacity: 0.8;
+  filter: invert(1);
+  text-shadow: none;
+  outline: none;
+}
+
+.github-dimmed-dark .modal-header .btn-close:hover,
+.github-dimmed-dark .modal-header .btn-close:focus {
+  color: var(--color-foreground);
+  opacity: 1;
+  text-shadow: none;
+  outline: none;
+}
+
+.github-dimmed-dark .modal-footer {
+  border-top: 2px solid var(--color-btn-default-border);
+}
+
+.github-dimmed-dark .modal-content pre {
+  font-family: var(--font-family-monospace);
+  background: inherit;
+  filter: invert(1);
+  font-size: inherit;
+}
+
+/* Notebooks */
+
+.github-dimmed-dark .cell-toolbar,
+.github-dimmed-dark .notebook-input {
+  background: var(--color-table-heading-background);
+  color: var(--color-foreground);
+  border-width: 0;
+}
+
+.github-dimmed-dark .notebook-input pre {
+  font-family: var(--font-family-monospace);
+  font-size: inherit;
+  filter: invert(1);
+  border-color: #ffffff00;
+}
+
+.github-dimmed-dark .notebook-cell {
+  background: var(--color-canvas-background);
+}
+
+.github-dimmed-dark .notebook-cell.selected {
+  border-color: var(--color-btn-border);
+}
+
+/* react timelines */
+.github-dimmed-dark .react-calendar-timeline .rct-sidebar {
+  color: var(--color-foreground);
+}
+
+/* file tree */
+
+
+/* Scrollbars */
+
+.github-dimmed-dark ::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+}
+
+/* Dropdown menus */
+.github-dimmed-dark .dropdown-menu {
+  background: var(--color-canvas-background);
+}
+
+.github-dimmed-dark .dropdown-item {
+  font-family: var(--font-family-sans-serif);
+  font-size: var(--font-size-base);
+}
+
+/* Footer */
+.github-dimmed-dark .app-footer.fixed-bottom {
+  background: var(--color-footer-background);
+  color: var(--color-foreground-dimmed);
+  font-family: var(--font-family-sans-serif);
+  border-top: 1px solid var(--color-btn-border);
+}
+
+/* Shell input */
+.github-dimmed-dark .shell-command .input-group .form-control {
+  font-family: var(--font-family-monospace);
+  background: var(--color-canvas-background);
+  color: var(--color-foreground);
+  border-color: var(--color-btn-default-border);
+  height: auto;
+}
+
+.github-dimmed-dark .shell-command .velo-ace-editor {
+  -webkit-flex: auto;
+  flex: auto;
+  width: 1%;
+  min-width: 0;
+  border-width: 1px;
+  border-style: solid;
+  height: 100%;
+  overflow-y: auto;
+  border-color: var(--color-btn-border);
+}
+
+.github-dimmed-dark .tooltip-inner {
+  font-family: var(--font-family-sans-serif);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  background-color: var(--color-tooltip-background);
+}
+
+.github-dimmed-dark .tooltip.show,
+.github-dimmed-dark .tooltip.bs-tooltip-top {
+  font-family: var(--font-family-sans-serif);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-foreground);
+}
+
+.github-dimmed-dark .bs-tooltip-top .tooltip-arrow::before {
+  border-top-color: var(--color-tooltip-background);
+}
+
+/* Shell output */
+.github-dimmed-dark .notebook-output pre {
+  filter: invert(1);
+  border-color: var(--color-btn-border);
+  font-size: inherit;
+}
+
+.github-dimmed-dark .shell-cell {
+  border: 1px solid var(--color-btn-border);
+}
+
+/* ACE things */
+.github-dimmed-dark .ace_tooltip {
+  background: var(--color-canvas-background);
+  color: var(--color-foreground);
+  border: 1px solid var(--color-btn-border);
+  font-family: var(--font-family-sans-serif);
+}
+
+.github-dimmed-dark #ace_settingsmenu {
+  background: var(--color-footer-background);
+}
+
+.github-dimmed-dark #ace_settingsmenu button,
+.github-dimmed-dark #ace_settingsmenu input,
+.github-dimmed-dark #ace_settingsmenu select {
+  background: var(--color-btn-default-background);
+}
+
+.github-dimmed-dark .shell-command .ace_editor {
+  overflow: visible;
+  font-family: var(--font-family-monospace);
+}
+
+.github-dimmed-dark .shell-command .show > .btn-primary.dropdown-toggle {
+  background: var(--color-accent-50);
+  border-color: var(--color-accent-50);
+}
+
+.github-dimmed-dark .shell-command .show > .btn-primary.dropdown-toggle:active {
+  background: var(--color-accent-50);
+  border-color: var(--color-accent-50);
+}
+
+.github-dimmed-dark .shell-command .show > .dropdown-menu.show {
+  background: var(--color-btn-default-background);
+  border: 1px solid var(--color-btn-border);
+}
+
+.github-dimmed-dark .custom-tooltip {
+  margin: 0;
+  padding: 10px;
+  background: var(--color-tooltip-background);
+  border: none;
+  box-shadow: 4px 4px 4px rgba(0,0,0,.5);
+  white-space: nowrap;
+  display: block;
+}
+
+.github-dimmed-dark .sidebar-icon {
+  filter: invert(1);
+}
+
+.github-dimmed-dark .file-hex-view td,
+.github-dimmed-dark .file-hex-view th {
+  border: 0px;
+}
+
+.github-dimmed-dark .velo__input {
+  color: var(--color-foreground);
+}
+
+.github-dimmed-dark .velo__option:hover,
+.github-dimmed-dark .velo__option--is-focused {
+  background: var(--color-btn-default-background-hover);
+}
+
+.github-dimmed-dark ::placeholder {
+  color: var(--color-foreground-dimmed) !important;
+  font-weight: 500 !important;
+}
+
+.github-dimmed-dark .velo__placeholder {
+  color: var(--color-foreground);
+}
+
+.github-dimmed-dark .ace_placeholder {
+  font-family: var(--font-family-sans-serif);
+  font-size: var(--font-size-large);
+  letter-spacing: 0.4px;
+  color: var(--color-foreground) !important;
+  position: inherit;
+  z-index: 1000;
+}
+
+.github-dimmed-dark .velo__multi-value {
+  border: 1px solid var(--color-btn-default-border);
+  background-color: var(--color-btn-default-border);
+}
+
+.github-dimmed-dark .velo__multi-value__label {
+  color: var(--color-foreground);
+  border: none;
+  background-color: var(--color-btn-default-border);
+  font-size: var(--font-size-small);
+}
+
+.github-dimmed-dark .velo__multi-value__remove {
+  color: var(--color-foreground);
+  background-color: var(--color-btn-default-border);
+  border: none;
+}
+
+.github-dimmed-dark .velo__multi-value__remove:hover {
+  color: var(--color-foreground-inverse);
+  background-color: var(--color-accent-100);
+  font-weight: 700;
+}
+
+.github-dimmed-dark hr {
+  background: var(--color-btn-default-border);
+  height: 1px;
+  border: none;
+  margin-top: 2em;
+}
+
+.github-dimmed-dark img.velo-logo {
+  opacity: 0.8;
+}
+
+.github-dimmed-dark .icon-small {
+  vertical-align: middle;
+  opacity: 0.8;
+}
+
+
+.github-dimmed-dark .no-content {
+    color: var(--color-foreground-dimmed);
+}
+
+.github-dimmed-dark .velo-ace-editor {
+  border-width: 0px;
+  border-style: inset;
+  height: 100%;
+  overflow-y: auto;
+  border-color: var(--color-btn-border);
+}
+
+.github-dimmed-dark .error-message {
+  color: #daaa3f !important;
+}
+
+.github-dimmed-dark .alert {
+  text-shadow: none;
+  box-shadow: none;
+}
+
+.github-dimmed-dark .json-index {
+    color: #817c36;
+}
+
+.github-dimmed-dark .json-key {
+    color: #dcb8af;
+}
+
+.github-dimmed-dark .json-string {
+    padding-left: 5px;
+    color: #33b0e3;
+}
+
+.github-dimmed-dark .json-number {
+    padding-left: 5px;
+    color: #ffca28;
+}
+
+.github-dimmed-dark .json-null {
+  padding-left: 5px;
+  color: #ef5350;
+}
+
+.github-dimmed-dark .json-boolean {
+  padding-left: 5px;
+  color: #7e57c2;
+}

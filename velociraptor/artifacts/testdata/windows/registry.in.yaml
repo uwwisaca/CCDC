@@ -1,0 +1,74 @@
+Queries:
+  # Test some edge cases of the registry filesystem accessor.
+  - SELECT OSPath FROM glob(globs="/*", accessor="registry")
+  - SELECT OSPath FROM glob(globs="\\*", accessor="registry")
+  - SELECT OSPath FROM glob(globs="\\HKEY_LOCAL_MACHINE\\S*", accessor="registry")
+
+  # No leading \\
+  - SELECT OSPath FROM glob(globs="HKEY_LOCAL_MACHINE\\S*", accessor="registry")
+
+  # A value with path seperators in it. Should return OSPath with
+  # value name quoted.
+  - SELECT OSPath FROM glob(
+       globs="HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+       accessor="registry")
+  - SELECT OSPath FROM stat(
+       filename="HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\\"c:\\windows\\system32\\msht.exe\"",
+       accessor="registry")
+
+  # A key with path separators in it.
+  - SELECT OSPath, Name FROM glob(globs="HKEY_USERS\\S-1-5-18\\http*\\*", accessor='registry')
+
+  - SELECT Name, OSPath, OSPath.Basename,
+       dirname(path=OSPath, path_type='windows')
+    FROM glob(globs="HKEY_CURRENT_USER\\Software\\Microsoft\\Office\\16.0\\Word\\Security\\Trusted Documents\\TrustRecords\\*",
+              accessor="registry")
+
+  # Check for PortProxy glob test parsing of fields and limit on type
+  - SELECT OSPath
+    FROM glob(globs='HKEY_LOCAL_MACHINE\\SYSTEM\\*ControlSet*\\services\\PortProxy\\**',
+        accessor='registry')
+    WHERE Data.type = "key"
+    ORDER BY OSPath
+
+  # Check for value creation
+  - LET KeyPath = '''HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\WINEVT\Channels\"Microsoft-Windows-Application Server-Applications/Debug"/Foobar2/'''
+  - SELECT reg_set_value(path=KeyPath + "Value",
+                         value="Hello", type="SZ", create=TRUE)
+    FROM scope()
+
+  # Disabled registry accessor cache
+  - LET REG_CACHE_SIZE <= -1
+
+  # We should be able to see the new value in there
+  - SELECT OSPath, Data FROM glob(globs=KeyPath + "/*", accessor="registry")
+
+  # Remove the key (this only works for keys without key children).
+  - SELECT reg_rm_key(path=KeyPath) FROM scope()
+
+  # Check that its gone now.
+  - SELECT OSPath, Data FROM glob(globs=KeyPath + "/*", accessor="registry")
+
+  # Test read_reg_key with glob
+  - SELECT *, Key.OSPath AS Key, Key.Name AS Name
+    FROM read_reg_key(globs="*", root='''HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion''')
+    WHERE Name = "Run"
+
+  # Test read_reg_key with no glob but a root
+  - SELECT *,  Key.OSPath AS Key
+    FROM read_reg_key(root='''HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run''')
+
+  # Check for sysinternal eula - must be last because it remaps the hives.
+  - SELECT User, ProgramName
+    FROM Artifact.Windows.Registry.Sysinternals.Eulacheck(source="RegistryAPI")
+
+  # Test default value handling - The key itself looks like a regular directory
+  - SELECT OSPath.Path AS Key, Data FROM glob(globs='Test', root='HKEY_CURRENT_USER/Software', accessor='registry')
+
+  # Listing the key shows a value with name @ as well as one subkey
+  # with name KeyWithValue and a value with name KeyWithValue. We can
+  # have key and values with the same name.
+  # Reading such a path with read_file() will open the value in preference to the key.
+  - SELECT OSPath.Path AS Key, Data, Data.type AS Type, read_file(accessor='registry', filename=OSPath) AS Content
+    FROM glob(globs='Test/*', root='HKEY_CURRENT_USER/Software', accessor='registry')
+    ORDER BY Type

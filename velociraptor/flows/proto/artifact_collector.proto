@@ -1,0 +1,269 @@
+syntax = "proto3";
+
+import "proto/semantic.proto";
+import "actions/proto/vql.proto";
+import "crypto/proto/jobs.proto";
+
+package proto;
+
+option go_package = "www.velocidex.com/golang/velociraptor/flows/proto";
+
+message ArtifactParameters {
+    repeated VQLEnv env = 3 [(sem_type) = {
+            description: "Environment variables to be provided for the query.",
+            friendly_name: "Params",
+        }];
+}
+
+message ArtifactSpec {
+    string artifact = 1;
+    ArtifactParameters parameters = 2;
+
+    // Batching control applies to this artifact only
+    float cpu_limit = 10;
+    uint64 max_batch_wait = 7;
+    uint64 max_batch_rows = 8;
+    uint64 max_batch_rows_buffer = 9;
+    uint64 timeout = 11;
+}
+
+message ArtifactCollectorArgs {
+    string creator = 1;
+
+    // This is an arbitrary object attached to the request that
+    // provides context by the creator. For example it may be used to
+    // store a signature of the request by the creator's key.
+    string user_data = 30;
+    string client_id = 3;
+    string flow_id = 31;
+
+    // If set we send an urgent request to the client.
+    bool urgent = 21;
+
+    // Deprecated: Old way of specifying the artifacts consist of
+    // shared parameters within a list of artifacts (i.e. all
+    // artifacts share same scope).
+    repeated string artifacts = 2 [(sem_type) = {
+            description: "The artifacts to launch.",
+            friendly_name: "Launch",
+        }];
+
+    // New way of specifying artifacts.
+    repeated ArtifactSpec specs = 24;
+
+    // Artifact collection limits.
+    float cpu_limit = 25;
+    float iops_limit = 26;
+    float progress_timeout = 27;
+
+    // Resource limits on this collection.
+    uint64 timeout = 7 [(sem_type) = {
+            description: "Number of seconds to run before cancelling the query.",
+            friendly_name: "Timeout",
+            default: "600",
+        }];
+
+    // Total number of rows we allow to collect. Client will abort the
+    // flow if this is exceeded.
+    uint64 max_rows = 22;
+    uint64 max_logs = 32;
+
+    // Total bytes allowed to upload. Client will abort the collection
+    // when exceeded. This might result is a partial file upload. It
+    // is possible to exceed the limit a bit.
+    uint64 max_upload_bytes = 23;
+
+    // Request a trace of the collection on the endpoint, will upload
+    // a snapshot every trace seconds.
+    uint64 trace_freq_sec = 29;
+
+    bool allow_custom_overrides = 8 [(sem_type) = {
+            description: "If true we will use a custom artifact if present instead of the named artifact.",
+        }];
+
+    // The maximum time in seconds the client will batch log messages
+    // before forwarding them to the server. If this is 0, no updates
+    // will be sent until he very end of the query.
+    uint64 log_batch_time = 28;
+
+    // A place to cache the compiled request. If this is provided we
+    // do not compile the artifacts at all, we just use it as is. This
+    // is used by hunts which repeat the same collection multiple
+    // times, so we can avoid the compiler overheads at scale.
+    repeated VQLCollectorArgs compiled_collector_args = 20;
+
+
+    // DEPRECATED:
+    float ops_per_second = 6 [(sem_type) = {
+            description: "Operations per second (Throttling).",
+            friendly_name: "Ops Per Second",
+            default: "1000000",
+        }];
+}
+
+message ArtifactCollectorResponse {
+    string flow_id = 1;
+    ArtifactCollectorArgs request =2;
+}
+
+message ArtifactUploadedFileInfo {
+    string name = 1;
+    string vfs_path = 2;
+    uint64 size = 3;
+    uint64 stored_size = 4;
+    repeated string components = 5;
+
+    // idx for index files.
+    string type = 6;
+}
+
+// Maintain this also outside the collector context. It will be
+// updated each time anyting about the collection is changed, without
+// having to race updating the main record. The read active_time is
+// the latest between this record and the one in
+// ArtifactCollectorContext. This is mainly used by the GUI to notice
+// when a collection is updated.
+message PingContext {
+    uint64 active_time = 1;
+}
+
+// This context is serialized into the data store. We keep track of
+// all aspects of a collection.
+message ArtifactCollectorContext {
+    string client_id = 27;
+    string session_id = 13;
+    ArtifactCollectorArgs request = 11;
+
+    // If an error occurs this is the backtrace.
+    string backtrace = 1;
+
+    // When the collection was created.
+    uint64 create_time = 3;
+    uint64 start_time = 18;
+
+    // Last time this collection was active (receiving data).
+    uint64 active_time = 17;
+
+    uint64 inflight_time = 36;
+
+    // A total count of files uploaded by this query.  This is now
+    // tracked on the client and synced to the server so the server
+    // does not need to keep track of it.
+    uint64 total_uploaded_files = 23;
+    uint64 total_expected_uploaded_bytes = 25;
+    uint64 total_uploaded_bytes = 26;
+    uint64 total_collected_rows = 28;
+    uint64 total_logs = 32;
+
+    int64 total_requests = 35;
+    int64 outstanding_requests = 31;
+    uint64 transactions_outstanding = 37;
+
+    // We expect the next response from the client to have this id.
+    uint64 next_response_id = 30;
+
+    // Total time the query took to run on the client (reported by the
+    // client's status message at the end of the query).
+    int64 execution_duration = 29;
+
+
+    // Flows go through the following state transitions:
+    // 1. The start by
+    enum State {
+        UNSET = 0;
+
+        // Flow is scheduled and active. If the client is not online,
+        // it will receive the collection later.
+        RUNNING = 1;
+
+        // Flow was delivered to the client and is waiting on the
+        // client for a concurrency slot.
+        WAITING = 6;
+
+        // Flow is currently in progress on the client. This indicates
+        // the client was sent the collection and it is currently
+        // executing. Progress should be updated periodically from the
+        // client.
+        IN_PROGRESS = 4;
+
+        // This state indicates the client is non-responsive. The
+        // client had not sent an update in a while and might have
+        // crashed, shutdown or become disconnected. When the client
+        // connects next we will update this status when we know more
+        // about it.
+        UNRESPONSIVE = 5;
+
+        FINISHED = 2; // Flow completed normally.
+        ERROR = 3;   // Flows which raise are marked as having an error.
+    };
+
+    State state = 14;
+
+    string status = 15 [(sem_type) = {
+            description: "Contents of an error status sent by the client."
+        }];
+
+    // Some of the collected artifacts may not have results.
+    repeated string artifacts_with_results = 22 [(sem_type) = {
+            description: "The full path to the artifacts with their results. "
+            "This takes the form artifact name/source name."
+        }];
+
+    // Keep detailed track of each query status.
+    repeated VeloStatus query_stats = 34;
+
+    // The below are not serialized but are used during execution.
+
+    // Uploads are now permanently stored in a json file. This field is
+    // never serialized - it is just a place holder during processing.
+    repeated ArtifactUploadedFileInfo uploaded_files = 24;
+
+
+    // The below fields are deprecated and only used in compatible
+    // code for older clients (<0.6.8)
+
+    // DEPRECATED: Not considered any more as clients report the end
+    // of the flow in FlowStats.flow_complete field.
+    bool user_notified = 16;
+
+    // Logs are stored in their own CSV file. This is just a
+    // placeholder during processing.
+    repeated LogMessage logs = 20;
+
+    bool dirty = 2;
+
+    uint64 total_loads = 33;
+}
+
+// Artifacts to collect for each label.
+message LabelEvents {
+    string label = 1;
+    ArtifactCollectorArgs artifacts = 2;
+}
+
+
+message GetClientMonitoringStateRequest {
+    // Show the compiled monitoring table from the point of view of
+    // this client.
+    string client_id = 1;
+}
+
+// This is stored in the ArtifactCollector state.
+message ClientEventTable {
+    uint64 version = 1;
+
+    // Artifacts to collect from ALL clients.
+    ArtifactCollectorArgs artifacts = 2;
+
+    repeated LabelEvents label_events = 3;
+
+    // populated for GetClientMonitoringState()
+    VeloMessage client_message = 4;
+}
+
+
+message UploadedFileInfo {
+    string name = 1;
+    string vfs_path = 2;
+    uint64 size = 3;
+}

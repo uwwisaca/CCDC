@@ -1,0 +1,16 @@
+Query: LET AllData <= SELECT "A" AS Key, "B" AS Value FROM scope()
+Output: []
+
+Query: LET Mem <= memoize(query={ SELECT * FROM AllData }, key="Key")
+Output: []
+
+Query: SELECT get(item=Mem, field="A") FROM scope()
+Output: [
+ {
+  "get(item=Mem, field=\"A\")": {
+   "Key": "A",
+   "Value": "B"
+  }
+ }
+]
+

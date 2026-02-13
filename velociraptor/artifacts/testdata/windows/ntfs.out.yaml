@@ -1,0 +1,180 @@
+Query: SELECT OSPath FROM glob(globs="/*", accessor="ntfs")
+Output: [
+ {
+  "OSPath": "\\\\.\\C:"
+ },
+ {
+  "OSPath": "\\\\.\\D:"
+ },
+ {
+  "OSPath": "\\\\.\\X:"
+ },
+ {
+  "OSPath": "\\\\?\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy1"
+ },
+ {
+  "OSPath": "\\\\?\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy2"
+ }
+]
+
+Query: SELECT OSPath FROM glob(globs="\\*", accessor="ntfs")
+Output: [
+ {
+  "OSPath": "\\\\.\\C:"
+ },
+ {
+  "OSPath": "\\\\.\\D:"
+ },
+ {
+  "OSPath": "\\\\.\\X:"
+ },
+ {
+  "OSPath": "\\\\?\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy1"
+ },
+ {
+  "OSPath": "\\\\?\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy2"
+ }
+]
+
+Query: SELECT OSPath FROM glob(globs="\\\\.\\c:\\*", accessor="ntfs") WHERE Name = "Windows"
+Output: [
+ {
+  "OSPath": "\\\\.\\C:\\Windows"
+ }
+]
+
+Query: SELECT OSPath FROM glob(globs="\\\\.\\c:\\Windows\\*", accessor="ntfs") WHERE Name = "notepad.exe"
+Output: [
+ {
+  "OSPath": "\\\\.\\C:\\Windows\\notepad.exe"
+ }
+]
+
+Query: SELECT OSPath FROM glob(globs="c:/Windows/*", accessor="ntfs") WHERE Name = "notepad.exe"
+Output: [
+ {
+  "OSPath": "\\\\.\\C:\\Windows\\notepad.exe"
+ }
+]
+
+# Expect to see an ADS and an alternative short file name.
+Query: SELECT OSPath FROM glob(globs="c:\\*", accessor="ntfs") WHERE Name =~ "h.+txt"
+Output: [
+ {
+  "OSPath": "\\\\.\\C:\\HI.TXT"
+ },
+ {
+  "OSPath": "\\\\.\\C:\\HI.TXT:myads"
+ },
+ {
+  "OSPath": "\\\\.\\C:\\hello.txt"
+ },
+ {
+  "OSPath": "\\\\.\\C:\\hello.txt:myads"
+ }
+]
+
+# Make sure lazy_ntfs can see the $LogFile
+Query: SELECT OSPath FROM glob(globs="C:/$LogFile", accessor="lazy_ntfs")
+Output: [
+ {
+  "OSPath": "\\\\.\\C:\\$LogFile"
+ }
+]
+
+Query: SELECT OSPath FROM glob(globs="C:/$LogFile", accessor="ntfs")
+Output: [
+ {
+  "OSPath": "\\\\.\\C:\\$LogFile"
+ }
+]
+
+# Check lazy_ntfs produces drives for root.
+Query: SELECT OSPath FROM glob(globs="/*", accessor="lazy_ntfs")
+Output: [
+ {
+  "OSPath": "\\\\.\\C:"
+ },
+ {
+  "OSPath": "\\\\.\\D:"
+ },
+ {
+  "OSPath": "\\\\.\\X:"
+ },
+ {
+  "OSPath": "\\\\?\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy1"
+ },
+ {
+  "OSPath": "\\\\?\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy2"
+ }
+]
+
+Query: SELECT OSPath FROM glob(globs="\\*", accessor="lazy_ntfs")
+Output: [
+ {
+  "OSPath": "\\\\.\\C:"
+ },
+ {
+  "OSPath": "\\\\.\\D:"
+ },
+ {
+  "OSPath": "\\\\.\\X:"
+ },
+ {
+  "OSPath": "\\\\?\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy1"
+ },
+ {
+  "OSPath": "\\\\?\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy2"
+ }
+]
+
+Query: SELECT OSPath FROM glob(globs="\\\\.\\c:\\*", accessor="lazy_ntfs") WHERE Name = "Windows"
+Output: [
+ {
+  "OSPath": "\\\\.\\C:\\Windows"
+ }
+]
+
+Query: SELECT OSPath FROM glob(globs="\\\\.\\c:\\Windows\\*", accessor="lazy_ntfs") WHERE Name = "notepad.exe"
+Output: [
+ {
+  "OSPath": "\\\\.\\C:\\Windows\\notepad.exe"
+ }
+]
+
+Query: SELECT OSPath FROM glob(globs="c:/Windows/*", accessor="lazy_ntfs") WHERE Name = "notepad.exe"
+Output: [
+ {
+  "OSPath": "\\\\.\\C:\\Windows\\notepad.exe"
+ }
+]
+
+# Expect to see an ADS and an alternative short file name.
+Query: SELECT OSPath FROM glob(globs="c:\\*", accessor="lazy_ntfs") WHERE Name =~ "txt"
+Output: [
+ {
+  "OSPath": "\\\\.\\C:\\HI.TXT"
+ },
+ {
+  "OSPath": "\\\\.\\C:\\HI.TXT:myads"
+ },
+ {
+  "OSPath": "\\\\.\\C:\\hello.txt"
+ },
+ {
+  "OSPath": "\\\\.\\C:\\hello.txt:myads"
+ }
+]
+
+# Test for ADSHunter - c:\adstest\test and ADS created via git action in windows.yaml
+Query: SELECT AdsName,Size,HostObject,AdsContent,OSPath FROM Artifact.Windows.NTFS.ADSHunter(TargetGlob='C:\\adstest\\*')
+Output: [
+ {
+  "AdsName": "test.txt",
+  "Size": 54,
+  "HostObject": "\\\\.\\C:\\adstest\\test",
+  "AdsContent": "\"This is a test of a folder ADS! Its resident too!\" \r\n",
+  "OSPath": "\\\\.\\C:\\adstest\\test:test.txt"
+ }
+]
+

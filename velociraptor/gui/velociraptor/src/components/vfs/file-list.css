@@ -1,0 +1,81 @@
+.fill-parent {
+  position: absolute;
+  left: 1em;
+  right: 1em;
+  top: 1em;
+  bottom: 1em;
+  overflow-y: auto;
+}
+.fill-parent.no-top-margin {
+    top: 0;
+}
+
+.fill-parent.no-margins {
+    left: 5px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.fill-parent.toolbar-margin {
+    top: 50px;
+}
+
+
+.toolbar {
+    display: block;
+    box-sizing: content-box;
+    overflow: visible;
+    margin: 5px;
+    margin-bottom: 5px;
+}
+
+table.table tbody tr.row_selected td,
+table.table tbody tr.row-selected {
+    background-color: var(--color-table-row-selected);
+    color: var(--color-table-row-selected-text);
+}
+
+.table tbody tr.highlighted td {
+    background-color: var(--color-table-row-highlighted);
+  }
+
+.recursive-list-button {
+    position: absolute;
+    left: 23px; top: 5px; font-weight: bold;
+    font-size: 18px;
+    -webkit-text-stroke: 1px #000;
+    color: var(--color-foreground);
+}
+
+
+.file-stomped {
+    color: var(--vfs-files-timestomped);
+}
+
+.file-hints {
+    min-height: 24px;
+    min-width: 32px;
+    cursor: context-menu;
+}
+
+.file-hints .hint-icon {
+    padding: 1px;
+    margin: 2px;
+}
+
+td.download-column {
+    display: table-cell;
+    border-bottom: none;
+    border-right: none;
+    border-left: none;
+    width: 45px;
+}
+
+.vfs-toolbar {
+    padding-right: 10px;
+}
+
+.min-width {
+    min-width: 10em;
+}

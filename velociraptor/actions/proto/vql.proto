@@ -1,0 +1,234 @@
+// These are the messages used in client actions.
+syntax = "proto3";
+
+import "proto/semantic.proto";
+import "artifacts/proto/artifact.proto";
+
+package proto;
+
+option go_package = "www.velocidex.com/golang/velociraptor/actions/proto";
+
+message VQLRequest {
+    // The obfuscated name of the artifact this query came from.
+    string Name = 2;
+
+    // The compiled VQL query to evaluate on the endpoint.
+    string VQL = 1;
+}
+
+message VQLEnv {
+    string key = 1;
+    string value = 2;
+    string comment = 3;
+}
+
+// This is the most common type of message - it specifies a query to
+// run on the endpoint.
+message VQLCollectorArgs {
+    // Number of this request compared to the entire collection.
+    int64 query_id = 32;
+    int64 total_queries = 33;
+
+    // If set we ignore any requests older than this.
+    uint64 expiry = 34;
+
+    // If this is specified we run this query first and if it returns
+    // any rows we continue with the real query.
+    string precondition = 29;
+
+    // The principal that created this request - only sent when
+    // scheduling the server so the server may keep track on who ran
+    // each query.
+    string principal = 28;
+
+    // The effective ACLs that will be used for this query. This is
+    // usually set by the artifact's suid field.
+    string effective_principal = 38;
+
+    repeated VQLEnv env = 3 [(sem_type) = {
+            description: "Environment variables to be provided for the query.",
+        }];
+
+    repeated VQLRequest Query = 2 [(sem_type) = {
+            description: "The VQL queries to execute on the client.",
+        }];
+
+    uint64 max_row = 4 [(sem_type) = {
+            friendly_name: "Max rows per part",
+            description: "The maximum rows per response. Responses larger than this "
+            "will be split across multiple responses.",
+            default: "1000",
+        }];
+
+    // If the row buffer size gets above this size we send the payload
+    // anyway. This is a fairer measure than max_rows of how large the
+    // payload is likely to be before compression because rows come in
+    // all different sizes. Default value is 5mb to match the typical
+    // max_upload_bytes
+    uint64 max_row_buffer_size = 37;
+
+    uint64 max_wait = 6 [(sem_type) = {
+            friendly_name: "Batch requests that take this long.",
+            description: "For long queries we return partial results after this long. This is required for event listeners which never really complete.",
+            default: "10",
+        }];
+
+    // This is deprecated in favor of the below limits.
+    float ops_per_second = 24 [(sem_type) = {
+      description: "An Op is defined as some arbitrary unit of work. This allows work to be limited. Typically VQL plugins will count ops towards the query as appropriate."
+    }];
+
+    float cpu_limit = 30;
+    float iops_limit = 31;
+    float progress_timeout = 36;
+
+    repeated Artifact artifacts = 5 [(sem_type) = {
+            description: "Artifacts sent from the server to help with this query."
+        }];
+
+    uint64 timeout = 25 [(sem_type) = {
+            description: "Maximum time for the query to run."
+        }];
+
+    // How often to heart beat progress (default 30 sec)
+    uint64 heartbeat = 27;
+
+    repeated string tools = 26 [(sem_type)={
+            description: "A list of tools we will need to run this VQL.",
+        }];
+
+    // Used only for API based calls
+    string org_id = 35;
+}
+
+message VQLTypeMap {
+    string column = 1;
+    string type = 2;
+}
+
+message VQLResponse {
+    // DEPRECATED: Response is encoded in a json array of rows.
+    string Response = 1 [(sem_type) = {
+            description: "JSON encoded response.",
+        }];
+
+    // Response is encoded as line delimited JSON.
+    string JSONLResponse = 10 [(sem_type) = {
+            description: "JSON encoded response.",
+        }];
+
+    bytes CompressedJsonResponse = 15;
+
+    // If uncompressed_size > 0 then the above JSONLResponse is
+    // compressed and this field contains the uncompressed size.
+    uint64 uncompressed_size = 13;
+
+    // The offset in the file stream of the uncompressed JSONLResponse
+    // buffer.
+    uint64 byte_offset = 14;
+
+    repeated string Columns = 2 [(sem_type) = {
+            description: "A list of column headings produced by the query.",
+        }];
+
+    repeated VQLTypeMap types = 8[(sem_type) = {
+            description: "Mapping between column names and their types.",
+        }];
+
+    uint64 query_id = 5 [(sem_type) = {
+            description: "Chronological order of the query we respond to."
+        }];
+
+    uint64 part = 6 [(sem_type) = {
+            description: "Large VQL responses are split across many parts. "
+            "This carries the part of this response.",
+        }];
+
+    VQLRequest Query = 3 [(sem_type) = {
+            description: "The query that was executed.",
+        }];
+
+    uint64 timestamp = 4 [(sem_type) = {
+            description: "The timestamp the response was generated.",
+            type: "RDFDatetime",
+        }];
+
+    uint64 total_rows = 7[(sem_type) = {
+            description: "Total number of rows in this response part."
+        }];
+
+    // Row count where query started.
+    uint64 query_start_row = 11;
+
+    string log = 9;
+
+    // Used only for server-server comms
+    string org_id = 12;
+}
+
+
+// FIXME: We replicate a small subset of GRR's elaborate knowledgebase
+// protos here because the GUI API plugins use this to construct the
+// GRR APIs. When we re-implement the API plugins, refactor this into
+// a more sane structure.
+message User {
+    string username = 1 [(sem_type) = {
+            description: "The username of the user."
+        }];
+}
+
+
+message VQLEventTable {
+    repeated VQLCollectorArgs event = 1 [(sem_type) = {
+            description: "A set of event queries to run.",
+        }];
+
+    uint64 version = 2 [(sem_type) = {
+            description: "The version of this event table."
+        }];
+}
+
+message ClientInfo {
+    string client_id = 1;
+    string hostname = 3;
+    string fqdn = 4;
+    string system = 5;
+    string release = 6;
+    string architecture = 7;
+    string ip_address = 10;
+    uint64 ping = 11;
+    string ping_time = 19;
+    string client_version = 12;
+    string client_name = 13;
+    uint64 first_seen_at = 20;
+    string build_time = 24;
+    string build_url = 25;
+    uint64 install_time = 26;
+
+    repeated string labels = 15;
+    repeated string mac_addresses = 22;
+
+    // A hint if tasks are available. This does not have to be
+    // accurate - checking the task queue will yield the correct
+    // tasks.
+    bool has_tasks = 27;
+
+    string last_interrogate_flow_id = 16;
+
+    // This can be a customized artifact that is compatible with
+    // Generic.Client.Info
+    string last_interrogate_artifact_name = 21;
+
+    uint64 last_hunt_timestamp = 17;
+    uint64 last_event_table_version = 18;
+    uint64 labels_timestamp = 23;
+
+    // A List of flows that are currently in flight and their last
+    // update epoch time.
+    map<string, int64> in_flight_flows = 28;
+
+
+    // A list of indexed metadata fields. There are not all metadata
+    // fields, only the ones that are important enough to be indexed.
+    map<string, string> metadata = 29;
+}

@@ -1,0 +1,86 @@
+Query: SELECT * FROM Artifact.Windows.System.HostsFile( HostsFile=srcDir + '/artifacts/testdata/files/hosts', HostnameRegex = 'second.com')
+Output: [
+ {
+  "Resolution": "127.0.3.4",
+  "Hostname": [
+   "second.com",
+   "standardcomment2.com"
+  ],
+  "Comment": "testing standard comment",
+  "_Source": "Windows.System.HostsFile"
+ }
+]
+
+Query: SELECT * FROM Artifact.Windows.System.HostsFile( HostsFile=srcDir + '/artifacts/testdata/files/hosts', ResolutionRegex = '127.0.0')
+Output: [
+ {
+  "Resolution": "127.0.0.1",
+  "Hostname": "test.com",
+  "Comment": "",
+  "_Source": "Windows.System.HostsFile"
+ },
+ {
+  "Resolution": "127.0.0.2",
+  "Hostname": "test2.com",
+  "Comment": "",
+  "_Source": "Windows.System.HostsFile"
+ }
+]
+
+Query: SELECT * FROM Artifact.Windows.System.HostsFile( HostsFile=srcDir + '/artifacts/testdata/files/hosts', ResolutionRegex = '127.0.3.3')
+Output: [
+ {
+  "Resolution": "127.0.3.3",
+  "Hostname": "standardcomment.com",
+  "Comment": "testing standard comment",
+  "_Source": "Windows.System.HostsFile"
+ }
+]
+
+Query: LET hostsFileGlobs = (dict(HostsFileGlobs=srcDir + '/artifacts/testdata/files/hosts'),)
+Output: []
+
+Query: SELECT Address, Hostname, Comment FROM Artifact.Generic.System.HostsFile( hostsFileGlobs=hostsFileGlobs, HostnameRegex = 'second.com', source='HostsFlattened')
+Output: [
+ {
+  "Address": "127.0.3.4",
+  "Hostname": "second.com",
+  "Comment": "testing standard comment"
+ }
+]
+
+Query: SELECT Address, Hostname, Comment FROM Artifact.Generic.System.HostsFile( hostsFileGlobs=hostsFileGlobs, AddressRegex = '127.0.0', source='HostsFlattened')
+Output: [
+ {
+  "Address": "127.0.0.1",
+  "Hostname": "test.com",
+  "Comment": ""
+ },
+ {
+  "Address": "127.0.0.2",
+  "Hostname": "test2.com",
+  "Comment": ""
+ }
+]
+
+Query: SELECT Address, Hostname, Comment FROM Artifact.Generic.System.HostsFile( hostsFileGlobs=hostsFileGlobs, AddressRegex = '0.3.3$', source='HostsFlattened')
+Output: [
+ {
+  "Address": "127.0.3.3",
+  "Hostname": "standardcomment.com",
+  "Comment": "testing standard comment"
+ }
+]
+
+Query: SELECT Address, Hostname, Comment FROM Artifact.Generic.System.HostsFile( hostsFileGlobs=hostsFileGlobs, HostnameRegex = 'second.com', source='Hosts')
+Output: [
+ {
+  "Address": "127.0.3.4",
+  "Hostname": [
+   "second.com",
+   "standardcomment2.com"
+  ],
+  "Comment": "testing standard comment"
+ }
+]
+

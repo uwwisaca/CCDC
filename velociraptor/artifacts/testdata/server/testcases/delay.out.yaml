@@ -1,0 +1,7 @@
+Query: SELECT * FROM delay(query={ SELECT "Hello" FROM scope() }, delay=1)
+Output: [
+ {
+  "\"Hello\"": "Hello"
+ }
+]
+

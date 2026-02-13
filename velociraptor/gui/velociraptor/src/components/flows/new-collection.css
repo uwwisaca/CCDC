@@ -1,0 +1,94 @@
+.new-artifact-search-table {
+    height: calc(100vh - 232px);
+    overflow: auto;
+}
+
+.new-artifact-search-table table.table td {
+    padding-bottom: 0.3rem;
+    padding-top: 0.3rem;
+    border: none;
+}
+
+.new-artifact-search-table th,
+.new-artifact-search-table tr,
+.new-artifact-search-table td {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.new-artifact-search-table.selectable tr.row-selected button {
+  background: var(--color-accent-50);
+}
+
+.new-artifact-search-table button {
+    text-decoration-line: none;
+}
+
+.new-artifact-description .report-viewer {
+    height: calc(100vh - 232px);
+    overflow: auto;
+}
+
+.new-artifact-description .report-viewer pre {
+    overflow: unset;
+}
+
+
+.new-artifact-page {
+}
+
+
+.new-collection-parameter-page label.form-label {
+    text-align: right;
+    font-weight: bold;
+}
+
+.form-check {
+    padding-top: 7px;
+}
+
+.expand-cell {
+    width: 20px;
+}
+
+
+.new-artifact-page th label.filter-label {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.favorites {
+    width: 400px;
+    line-height: normal;
+}
+
+.favorite-button {
+    height: 42px;
+}
+
+table.param-form-table {
+    width: 100%;
+}
+
+.param-form-autosuggest .react-autosuggest__input {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.param-form-autosuggest .react-autosuggest__suggestions-container {
+    width: 130%;
+    margin: 0px;
+}
+
+.param-form-autosuggest div.react-autosuggest__suggestions-container--open {
+    margin-left: 0px;
+}
+
+.trace-selector {
+    width: 100%;
+    white-space: break-spaces;
+}
+
+.accordion-icon {
+    padding: 10px;
+}

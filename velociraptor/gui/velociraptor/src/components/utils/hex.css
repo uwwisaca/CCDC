@@ -1,0 +1,82 @@
+.monospace {
+  font-family: var(--font-monospace);
+  font-size: 13px;
+  color: var(--color-monospace-color);
+  padding: 0;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.textdump {
+  font-family: var(--font-monospace);
+  font-size: 13px;
+  color: var(--color-monospace-color);
+  padding: 0;
+  margin: 0;
+  white-space: pre;
+}
+
+.hexdump {
+    margin: 0px;
+}
+
+td.hex_column, th.hex_column {
+    width: fit-content;
+}
+
+td.offset {
+    text-align: right;
+}
+
+th.offset {
+    text-align: right;
+    padding-right: 40px;
+}
+
+.content-area .data {
+    width: 1em;
+}
+
+.hex-dialog-body .offset-area {
+    padding-right: 40px;
+}
+
+.hex-dialog-body table.offset-area {
+    margin-left: 30px;
+}
+
+td.context-container {
+    display: inline-block;
+    width: 20em;
+}
+
+.hex-padding {
+    padding-left: 1.2em;
+    display: inline-block;
+    height: 1em;
+}
+
+.hex-char {
+    padding-right: 1em;
+    height: 1em;
+    display: inline-block;
+}
+
+.text-char {
+    display: inline-block;
+    height: 1em;
+}
+
+.hex-highlight {
+    background: var(--hex-highlight-background);
+    color: var(--hex-highlight-foreground);
+    height: 100%;
+}
+
+.hex-viewer {
+    overflow-x: auto;
+}
+
+.hex-viewer table {
+    max-width: 100%;
+}

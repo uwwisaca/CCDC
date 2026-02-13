@@ -1,0 +1,17 @@
+.ace-toolbar {
+    display: block;
+    box-sizing: content-box;
+    overflow: visible;
+    margin-bottom: 5px;
+}
+
+/* Used in new artifact ace editor popout */
+.velo-ace-editor {
+    border-width: 0;
+    height: 100%;
+    overflow-y: auto;
+}
+
+div.ace_editor.ace_autocomplete {
+    width: 70%
+}

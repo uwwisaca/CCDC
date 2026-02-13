@@ -1,0 +1,62 @@
+.user-label {
+    max-height: 38px;
+    margin-right: 10px
+}
+
+.user-label img {
+    max-height: 24px;
+    padding: 0;
+    margin-left: 5px;
+}
+
+.timezone-selector {
+    flex: 1 1 auto;
+}
+
+.org-label {
+    padding-left: 1ex;
+    display: inline;
+    opacity: 50%;
+}
+
+.set-password-button {
+    width: 100%;
+}
+
+.accordion {
+    background: initial;
+}
+
+.accordion-button, .accordion-button:not(.collapsed) {
+    padding-left: 12px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    color: var(--color-foreground);
+    background: var(--color-form-control-background);
+    border: 1px;
+    border-color: var(--color-btn-default-border);
+    border-style: solid;
+    font-size: var(--font-size-base);
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+}
+
+.accordion-item {
+    border: 0px;
+}
+
+.accordion-body {
+    padding: 10px;
+    color: var(--color-foreground);
+    background: var(--color-form-control-background);
+    border: 1px;
+    border-color: var(--color-btn-default-border);
+    border-style: solid;
+}
+
+input.form-control {
+    color: var(--color-foreground);
+    background: var(--color-form-control-background);
+}

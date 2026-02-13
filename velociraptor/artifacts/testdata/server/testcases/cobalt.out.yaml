@@ -1,0 +1,320 @@
+#prefix: srcDir + "/artifacts/testdata/files/CSSectionPE.bin"
+# tests for file parsing
+Query: SELECT Rule, relpath(path=OSPath, base=srcDir, sep="/") as OSPath,Hash,Xor,DecodedConfig FROM Artifact.Windows.Carving.CobaltStrike(TargetFileGlob=srcDir + "/artifacts/testdata/files/CSDump.bin")
+Output: [
+ {
+  "Rule": "cobalt_strike_beacon",
+  "OSPath": "artifacts/testdata/files/CSDump.bin",
+  "Hash": {
+   "MD5": "81d9b0a5308f6e46e06567ef9b889496",
+   "SHA1": "ba4a435cff1897ac653b4c6af43c40b4d01c154c",
+   "SHA256": "2227d7bd3c7a36a4d1d103e41df9a18798bf0d22b3e6357ee689d320fd318a24"
+  },
+  "Xor": "0x2e",
+  "DecodedConfig": {
+   "BeaconType": "windows-beacon_https-reverse_https",
+   "Port": 443,
+   "Sleeptime": 60000,
+   "Maxgetsize": 1048576,
+   "PublicKey": "30 81 9f 30 0d 06 09 2a 86 48 86 f7 0d 01 01 01 05 00 03 81 8d 00 30 81 89 02 81 81 00 a7 38 cd e7 5f 1f bb 1c 18 64 6c 37 7e 03 01 6b 16 2b 12 ba 72 bd f7 dc 36 b4 cd 2e 4e 9b ae 12 20 5a 95 c2 61 70 bf 90 81 05 ad 7f a4 bb cc fa 79 86 32 26 1b ed 98 70 f9 75 f2 07 94 e1 fe 49 95 23 d7 1f 08 a5 6c ae 03 15 bf de 3d 6c 8a 16 38 6b 03 b7 a6 55 1a a1 33 6d 50 32 5a 35 00 db 27 d7 8a d8 fd 13 b6 a7 3b 9f b7 c3 fb 4d 7a 08 8e 32 3f 07 61 86 56 ec d8 35 95 fa 5f 82 36 13 02 03 01 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+   "C2Server": "137.220.53.51,/dot.gif",
+   "UserAgent": "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.50727)",
+   "PostURI": "/submit.php",
+   "HttpGetHeader": "Cookie",
+   "HttpPostHeader": "\n\u0026Content-Type: application/octet-streamid",
+   "DNSIdle": "0.0.0.0",
+   "GetVerb": "GET",
+   "PostVerb": "POST",
+   "SpawnTox86": "%windir%\\syswow64\\rundll32.exe",
+   "SpawnTox64": "%windir%\\sysnative\\rundll32.exe",
+   "ProxyType": "IE settings",
+   "LicenseId": 305419776,
+   "ProcessInjectStartRWX": "PAGE_EXECUTE_READWRITE",
+   "ProcessInjectUseRWX": "PAGE_EXECUTE_READWRITE",
+   "UsesCookies": 1,
+   "ProcessInjectStub": "b5 4a fe 01 ec 6a 75 ed f3 5e 1a 44 f8 bd 39 29"
+  }
+ },
+ {
+  "Rule": "cobalt_strike_beacon",
+  "OSPath": "artifacts/testdata/files/CSDump.bin",
+  "Hash": {
+   "MD5": "81d9b0a5308f6e46e06567ef9b889496",
+   "SHA1": "ba4a435cff1897ac653b4c6af43c40b4d01c154c",
+   "SHA256": "2227d7bd3c7a36a4d1d103e41df9a18798bf0d22b3e6357ee689d320fd318a24"
+  },
+  "Xor": "0x69",
+  "DecodedConfig": {
+   "BeaconType": "windows-beacon_http-reverse_http",
+   "Port": 80,
+   "Sleeptime": 60000,
+   "Maxgetsize": 1048576,
+   "MaxDns": 255,
+   "PublicKey": "30 81 9f 30 0d 06 09 2a 86 48 86 f7 0d 01 01 01 05 00 03 81 8d 00 30 81 89 02 81 81 00 ea 36 55 7a 8a 85 29 81 8b b7 b8 da 54 2c 24 2b 5a cc 89 83 1b ff ca 4a bc 75 af e9 83 4a f3 26 72 ad 8f 76 74 e3 10 a7 fc 52 46 8f 4a d0 91 59 a6 a3 47 d1 3f 4b 33 a4 36 f2 1a fb 0c f5 e5 f2 5b 5e a5 52 7b 1f bc f8 32 6c 70 2a 0f e9 69 54 29 61 55 9a 6d e9 4a b0 cb 10 99 dd 13 fd 19 50 5d 4b 19 55 21 a8 37 df e2 9c e1 06 0c 91 8f cd 9f 03 c9 d8 17 0c c8 37 d5 18 e5 03 58 a3 03 db 02 03 01 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+   "C2Server": "31.44.184.33,/ga.js",
+   "UserAgent": "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0; NP07; NP07)",
+   "PostURI": "/submit.php",
+   "HttpGetHeader": "Cookie",
+   "HttpPostHeader": "\n\u0026Content-Type: application/octet-streamid",
+   "Pipename": "\\\\%s\\pipe\\msagent_%x",
+   "DNSIdle": "0.0.0.0",
+   "SpawnTox86": "%windir%\\syswow64\\rundll32.exe",
+   "SpawnTox64": "%windir%\\sysnative\\rundll32.exe",
+   "CryptoScheme": 1,
+   "ProxyType": "IE settings",
+   "LicenseId": 0,
+   "ProcessInjectStartRWX": "PAGE_EXECUTE_READWRITE",
+   "ProcessInjectUseRWX": "PAGE_EXECUTE_READWRITE"
+  }
+ }
+]
+
+# Test for data stream parsing, DecodedData output and bruteforce xor
+Query: LET Encoded = SELECT Data FROM read_file(filenames=srcDir + "/artifacts/testdata/files/CSDump.bin")
+Output: []
+
+Query: SELECT Rule,Hash,Xor,DecodedConfig,DecodedData FROM Artifact.Windows.Carving.CobaltStrike(TargetBytes=Encoded.Data[0],BruteXor="T", IncludeDecodedData="Y")
+Output: [
+ {
+  "Rule": "cobalt_strike_beacon",
+  "Hash": {
+   "MD5": "81d9b0a5308f6e46e06567ef9b889496",
+   "SHA1": "ba4a435cff1897ac653b4c6af43c40b4d01c154c",
+   "SHA256": "2227d7bd3c7a36a4d1d103e41df9a18798bf0d22b3e6357ee689d320fd318a24"
+  },
+  "Xor": "0x2e",
+  "DecodedConfig": {
+   "BeaconType": "windows-beacon_https-reverse_https",
+   "Port": 443,
+   "Sleeptime": 60000,
+   "Maxgetsize": 1048576,
+   "PublicKey": "30 81 9f 30 0d 06 09 2a 86 48 86 f7 0d 01 01 01 05 00 03 81 8d 00 30 81 89 02 81 81 00 a7 38 cd e7 5f 1f bb 1c 18 64 6c 37 7e 03 01 6b 16 2b 12 ba 72 bd f7 dc 36 b4 cd 2e 4e 9b ae 12 20 5a 95 c2 61 70 bf 90 81 05 ad 7f a4 bb cc fa 79 86 32 26 1b ed 98 70 f9 75 f2 07 94 e1 fe 49 95 23 d7 1f 08 a5 6c ae 03 15 bf de 3d 6c 8a 16 38 6b 03 b7 a6 55 1a a1 33 6d 50 32 5a 35 00 db 27 d7 8a d8 fd 13 b6 a7 3b 9f b7 c3 fb 4d 7a 08 8e 32 3f 07 61 86 56 ec d8 35 95 fa 5f 82 36 13 02 03 01 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+   "C2Server": "137.220.53.51,/dot.gif",
+   "UserAgent": "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.50727)",
+   "PostURI": "/submit.php",
+   "HttpGetHeader": "Cookie",
+   "HttpPostHeader": "\n\u0026Content-Type: application/octet-streamid",
+   "DNSIdle": "0.0.0.0",
+   "GetVerb": "GET",
+   "PostVerb": "POST",
+   "SpawnTox86": "%windir%\\syswow64\\rundll32.exe",
+   "SpawnTox64": "%windir%\\sysnative\\rundll32.exe",
+   "ProxyType": "IE settings",
+   "LicenseId": 305419776,
+   "ProcessInjectStartRWX": "PAGE_EXECUTE_READWRITE",
+   "ProcessInjectUseRWX": "PAGE_EXECUTE_READWRITE",
+   "UsesCookies": 1,
+   "ProcessInjectStub": "b5 4a fe 01 ec 6a 75 ed f3 5e 1a 44 f8 bd 39 29"
+  },
+  "DecodedData": {
+   "Path": "data",
+   "Size": 10000,
+   "UploadId": 0,
+   "StoredSize": 10000,
+   "sha256": "e4827601fe57d67ef030a3d3aa5b7d8d18e5bd51bbee5cd8ce58ce64986aeaba",
+   "md5": "8f5f398cc5f2df9253a5c0d1e49d9d0f",
+   "StoredName": "/uploads/data/cobalt_strike_beacon_0.bin",
+   "Components": [
+    "uploads",
+    "data",
+    "cobalt_strike_beacon_0.bin"
+   ]
+  }
+ },
+ {
+  "Rule": "cobalt_strike_beacon",
+  "Hash": {
+   "MD5": "81d9b0a5308f6e46e06567ef9b889496",
+   "SHA1": "ba4a435cff1897ac653b4c6af43c40b4d01c154c",
+   "SHA256": "2227d7bd3c7a36a4d1d103e41df9a18798bf0d22b3e6357ee689d320fd318a24"
+  },
+  "Xor": "0x69",
+  "DecodedConfig": {
+   "BeaconType": "windows-beacon_http-reverse_http",
+   "Port": 80,
+   "Sleeptime": 60000,
+   "Maxgetsize": 1048576,
+   "MaxDns": 255,
+   "PublicKey": "30 81 9f 30 0d 06 09 2a 86 48 86 f7 0d 01 01 01 05 00 03 81 8d 00 30 81 89 02 81 81 00 ea 36 55 7a 8a 85 29 81 8b b7 b8 da 54 2c 24 2b 5a cc 89 83 1b ff ca 4a bc 75 af e9 83 4a f3 26 72 ad 8f 76 74 e3 10 a7 fc 52 46 8f 4a d0 91 59 a6 a3 47 d1 3f 4b 33 a4 36 f2 1a fb 0c f5 e5 f2 5b 5e a5 52 7b 1f bc f8 32 6c 70 2a 0f e9 69 54 29 61 55 9a 6d e9 4a b0 cb 10 99 dd 13 fd 19 50 5d 4b 19 55 21 a8 37 df e2 9c e1 06 0c 91 8f cd 9f 03 c9 d8 17 0c c8 37 d5 18 e5 03 58 a3 03 db 02 03 01 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+   "C2Server": "31.44.184.33,/ga.js",
+   "UserAgent": "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0; NP07; NP07)",
+   "PostURI": "/submit.php",
+   "HttpGetHeader": "Cookie",
+   "HttpPostHeader": "\n\u0026Content-Type: application/octet-streamid",
+   "Pipename": "\\\\%s\\pipe\\msagent_%x",
+   "DNSIdle": "0.0.0.0",
+   "SpawnTox86": "%windir%\\syswow64\\rundll32.exe",
+   "SpawnTox64": "%windir%\\sysnative\\rundll32.exe",
+   "CryptoScheme": 1,
+   "ProxyType": "IE settings",
+   "LicenseId": 0,
+   "ProcessInjectStartRWX": "PAGE_EXECUTE_READWRITE",
+   "ProcessInjectUseRWX": "PAGE_EXECUTE_READWRITE"
+  },
+  "DecodedData": {
+   "Path": "data",
+   "Size": 10000,
+   "UploadId": 0,
+   "StoredSize": 10000,
+   "sha256": "f80f9893cf9d92f655df9a87841067a17e8296ab758a7b8aee6f3866bcd7ecf4",
+   "md5": "ce8f0108acdd1307d1879865c4e35f2f",
+   "StoredName": "/uploads/data/cobalt_strike_beacon_11001.bin",
+   "Components": [
+    "uploads",
+    "data",
+    "cobalt_strike_beacon_11001.bin"
+   ]
+  }
+ }
+]
+
+# tests sleepfunction parsing
+Query: SELECT Rule, relpath(path=OSPath, base=srcDir, sep="/") as OSPath,Hash,Xor,DecodedConfig FROM Artifact.Windows.Carving.CobaltStrike(TargetFileGlob=srcDir + "/artifacts/testdata/files/CSx86sleep.bin")
+Output: [
+ {
+  "Rule": "cobalt_strike_sleepfunction",
+  "OSPath": "artifacts/testdata/files/CSx86sleep.bin",
+  "Hash": {
+   "MD5": "d99eed2e6496ee36428993bebc7bb6b3",
+   "SHA1": "13aecd545c526bd0718d68740844ac65d249eb09",
+   "SHA256": "040d308f10443afee5d8a38b05fe246f35f1f534b92c651b5fa909ded0dc4097"
+  },
+  "Xor": "0x00",
+  "DecodedConfig": "Sleep mask 32-bit 4.2 deobfuscation routine found."
+ }
+]
+
+# Generate this file with
+# SELECT copy(accessor="data", filename=xor(key="infected",
+# string=read_file(filename="F:/malware/infected.zip")),
+# dest="F:/malware/infected.zip.xor") FROM scope()
+Query: LET CSsectionStager <= xor(key="infected", string=read_file( filename=srcDir+"/artifacts/testdata/files/CSsectionStager.zip.xor"))
+Output: []
+
+Query: LET CSShellcode <= xor(key="infected", string=read_file( filename=srcDir+"/artifacts/testdata/files/CSShellcode.zip.xor"))
+Output: []
+
+Query: LET _ <= remap(config=RemappingTemplate, copy=["zip", "scope", "data", "process"], clear=TRUE)
+Output: []
+
+Query: SELECT OSPath, Name FROM glob(globs="/**") ORDER BY Name
+Output: [
+ {
+  "OSPath": "CSShellcode",
+  "Name": "CSShellcode"
+ },
+ {
+  "OSPath": "CSShellcode\\CSShellcode.bin",
+  "Name": "CSShellcode.bin"
+ },
+ {
+  "OSPath": "CSsectionStager",
+  "Name": "CSsectionStager"
+ },
+ {
+  "OSPath": "CSsectionStager\\CSsectionStager.exe",
+  "Name": "CSsectionStager.exe"
+ }
+]
+
+# tests embedded shellcode in data section parsing
+Query: SELECT Rule,OSPath.Basename,Hash,Xor,DecodedConfig FROM Artifact.Windows.Carving.CobaltStrike(TargetFileGlob="/**/*.exe")
+Output: [
+ {
+  "Rule": "Embedded data section: cobalt_strike_shellcode",
+  "OSPath.Basename": "CSsectionStager.exe",
+  "Hash": {
+   "MD5": "12dd068bb362a3ef64fc0b19ad752ed5",
+   "SHA1": "184bb361cec7fcc10b1ab98d7f9aa0eb05e2ce35",
+   "SHA256": "f43613dc64d3ea3be263392da938242201ed2dfe4580f6ca340250ae516bf9b5"
+  },
+  "Xor": "0x00",
+  "DecodedConfig": {
+   "Server": "test_cobaltstrike.velociraptor.rocks",
+   "TargetUri": "/jquery-3.3.2.slim.min.js",
+   "License": 0,
+   "Strings": [
+    "AQAPRQVH1",
+    "AXAX^YZAXAYAZH",
+    "XAYZH",
+    "wininet",
+    "APAPA",
+    "AQAQj",
+    "/jquery-3.3.2.slim.min.js",
+    "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language: en-US,en;q=0.5",
+    "Referer: http://code.jquery.com/",
+    "Accept-Encoding: gzip, deflate",
+    "User-Agent: Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko",
+    "test_cobaltstrike.velociraptor.rocks"
+   ]
+  }
+ }
+]
+
+# Use byte scanning of the raw file.
+Query: SELECT Rule,Hash,Xor,DecodedConfig FROM Artifact.Windows.Carving.CobaltStrike( TargetBytes=read_file(filename="/CSsectionStager/CSsectionStager.exe"))
+Output: [
+ {
+  "Rule": "Embedded data section: cobalt_strike_shellcode",
+  "Hash": {
+   "MD5": "12dd068bb362a3ef64fc0b19ad752ed5",
+   "SHA1": "184bb361cec7fcc10b1ab98d7f9aa0eb05e2ce35",
+   "SHA256": "f43613dc64d3ea3be263392da938242201ed2dfe4580f6ca340250ae516bf9b5"
+  },
+  "Xor": "0x00",
+  "DecodedConfig": {
+   "Server": "test_cobaltstrike.velociraptor.rocks",
+   "TargetUri": "/jquery-3.3.2.slim.min.js",
+   "License": 0,
+   "Strings": [
+    "AQAPRQVH1",
+    "AXAX^YZAXAYAZH",
+    "XAYZH",
+    "wininet",
+    "APAPA",
+    "AQAQj",
+    "/jquery-3.3.2.slim.min.js",
+    "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language: en-US,en;q=0.5",
+    "Referer: http://code.jquery.com/",
+    "Accept-Encoding: gzip, deflate",
+    "User-Agent: Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko",
+    "test_cobaltstrike.velociraptor.rocks"
+   ]
+  }
+ }
+]
+
+# tests shellcode parsing
+Query: SELECT Rule, relpath(path=OSPath, base=srcDir, sep="/") as OSPath, Hash,Xor,DecodedConfig FROM Artifact.Windows.Carving.CobaltStrike(TargetFileGlob="/**/*.bin")
+Output: [
+ {
+  "Rule": "cobalt_strike_shellcode",
+  "OSPath": "",
+  "Hash": {
+   "MD5": "b173bd1934797444b0f8658495ab0765",
+   "SHA1": "75082bb8c6c3529a298b5e3432a2769362efe451",
+   "SHA256": "771e8bef3711e8327b5ddb9c6109bd23e494488cccd31097e91033a427e413ef"
+  },
+  "Xor": "0x00",
+  "DecodedConfig": {
+   "Server": "10.8.0.58",
+   "TargetUri": "/pi9K",
+   "License": 426352781,
+   "Strings": [
+    "AQAPRQVH1",
+    "AXAX^YZAXAYAZH",
+    "XAYZH",
+    "wininet",
+    "APAPA",
+    "AQAQj",
+    "/pi9K",
+    "User-Agent: Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; BOIE9;ENUSMSE)",
+    "PMD?!Y",
+    "10.8.0.58"
+   ]
+  }
+ }
+]
+
