@@ -1,4 +1,4 @@
-$DestinationFolder = "\Sysinternals"
+$DestinationFolder = ".\Sysinternals"
 New-Item -Path $DestinationFolder -ItemType Directory -Force
 $links = (Invoke-WebRequest -Uri 'https://live.sysinternals.com').Links
 foreach ($item in $links) {
@@ -9,4 +9,5 @@ foreach ($item in $links) {
 	}
 
 }
+
 
