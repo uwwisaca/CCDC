@@ -36,11 +36,15 @@ elif [[ "$MACHINE_IP" == "172.20.242.30" ]]; then # Detect Ecom & Run Correct Sc
     apt install -y tmux
     apt install -y audit
     echo "Dependencies downloaded and installed. You can alert Firewall Master that connection can be cut!"
+    sudo bash UbuntuEcom/web-backup.sh # backup in case STIGs break server
+    sudo bash UbuntuEcom/1-linux-triage.sh # added init triage
     sudo bash UbuntuEcom/initialEcomHardening.sh
     sudo bash UbuntuEcom/ubuntuForwarderInstall.sh
     sudo bash UbuntuEcom/apply-ubuntu-stig.sh
     sudo bash UbuntuEcom/apply-mysql-stig.sh
     sudo bash UbuntuEcom/apply-apache-stig.sh
+    sudo bash UbuntuEcom/web-backup.sh
+    
 
 elif [[ "$MACHINE_IP" == "172.20.242.40" ]]; then # Detect Webmail & Run Correct Scripts
     echo "Machine Detected: Fedora-WebMail"
@@ -48,10 +52,13 @@ elif [[ "$MACHINE_IP" == "172.20.242.40" ]]; then # Detect Webmail & Run Correct
     dnf install -y tmux
     dnf install -y audit
     echo "Dependencies downloaded and installed. You can alert Firewall Master that connection can be cut!"
+    sudo bash FedoraMail/mail-backup.sh # backup in case STIGs break server
+    sudo bash FedoraMail/1-fedora-triage.sh # added init triage
     sudo bash FedoraMail/harden_firewall.sh
-    sudo nash FedoraMail/fedoraForwarderInstall.sh
+    sudo bash FedoraMail/fedoraForwarderInstall.sh
     sudo bash FedoraMail/apply-rhel9-stig.sh
     sudo bash FedoraMail/apply-apache-stig.sh
+    sudo bash FedoraMail/mail-backup.sh
 
 elif [[ -r /etc/os-release ]]; then # If no IP match, fall back to OS detection (Ubuntu Workstation)
     . /etc/os-release
@@ -62,6 +69,7 @@ elif [[ -r /etc/os-release ]]; then # If no IP match, fall back to OS detection 
         apt install -y tmux
         apt install -y audit
         echo "Dependencies downloaded and installed. You can alert Firewall Master that connection can be cut!"
+        sudo bash UbuntuEcom/1-linux-triage.sh
         sudo bash UbuntuWkst/initialUWkstHardening.sh
         sudo bash UbuntuWkst/ubuntuForwarderInstall.sh
         sudo bash UbuntuWkst/apply-ubuntu-desktop-stig.sh
