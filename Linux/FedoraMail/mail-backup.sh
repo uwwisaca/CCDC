@@ -12,7 +12,7 @@ fi
 
 # Create backup dir'
 sudo mkdir -p /root/backup
-sudo chmod 700 /backup
+sudo chmod 700 /root/backup
 
 # Configuration
 BACKUP_BASE_DIR="${1:-/root/backup}"
