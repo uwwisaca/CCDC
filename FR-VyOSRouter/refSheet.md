@@ -48,6 +48,20 @@ Create another user that replaces the vyos user. Enable OTP for the created user
     exit
     confirm
 
+## Cut Internet Connections via Firewall
+
+In competition format, it may become necessary to block access to the entire range in order to triage a broad issue.
+This can be accomplished by adding the following rules to the firewall.
+
+    set firewall ipv4 forward filter rule 1 action drop
+    set firewall ipv4 forward filter rule 1 description "DROP ALL FORWARD"
+
+    set firewall ipv4 input filter rule 1 action drop
+    set firewall ipv4 input filter rule 1 description "DROP ALL INPUT"
+
+    set firewall ipv4 output filter rule 1 action drop
+    set firewall ipv4 output filter rule 1 description "DROP ALL OUTPUT"
+
 ## Operational Mode Basics
 
 For basically any command that can be run within configuration mode ("set" commands), you can use show to display the current state of the console at that path.
