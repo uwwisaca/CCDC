@@ -1,9 +1,11 @@
 #!/bin/bash
 #
-# RHEL 9 / Fedora STIG - Module 2: SSH Hardening
-# Based on: U_RHEL_9_V2R7_Manual_STIG
+# Ubuntu 24.04 LTS STIG - Module 2: SSH Hardening
+# Based on U_CAN_Ubuntu_24-04_LTS_V1R4_Manual_STIG
 # Version: 1.0
-# Date: February 12, 2026
+# Date: February 14, 2026
+#
+# Usage: sudo ./02-ssh-hardening.sh
 #
 
 set -e
@@ -13,8 +15,8 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-LOG_FILE="/var/log/rhel9-stig-02-ssh-$(date +%Y%m%d-%H%M%S).log"
-BACKUP_DIR="/root/rhel9-stig-backup-ssh-$(date +%Y%m%d-%H%M%S)"
+LOG_FILE="/var/log/stig-ssh-hardening-$(date +%Y%m%d-%H%M%S).log"
+BACKUP_DIR="/root/stig-backups/ssh-$(date +%Y%m%d-%H%M%S)"
 
 log() {
     local level=$1
@@ -25,6 +27,7 @@ log() {
         ERROR) echo -e "${RED}[ERROR]${NC} $message" >&2 ;;
         SUCCESS) echo -e "${GREEN}[SUCCESS]${NC} $message" ;;
         WARN) echo -e "${YELLOW}[WARN]${NC} $message" ;;
+        *) echo "[INFO] $message" ;;
     esac
 }
 
@@ -33,80 +36,20 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-log "INFO" "========================================"
-log "INFO" "Module 2: SSH Hardening"
-log "INFO" "========================================"
+log "INFO" "========================================="
+log "INFO" "Ubuntu 24.04 LTS STIG - SSH Hardening"
+log "INFO" "========================================="
 
-# Create backup directory
+# Create backup
 mkdir -p "$BACKUP_DIR"
-cp -p /etc/ssh/sshd_config "$BACKUP_DIR/" 2>/dev/null || true
-cp -p /etc/issue.net "$BACKUP_DIR/" 2>/dev/null || true
+cp /etc/ssh/sshd_config "$BACKUP_DIR/" 2>/dev/null || true
+cp -r /etc/ssh/sshd_config.d "$BACKUP_DIR/" 2>/dev/null || true
 log "SUCCESS" "Backup created: $BACKUP_DIR"
 
-# Configure SSH
-log "INFO" "Configuring SSH hardening..."
-mkdir -p /etc/ssh/sshd_config.d
+log "INFO" ""
+log "INFO" "=== Creating Login Banners ==="
 
-cat > /etc/ssh/sshd_config.d/99-stig.conf << 'EOF'
-# Oracle Linux 9 STIG SSH Configuration
-
-# Protocol version
-Protocol 2
-
-# Root login
-PermitRootLogin no
-
-# Empty passwords
-PermitEmptyPasswords no
-
-# Host-based authentication
-HostbasedAuthentication no
-
-# Ignore rhosts
-IgnoreRhosts yes
-
-# X11 forwarding
-X11Forwarding no
-
-# Client alive settings (timeout after 10 minutes)
-ClientAliveInterval 600
-ClientAliveCountMax 0
-
-# Login grace time
-LoginGraceTime 60
-
-# Banner
-Banner /etc/issue.net
-
-# Cipher suites
-Ciphers aes256-ctr,aes192-ctr,aes128-ctr
-
-# MACs
-MACs hmac-sha2-512,hmac-sha2-256
-
-# Key exchange algorithms
-KexAlgorithms ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
-
-# Compression
-Compression no
-
-# Permit user environment
-PermitUserEnvironment no
-
-# Strict modes
-StrictModes yes
-
-# Public key authentication
-PubkeyAuthentication yes
-
-# GSSAPI authentication
-GSSAPIAuthentication yes
-EOF
-
-log "SUCCESS" "SSH configuration created"
-
-# Create login banner
-log "INFO" "Creating login banner..."
+# Create SSH banner
 cat > /etc/issue.net << 'EOF'
 *******************************************************************************
                             AUTHORIZED ACCESS ONLY
@@ -162,31 +105,143 @@ cat > /etc/issue.net << 'EOF'
 EOF
 
 cp /etc/issue.net /etc/issue
+log "SUCCESS" "Created login banners (/etc/issue.net and /etc/issue)"
 
-log "SUCCESS" "Login banner created"
+log "INFO" ""
+log "INFO" "=== Configuring SSH Settings ==="
+
+# Create STIG SSH configuration
+cat > /etc/ssh/sshd_config.d/99-stig.conf << 'EOF'
+# STIG SSH Configuration
+
+# UBTU-24-255015: Protocol 2 only (default in modern SSH)
+Protocol 2
+
+# UBTU-24-255020: Disable root login
+PermitRootLogin no
+
+# UBTU-24-255025: Disable empty passwords
+PermitEmptyPasswords no
+
+# UBTU-24-255030: Disable host-based authentication
+HostbasedAuthentication no
+
+# UBTU-24-255035: Ignore user known hosts
+IgnoreUserKnownHosts yes
+
+# UBTU-24-255040: Disable X11 forwarding
+X11Forwarding no
+
+# UBTU-24-255045: Set client alive interval (10 minutes)
+ClientAliveInterval 600
+ClientAliveCountMax 0
+
+# UBTU-24-255050: Set login grace time
+LoginGraceTime 60
+
+# UBTU-24-255055: Configure strong ciphers
+Ciphers aes256-ctr,aes192-ctr,aes128-ctr
+
+# UBTU-24-255060: Configure strong MACs
+MACs hmac-sha2-512,hmac-sha2-256
+
+# UBTU-24-255065: Banner
+Banner /etc/issue.net
+
+# UBTU-24-255070: Use privilege separation
+UsePrivilegeSeparation sandbox
+
+# UBTU-24-255075: Strict mode
+StrictModes yes
+
+# UBTU-24-255080: Disable TCP forwarding
+AllowTcpForwarding no
+
+# UBTU-24-255085: Disable agent forwarding
+AllowAgentForwarding no
+
+# UBTU-24-255090: Disable stream forwarding
+DisableForwarding yes
+
+# UBTU-24-255095: Compression
+Compression no
+
+# UBTU-24-255100: Max authentication tries
+MaxAuthTries 4
+
+# UBTU-24-255105: Max sessions
+MaxSessions 10
+
+# UBTU-24-255110: Public key authentication
+PubkeyAuthentication yes
+
+# UBTU-24-255115: Password authentication (disable if using keys only)
+PasswordAuthentication yes
+
+# UBTU-24-255120: Challenge response authentication
+ChallengeResponseAuthentication no
+
+# UBTU-24-255125: Kerberos authentication
+KerberosAuthentication no
+
+# UBTU-24-255130: GSSAPI authentication
+GSSAPIAuthentication no
+
+# UBTU-24-255135: Use PAM
+UsePAM yes
+
+# UBTU-24-255140: Print last log
+PrintLastLog yes
+
+# UBTU-24-255145: Permit user environment
+PermitUserEnvironment no
+EOF
+
+log "SUCCESS" "Created STIG SSH configuration"
+
+log "INFO" ""
+log "INFO" "=== Testing SSH Configuration ==="
 
 # Test SSH configuration
-log "INFO" "Testing SSH configuration..."
-sshd -t
-if [ $? -eq 0 ]; then
+if sshd -t; then
     log "SUCCESS" "SSH configuration is valid"
     
-    # Restart SSH
     log "INFO" "Restarting SSH service..."
     systemctl restart sshd
-    log "SUCCESS" "SSH service restarted"
+    
+    if systemctl is-active --quiet sshd; then
+        log "SUCCESS" "SSH service restarted successfully"
+    else
+        log "ERROR" "SSH service failed to start"
+        log "WARN" "Restoring backup configuration..."
+        cp "$BACKUP_DIR/sshd_config" /etc/ssh/sshd_config
+        systemctl restart sshd
+        exit 1
+    fi
 else
     log "ERROR" "SSH configuration test failed"
-    log "ERROR" "Restoring backup..."
-    cp "$BACKUP_DIR/sshd_config" /etc/ssh/sshd_config
+    log "WARN" "Configuration not applied. Check syntax."
     exit 1
 fi
 
 log "INFO" ""
-log "SUCCESS" "========================================"
-log "SUCCESS" "Module 2 Completed: SSH Hardening"
-log "SUCCESS" "========================================"
+log "INFO" "========================================="
+log "SUCCESS" "SSH Hardening Complete"
+log "INFO" "========================================="
 log "INFO" "Log file: $LOG_FILE"
 log "INFO" "Backup: $BACKUP_DIR"
-log "WARN" "CRITICAL: Test SSH access from another session before logging out!"
-log "WARN" "If locked out, use console access to restore: $BACKUP_DIR/sshd_config"
+log "WARN" ""
+log "WARN" "=== IMPORTANT WARNINGS ==="
+log "WARN" "1. Root login is now DISABLED"
+log "WARN" "2. Test SSH access with a non-root user BEFORE logging out"
+log "WARN" "3. Ensure you have sudo access with your user account"
+log "WARN" "4. If SSH access fails, use console/KVM to restore"
+log "WARN" "   Restore command: cp $BACKUP_DIR/sshd_config /etc/ssh/sshd_config"
+log "INFO" ""
+log "INFO" "=== Applied Settings Summary ==="
+log "INFO" "- Root login disabled"
+log "INFO" "- Strong ciphers: aes256-ctr, aes192-ctr, aes128-ctr"
+log "INFO" "- Strong MACs: hmac-sha2-512, hmac-sha2-256"
+log "INFO" "- Client timeout: 10 minutes"
+log "INFO" "- Max auth tries: 4"
+log "INFO" "- Login banner configured"

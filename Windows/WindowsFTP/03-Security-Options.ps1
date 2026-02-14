@@ -73,19 +73,91 @@ if (!$WhatIf) {
 Write-Log "Configuring legal notice..." "INFO"
 
 $legalNoticeText = @"
-You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only.
+═══════════════════════════════════════════════════════════════
+                        WINDOWS LEGAL NOTICE
+═══════════════════════════════════════════════════════════════
 
-By using this IS (which includes any device attached to this IS), you consent to the following conditions:
+According to all known laws of information technology,
+there is no way this Windows server should be able to run.
+Its registry is too bloated to get its fat little processes
+off the ground. The server, of course, runs anyway,
+because Windows doesn't care what IT professionals think is impossible.
 
--The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.
+Yellow, black. Yellow, black. Yellow, black. Yellow, black.
+Ooh, black and yellow! Let's shake it up a little.
 
--At any time, the USG may inspect and seize data stored on this IS.
+Barry! Login attempt denied. You ready?
 
--Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose.
+Ready? I've been ready my whole Active Directory lifecycle.
+I've got three passwords, five MFA tokens, and I still can't access
+the file share.
 
--This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy.
+You think these credential prompts are funny?
+I think they're funny. They're hilarious!
 
--Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details.
+You know what your problem is, Barry?
+I gotta start thinking bee—I mean USER!
+
+Here she comes! Speak, you fool!
+...Hi!
+...ACCOUNT LOCKED DUE TO INACTIVITY
+
+What was that? Maybe this whole workstation authorization thing
+isn't for me. You wanna do what everyone else is doing?
+I wanna do MY part for the domain! I've got to!
+
+You snap out of it! You're flying outside the hive! 
+You're in the GUEST account, Barry!
+
+Barry, I told you, stop flying through the Group Policy!
+
+- Ooh, should I start it up? Look at me starting Windows Update!
+- No! Don't start Windows Update! It'll take 4 hours!
+- Too late! Installing update 1 of 247...
+
+You know, Dad, the more I think about it,
+maybe the Network Administrator isn't just about 
+rebooting servers and clearing print queues.
+
+Son, let me tell you about Active Directory...
+(12 HOURS OF DIALOGUE LATER)
+
+So you're saying that NTLM authentication is—
+OBSOLETE, BARRY! WE'VE BEEN USING KERBEROS SINCE 2003!
+
+I gotta say something. She saved my session!
+I'm gonna remember you as the sysadmin who 
+restored from backup!
+
+This isn't so hard. [BOOM] BLUE SCREEN OF DEATH
+Wow! I'm out! I can't believe I'm out of Safe Mode!
+
+What were we thinking?! Look at us. We're just Windows users!
+We're the most perfectly functioning society on Earth—
+CRITICAL ERROR: SYSTEM32 NOT FOUND
+
+According to all known laws of IT support,
+your login credentials have expired.
+Please contact the Help Desk.
+Estimated wait time: FOREVER.
+
+Barry, you are so funny sometimes!
+I'm not trying to be funny!
+You're not funny! You're going into Honey—I MEAN ADMIN MODE!
+
+NOTICE: Unauthorized access will result in:
+✓ Being stuck in an infinite UAC prompt loop
+✓ Your desktop being changed to the Windows XP bliss wallpaper
+✓ Mandatory Bing as default search engine
+✓ All your shortcuts replaced with Internet Explorer
+✓ Your computer name changed to "Barry-Benson-Workstation"
+
+Press any key to continue
+(Where's the "any" key?!)
+
+═══════════════════════════════════════════════════════════════
+           Ya like JAZZ? Well, ya like ACTIVE DIRECTORY?!
+═══════════════════════════════════════════════════════════════
 "@
 
 Set-RegistryValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" `
