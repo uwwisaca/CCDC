@@ -176,9 +176,9 @@ Write-Log "Configuring services..." "INFO"
 $servicesToDisable = @(
     @{Name="FTPSVC"; Description="Microsoft FTP Service"},
     @{Name="RpcLocator"; Description="Remote Procedure Call (RPC) Locator"},
-    @{Name="simptcp"; Description="Simple TCP/IP Services"},
-    @{Name="SNMP"; Description="SNMP Service"},
-    @{Name="SNMPTRAP"; Description="SNMP Trap"}
+    @{Name="simptcp"; Description="Simple TCP/IP Services"}
+    #@{Name="SNMP"; Description="SNMP Service"},
+    #@{Name="SNMPTRAP"; Description="SNMP Trap"}
 )
 
 foreach ($svc in $servicesToDisable) {
