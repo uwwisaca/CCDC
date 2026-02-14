@@ -19,7 +19,7 @@ CURRENT_HASH=$(find "$BOOT_DIR" -type f -print0 | sort -z | xargs -0 sha256sum |
 # First run - create baseline
 if [ ! -f "$STATE_FILE" ]; then
     echo "$CURRENT_HASH" > "$STATE_FILE"
-    echo "Hash created: $CURRENT_HASH"
+    echo "Hash created."
     exit 0
 fi
 
