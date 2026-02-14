@@ -48,6 +48,12 @@ Create another user that replaces the vyos user. Enable OTP for the created user
     exit
     confirm
 
+## Fixing the Firewall Script for Team Number
+
+Run this in bash (Where <TEAMNUMBER> is replaced with the team number we are given plus 20).
+
+    sed -i 's/\b36\b/<TEAMNUMBER>/g' vyosfw.sh
+
 ## Cut Internet Connections via Firewall
 
 In competition format, it may become necessary to block access to the entire range in order to triage a broad issue.
