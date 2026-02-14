@@ -112,33 +112,51 @@ cat > /etc/issue.net << 'EOF'
                             AUTHORIZED ACCESS ONLY
 *******************************************************************************
 
-You are accessing a U.S. Government (USG) Information System (IS) that is
-provided for USG-authorized use only.
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║        HALT! Who would cross the Bridge of SSH must          ║
+║           answer me these questions three, ere the           ║
+║              other side ye see...                            ║
+║                                                              ║
+║  QUESTION 1: What is your name?                             ║
+║  QUESTION 2: What is your quest?                            ║
+║  QUESTION 3: What is the airspeed velocity of an            ║
+║              unladen packet?                                 ║
+║                                                              ║
+║  What? I don't know tha-- AAAAAAHHHHH! [BANNED]             ║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  Your mother was a hamster and your father smelt of         ║
+║  elderberries! I fart in your general direction!            ║
+║  Now go away or I shall taunt you a second time!            ║
+║                                                              ║
+║  AUTHENTICATION ATTEMPTS REMAINING: 3                        ║
+║   - First attempt: We shall say "Ni!" to you                ║
+║   - Second attempt: Bring us a SHRUBBERY                    ║
+║   - Third attempt: [DRAMATIC ORGAN CHORD] THE COMFY CHAIR!  ║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  NOTICE: This system is protected by the Spanish            ║
+║  Inquisition (bet you weren't expecting that)               ║
+║                                                              ║
+║  Chief Weapons:                                             ║
+║   • Fear                                                     ║
+║   • Surprise                                                 ║
+║   • Ruthless efficiency                                     ║
+║   • An almost fanatical devotion to iptables                ║
+║   • Nice red uniforms                                        ║
+║                                                              ║
+║  "It's just a flesh wound!" - Your SSH connection (Liar)    ║
+║                                                              ║
+║  "We are the knights who say... SUDO!"                      ║
+║                                                              ║
+║  'Tis but a server! A scratch! Your bytes cannot pass!      ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
 
-By using this IS (which includes any device attached to this IS), you consent
-to the following conditions:
-
-- The USG routinely intercepts and monitors communications on this IS for
-  purposes including, but not limited to, penetration testing, COMSEC
-  monitoring, network operations and defense, personnel misconduct (PM), law
-  enforcement (LE), and counterintelligence (CI) investigations.
-
-- At any time, the USG may inspect and seize data stored on this IS.
-
-- Communications using, or data stored on, this IS are not private, are
-  subject to routine monitoring, interception, and search, and may be
-  disclosed or used for any USG-authorized purpose.
-
-- This IS includes security measures (e.g., authentication and access
-  controls) to protect USG interests--not for your personal benefit or
-  privacy.
-
-- Notwithstanding the above, using this IS does not constitute consent to PM,
-  LE or CI investigative searching or monitoring of the content of privileged
-  communications, or work product, related to personal representation or
-  services by attorneys, psychotherapists, or clergy, and their assistants.
-  Such communications and work product are private and confidential. See User
-  Agreement for details.
+             [COCONUT CLAPPING SOUNDS INTENSIFY]
 
 *******************************************************************************
 EOF
