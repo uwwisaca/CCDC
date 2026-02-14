@@ -166,8 +166,41 @@ if [ -d /etc/dovecot ]; then
     log "  - Dovecot permissions set"
 fi
 
+# fix failures for postfix startup (perms)
 if [ -d /var/spool/postfix ]; then
-    chown -R postfix:postfix /var/spool/postfix
+    chown root:root /var/spool/postfix
+    chmod 755 /var/spool/postfix
+    
+    # pid directory must be owned by root
+    if [ -d /var/spool/postfix/pid ]; then
+        chown root:root /var/spool/postfix/pid
+        chmod 755 /var/spool/postfix/pid
+    fi
+    
+    # public and maildrop must be owned by postfix:postdrop
+    if [ -d /var/spool/postfix/public ]; then
+        chown postfix:postdrop /var/spool/postfix/public
+        chmod 710 /var/spool/postfix/public
+    fi
+    
+    if [ -d /var/spool/postfix/maildrop ]; then
+        chown postfix:postdrop /var/spool/postfix/maildrop
+        chmod 730 /var/spool/postfix/maildrop
+    fi
+    
+    # Most other directories should be owned by postfix
+    for dir in active bounce corrupt defer deferred flush hold incoming private saved trace; do
+        if [ -d "/var/spool/postfix/$dir" ]; then
+            chown postfix:postfix "/var/spool/postfix/$dir"
+            chmod 700 "/var/spool/postfix/$dir"
+        fi
+    done
+    
+    # Remove any stale pid file
+    if [ -f /var/spool/postfix/pid/master.pid ]; then
+        log "  - Removing stale PID file"
+        rm -f /var/spool/postfix/pid/master.pid
+    fi
     log "  - Postfix spool permissions set"
 fi
 
