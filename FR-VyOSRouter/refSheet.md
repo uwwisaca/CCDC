@@ -41,6 +41,8 @@ Create another user that replaces the vyos user. Enable OTP for the created user
     set system login user <username> authentication plaintext-password <password>
     generate system login username <username> otp-key hotp-time rate-limit 3 rate-time 30 window-size 3
     set system login user vyos disable
+    curl -fsSL https://raw.githubusercontent.com/uwwisaca/CCDC/refs/heads/main/FR-VyOSRouter/vyosfw.sh -o /tmp/vyosfw.sh
+    source /tmp/vyosfw.sh
     commit-confirm 5
     save
     exit
