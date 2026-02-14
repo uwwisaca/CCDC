@@ -1,8 +1,8 @@
 ### ESSENTIAL RULES
 # Allow established/related return traffic (IMPORTANT)
 set firewall ipv4 forward filter rule 1 action accept
-set firewall ipv4 forward filter rule 1 state established enable
-set firewall ipv4 forward filter rule 1 state related enable
+set firewall ipv4 forward filter rule 1 state established
+set firewall ipv4 forward filter rule 1 state related
 set firewall ipv4 forward filter rule 1 description "allow established/related"
 
 # Allow this host to access the internet (WAN)
@@ -126,13 +126,13 @@ set firewall ipv6 forward filter rule 153 description "DROP forwarded port udp/6
 ### CROSS NETWORK FW
 ## Allow LAN -> WAN outbound for eth1
 set firewall ipv4 forward filter rule 500 action accept
-set firewall ipv4 forward filter rule 500 inbound-interface eth1
-set firewall ipv4 forward filter rule 500 outbound-interface eth0
+set firewall ipv4 forward filter rule 500 inbound-interface name eth1
+set firewall ipv4 forward filter rule 500 outbound-interface name eth0
 set firewall ipv4 forward filter rule 500 description "allow eth1 -> eth0 outbound"
 ## Allow LAN -> WAN outbound for eth2
 set firewall ipv4 forward filter rule 501 action accept
-set firewall ipv4 forward filter rule 501 inbound-interface eth2
-set firewall ipv4 forward filter rule 501 outbound-interface eth0
+set firewall ipv4 forward filter rule 501 inbound-interface name eth2
+set firewall ipv4 forward filter rule 501 outbound-interface name eth0
 set firewall ipv4 forward filter rule 501 description "allow eth2 -> eth0 outbound"
 
 ### PUBLIC DEVICE FW
