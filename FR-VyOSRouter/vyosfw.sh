@@ -1,9 +1,9 @@
 ### ESSENTIAL RULES
 # Allow established/related return traffic (IMPORTANT)
-set firewall ipv4 forward filter rule 1 action accept
-set firewall ipv4 forward filter rule 1 state established
-set firewall ipv4 forward filter rule 1 state related
-set firewall ipv4 forward filter rule 1 description "allow established/related"
+set firewall ipv4 forward filter rule 2 action accept
+set firewall ipv4 forward filter rule 2 state established
+set firewall ipv4 forward filter rule 2 state related
+set firewall ipv4 forward filter rule 2 description "allow established/related"
 
 # Allow this host to access the internet (WAN)
 # set firewall ipv4 forward filter rule 2 action accept
