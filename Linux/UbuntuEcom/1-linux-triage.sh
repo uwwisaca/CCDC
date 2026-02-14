@@ -4,11 +4,23 @@
 set -e
 
 # Establish log file for installs
-INSTALL_LOG = "/var/log/tools_installs.log"
+INSTALL_LOG="/var/log/tools_installs.log"
 if [[ $EUID -ne 0 ]]; then
     echo -e "This script must be run as root."
     exit 1
 fi
+
+apt update
+apt install -y \
+    git \
+    wget \
+    curl \
+    jq \
+    python3 \
+    python3-pip \
+    python3-venv \
+    linux-headers-$(uname -r) \
+    dkms
 
 # 1 - LiME
 echo -e "================ Installing LiME ================"
@@ -52,14 +64,14 @@ echo -e "================ Volatility successfully installed ================"
 # 3. chkrootkit - Rootkit Detector
 # ================
 echo -e "Installing chkrootkit"
-apt install -y chkrootkit
+apt install -y --no-install-recommends chkrootkit # avoids installing postfix
 echo -e "================ chkrootkit successfully installed ================"
 
 # ================
 # 4. rkhunter - Rootkit Hunter
 # ================
 echo -e "================ Installing rkhunter ================"
-apt install -y rkhunter
+apt install -y --no-install-recommends rkhunter # avoids installing postfix
 # Update rkhunter database
 rkhunter --update
 rkhunter --propupd
